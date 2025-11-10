@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Космические Блоки</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+    }
+    #gameArea {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .block {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      background: #2962ff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <div>Камушки: <span id="coins">0</span></div>
+    <div>Уровень: <span id="level">1</span></div>
+  </div>
+  <div id="gameArea"></div>
+  <button class="btn" onclick="startGame()">Начать</button>
+
+  <script>
+    let coins = 0;
+    let level = 1;
+    let gameActive = false;
+    let currentBlock = null;
+
+    function startGame() {
+      document.querySelector('.btn').style.display = 'none';
+      gameActive = true;
+      level = 1;
+      coins = 0;
+      document.getElementById('coins').textContent = coins;
+      createBlock();
+    }
+
+    function createBlock() {
+      if (!gameActive) return;
+      
+      const block = document.createElement('div');
+      block.className = 'block';
+      block.textContent = level * 10;
+      document.getElementById('gameArea').appendChild(block);
+      currentBlock = block;
+
+      let y = window.innerHeight + 60;
+      const speed = 30;
+      const startTime = Date.now();
+
+      block.onclick = () => {
+        const health = parseInt(block.textContent);
+        if (health <= 1) {
+          coins += level * 10;
+          document.getElementById('coins').textContent = coins;
+          document.getElementById('gameArea').removeChild(block);
+          level++;
+          document.getElementById('level').textContent = level;
+          setTimeout(createBlock, 500);
+        } else {
+          block.textContent = health - 1;
+        }
+      };
+
+      const move = () => {
+        if (!gameActive) return;
+        const elapsed = (Date.now() - startTime) / 1000;
+        y = window.innerHeight + 60 - elapsed * speed;
+        block.style.top = y + 'px';
+        
+        if (y < 100) {
+          alert('Игра окончена!');
+          gameActive = false;
+          document.querySelector('.btn').style.display = 'block';
+        } else {
+          requestAnimationFrame(move);
+        }
+      };
+      move();
+    }
+  </script>
+</body>
+</html>
