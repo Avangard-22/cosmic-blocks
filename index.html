@@ -5,20 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Космический кликер</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Orbitron', 'Arial', sans-serif;
             background: #000;
             color: white;
             min-height: 100vh;
             overflow: hidden;
             user-select: none;
         }
+
         #gameContainer {
             position: relative;
             width: 100%;
@@ -26,6 +31,7 @@
             background: linear-gradient(180deg, #000011 0%, #0a0a2a 50%, #000011 100%);
             overflow: hidden;
         }
+
         /* Фоновые звезды */
         #stars {
             position: absolute;
@@ -35,11 +41,13 @@
             height: 100%;
             z-index: 1;
         }
+
         .star {
             position: absolute;
             background: white;
             border-radius: 50%;
         }
+
         /* Игровая область */
         #gameArea {
             position: absolute;
@@ -49,6 +57,7 @@
             height: 100%;
             z-index: 2;
         }
+
         /* Блоки */
         .block {
             position: absolute;
@@ -69,29 +78,60 @@
             left: 50%;
             transform: translateX(-50%);
             bottom: -100px;
+            font-family: 'Orbitron', monospace;
         }
+
         .block:active {
             transform: translateX(-50%) scale(0.95);
         }
+
         .block-gold {
             background: linear-gradient(135deg, #ffd700, #ff6b00);
             animation: gold-shimmer 3s infinite;
         }
+
         .block-rainbow {
             background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff);
             background-size: 400% 400%;
             animation: rainbow 3s ease infinite;
         }
+
+        /* НОВОЕ: Стили для кристальных и загадочных блоков из второго кода */
+        .block-crystal {
+            background: linear-gradient(45deg, #00ffff, #ffffff, #00ffff) !important;
+            box-shadow: 0 0 25px #00ffff, 0 0 10px #ffffff inset !important;
+            animation: crystalPulse 2s ease-in-out infinite !important;
+        }
+
+        .block-mystery {
+            background: linear-gradient(45deg, #9b59b6, #e74c3c, #3498db) !important;
+            background-size: 300% 300% !important;
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.7) !important;
+            animation: mysteryShift 4s ease-in-out infinite !important;
+        }
+
         @keyframes gold-shimmer {
             0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 107, 0, 0.3) inset; }
             50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 107, 0, 0.6) inset; }
             100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 107, 0, 0.3) inset; }
         }
+
         @keyframes rainbow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+
+        @keyframes crystalPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+
+        @keyframes mysteryShift {
+            0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+            50% { background-position: 100% 50%; filter: hue-rotate(180deg); }
+        }
+
         /* Интерфейс */
         #ui {
             position: absolute;
@@ -102,6 +142,7 @@
             z-index: 3;
             pointer-events: none;
         }
+
         #header {
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
@@ -109,13 +150,17 @@
             border-bottom: 2px solid #bb86fc;
             position: relative;
             pointer-events: auto;
+            backdrop-filter: blur(6px);
         }
+
         h1 {
             color: #bb86fc;
             margin-bottom: 10px;
             font-size: 2em;
             text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+            font-family: 'Orbitron', sans-serif;
         }
+
         .stats-container {
             display: flex;
             justify-content: center;
@@ -123,12 +168,15 @@
             margin-bottom: 10px;
             flex-wrap: wrap;
         }
+
         .stat {
             background: rgba(187, 134, 252, 0.2);
             padding: 8px 15px;
             border-radius: 20px;
             border: 1px solid #bb86fc;
+            font-family: 'Orbitron', monospace;
         }
+
         #levelProgressContainer {
             width: 80%;
             height: 10px;
@@ -137,20 +185,22 @@
             margin: 10px auto;
             overflow: hidden;
         }
+
         #levelProgress {
             height: 100%;
             background: linear-gradient(90deg, #bb86fc, #03dac6);
             width: 0%;
             transition: width 0.3s ease;
         }
+
         .controls {
             position: absolute;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 20px;
             text-align: center;
             pointer-events: auto;
         }
+
         #startBtn {
             background: linear-gradient(135deg, #bb86fc, #3700b3);
             color: white;
@@ -162,54 +212,65 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(187, 134, 252, 0.5);
             pointer-events: auto;
+            font-family: 'Orbitron', sans-serif;
         }
+
         #startBtn:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(187, 134, 252, 0.7);
         }
+
+        /* ИЗМЕНЕНО: Улучшения перемещены в правую часть и уменьшены в 2.5 раза */
         .upgrades {
             position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 120px;
+            right: 20px;
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            padding: 20px;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px;
             pointer-events: auto;
+            z-index: 10;
         }
+
         .upgrade-btn {
-            width: 100px;
-            height: 100px;
+            width: 60px;
+            height: 60px;
             border: none;
-            border-radius: 15px;
+            border-radius: 10px;
             color: white;
-            font-size: 0.9em;
+            font-size: 0.6em;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 2px;
             text-align: center;
             position: relative;
             pointer-events: auto;
+            padding: 4px;
+            font-family: 'Orbitron', monospace;
         }
+
         .btn-available {
             background: linear-gradient(135deg, #03dac6, #018786);
             box-shadow: 0 4px 15px rgba(3, 218, 198, 0.5);
         }
+
         .btn-available:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(3, 218, 198, 0.7);
         }
+
         .btn-unavailable {
             background: linear-gradient(135deg, #666, #333);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             opacity: 0.7;
             cursor: not-allowed;
         }
+
         /* Стили для системы достижений */
         .achievement-icons-container {
             position: absolute;
@@ -220,6 +281,7 @@
             z-index: 30;
             pointer-events: auto;
         }
+
         .achievement-icon-badge {
             width: 30px;
             height: 30px;
@@ -234,6 +296,7 @@
             box-shadow: 0 0 5px rgba(187, 134, 252, 0.5);
             cursor: pointer;
         }
+
         .achievements-menu {
             position: fixed;
             top: 50%;
@@ -253,6 +316,7 @@
             overflow-y: auto;
             pointer-events: auto;
         }
+
         .achievements-header {
             display: flex;
             justify-content: space-between;
@@ -261,6 +325,7 @@
             padding-bottom: 15px;
             border-bottom: 1px solid #bb86fc;
         }
+
         .achievement-item {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
@@ -271,18 +336,22 @@
             transition: transform 0.2s, background 0.2s;
             cursor: default;
         }
+
         .achievement-item:hover {
             transform: translateX(5px);
         }
+
         .achievement-item.achieved {
             background: rgba(124, 179, 66, 0.2);
             border-left: 4px solid #7cb342;
         }
+
         .achievement-item.locked {
             background: rgba(158, 158, 158, 0.2);
             border-left: 4px solid #9e9e9e;
             opacity: 0.7;
         }
+
         .achievement-icon-large {
             width: 50px;
             height: 50px;
@@ -296,31 +365,38 @@
             flex-shrink: 0;
             box-shadow: 0 0 15px rgba(187, 134, 252, 0.6);
         }
+
         .achievement-details {
             flex: 1;
         }
+
         .achievement-name {
             font-weight: bold;
             font-size: 1.1em;
             margin-bottom: 4px;
             color: #bb86fc;
         }
+
         .achievement-item.achieved .achievement-name {
             color: #69f0ae;
         }
+
         .achievement-item.locked .achievement-name {
             color: #ccc;
         }
+
         .achievement-desc {
             font-size: 0.9em;
             color: #ccc;
             margin-bottom: 4px;
         }
+
         .achievement-stats {
             font-size: 0.85em;
             color: #ffcc00;
             font-weight: bold;
         }
+
         .achievements-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -329,19 +405,23 @@
             padding-top: 15px;
             border-top: 1px solid #555;
         }
+
         .stat-item {
             text-align: center;
         }
+
         .stat-value {
             font-size: 1.8em;
             font-weight: bold;
             color: #bb86fc;
             display: block;
         }
+
         .stat-label {
             font-size: 0.8em;
             color: #ccc;
         }
+
         /* Стили для уведомлений о достижениях */
         .achievement-notification {
             position: fixed;
@@ -360,6 +440,7 @@
             transition: opacity 0.5s ease;
             pointer-events: auto;
         }
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -370,10 +451,12 @@
                 opacity: 1;
             }
         }
+
         .achievement-notification.fade-out {
             opacity: 0;
             transform: translateX(100%);
         }
+
         .achievement-notification .achievement-icon {
             width: 40px;
             height: 40px;
@@ -386,44 +469,50 @@
             flex-shrink: 0;
             box-shadow: 0 0 15px rgba(187, 134, 252, 0.8);
         }
+
         .achievement-notification .achievement-content {
             flex: 1;
         }
+
         .achievement-notification .achievement-title {
             font-size: 0.8em;
             color: #ffcc00;
             margin-bottom: 2px;
         }
+
         .achievement-notification .achievement-name {
             font-weight: bold;
             font-size: 1.1em;
             color: #bb86fc;
             margin-bottom: 2px;
         }
+
         .achievement-notification .achievement-desc {
             font-size: 0.9em;
             color: #ccc;
         }
+
         /* Стили для улучшения помощника */
         #upgradeHelperLevelBtn {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 100px;
-            height: 100px;
+            width: 60px;
+            height: 60px;
             padding: 0;
             background: linear-gradient(135deg, #304ffe, #651fff);
         }
+
         #upgradeHelperLevelBtn .helper-level {
             position: absolute;
-            top: -8px;
-            right: -8px;
+            top: -6px;
+            right: -6px;
             background: #ff4444;
             color: white;
-            font-size: 0.8em;
-            width: 20px;
-            height: 20px;
+            font-size: 0.6em;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -431,15 +520,18 @@
             font-weight: bold;
             box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
+
         #upgradeHelperLevelBtn .helper-icon {
-            font-size: 1.5em;
-            margin-bottom: 5px;
+            font-size: 1.2em;
+            margin-bottom: 3px;
         }
+
         #upgradeHelperLevelBtn .helper-cost {
-            font-size: 0.8em;
+            font-size: 0.6em;
             color: #ffd700;
             font-weight: bold;
         }
+
         /* Эффекты разрушения блоков */
         .block-explosion-particle {
             position: absolute;
@@ -449,6 +541,7 @@
             pointer-events: none;
             z-index: 25;
         }
+
         .block-explosion-flash {
             position: absolute;
             width: 60px;
@@ -458,10 +551,12 @@
             z-index: 20;
             animation: flash-pulse 0.5s ease-out forwards;
         }
+
         @keyframes flash-pulse {
             0% { transform: scale(0.5); opacity: 1; }
             100% { transform: scale(3); opacity: 0; }
         }
+
         /* Эффекты для комбо */
         .combo-text {
             position: absolute;
@@ -471,15 +566,19 @@
             z-index: 10;
             animation: floatUp 1s ease-out forwards;
             text-align: center;
+            font-family: 'Orbitron', monospace;
         }
+
         .combo-bonus {
             color: #ffd700;
             font-weight: bold;
         }
+
         @keyframes floatUp {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-80px); opacity: 0; }
         }
+
         .damage-text {
             position: absolute;
             color: #ff4444;
@@ -488,11 +587,28 @@
             pointer-events: none;
             z-index: 10;
             animation: damageFloat 1s ease-out forwards;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
+
+        .crit-damage-text {
+            color: #ff9900;
+            font-size: 1.4em;
+            text-shadow: 0 0 10px rgba(255, 153, 0, 0.8);
+            animation: critFloat 1s ease-out forwards;
+        }
+
         @keyframes damageFloat {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-50px); opacity: 0; }
         }
+
+        @keyframes critFloat {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            50% { transform: translateY(-25px) scale(1.5); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1); opacity: 0; }
+        }
+
         .coin-animation {
             position: absolute;
             font-weight: bold;
@@ -500,11 +616,15 @@
             pointer-events: none;
             z-index: 10;
             animation: coinFloat 1.5s ease-out forwards;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
         }
+
         @keyframes coinFloat {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-30px); opacity: 0; }
         }
+
         .helper-effect {
             position: absolute;
             width: 20px;
@@ -515,10 +635,12 @@
             z-index: 15;
             animation: helperPulse 0.5s ease-out forwards;
         }
+
         @keyframes helperPulse {
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(3); opacity: 0; }
         }
+
         .tooltip {
             position: fixed;
             background: rgba(0, 0, 0, 0.9);
@@ -533,6 +655,7 @@
             text-align: center;
             box-shadow: 0 4px 15px rgba(187, 134, 252, 0.5);
         }
+
         .hud-btn {
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid #bb86fc;
@@ -544,10 +667,12 @@
             font-size: 1.2em;
             pointer-events: auto;
         }
+
         .hud-btn:hover {
             background: rgba(187, 134, 252, 0.2);
             transform: scale(1.05);
         }
+
         .close-btn {
             background: none;
             border: none;
@@ -556,10 +681,12 @@
             cursor: pointer;
             padding: 0 5px;
         }
+
         .close-btn:hover {
             color: #ff7777;
             transform: scale(1.2);
         }
+
         /* Фоновые частицы */
         #backgroundParticles {
             position: absolute;
@@ -569,11 +696,151 @@
             height: 100%;
             z-index: 0;
         }
+
         .bg-particle {
             position: absolute;
             background: rgba(187, 134, 252, 0.3);
             border-radius: 50%;
             pointer-events: none;
+        }
+
+        /* НОВОЕ: Кнопка улучшения крита помощника */
+        #upgradeHelperCritBtn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            padding: 0;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+        }
+
+        #upgradeHelperCritBtn .crit-level {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ff9900;
+            color: white;
+            font-size: 0.6em;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        #upgradeHelperCritBtn .crit-icon {
+            font-size: 1.2em;
+            margin-bottom: 3px;
+        }
+
+        #upgradeHelperCritBtn .crit-cost {
+            font-size: 0.6em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* НОВОЕ: Стили из второго кода для анимаций и эффектов */
+        .rare-block-announce {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8em;
+            font-weight: bold;
+            z-index: 35;
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ff6b00, 0 0 20px #ff6b00;
+            animation: rareAnnounce 2s ease-out;
+            pointer-events: none;
+            font-family: 'Orbitron', monospace;
+        }
+
+        @keyframes rareAnnounce {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .bonus-effect {
+            position: absolute;
+            font-size: 1.4em;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 20;
+            animation: bonusFloat 2s ease-out;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+        }
+
+        @keyframes bonusFloat {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-80px); opacity: 0; }
+        }
+
+        /* НОВОЕ: Эффекты помощника из второго кода */
+        .helper {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #69f0ae, #00e676);
+            border-radius: 50%;
+            z-index: 12;
+            pointer-events: none;
+            box-shadow: 0 0 15px #69f0ae;
+            animation: helperFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes helperFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .helper-beam {
+            position: absolute;
+            width: 3px;
+            background: linear-gradient(to top, transparent, #69f0ae);
+            z-index: 11;
+            pointer-events: none;
+            animation: beamPulse 0.5s ease-out;
+        }
+
+        @keyframes beamPulse {
+            0% { height: 0; opacity: 1; }
+            100% { height: 100px; opacity: 0; }
+        }
+
+        /* НОВОЕ: Эффект сбора валюты из второго кода */
+        .coin-collect {
+            position: absolute;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffd700;
+            pointer-events: none;
+            z-index: 15;
+            animation: coinFly 1.2s ease-out forwards;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes coinFly {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.8) translate(var(--target-x), var(--target-y));
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -595,33 +862,70 @@
                 </div>
                 <div id="achievementIcons" class="achievement-icons-container"></div>
             </div>
+
             <div class="controls">
                 <button id="startBtn">Начать игру</button>
             </div>
+
+            <!-- ИЗМЕНЕНО: Улучшения перемещены в правую часть и уменьшены -->
             <div class="upgrades">
                 <button id="upgradeClickBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-fist-raised" style="font-size: 1.5em; margin-bottom: 5px;"></i>
+                    <i class="fas fa-fist-raised" style="font-size: 1em; margin-bottom: 2px;"></i>
                     <div>Урон: 1</div>
                     <div>50 💎</div>
                 </button>
+                
                 <button id="upgradeSlowBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-anchor" style="font-size: 1.5em; margin-bottom: 5px;"></i>
+                    <i class="fas fa-anchor" style="font-size: 1em; margin-bottom: 2px;"></i>
                     <div>Якорь</div>
                     <div>200 💎</div>
                 </button>
+                
                 <button id="upgradeHelperBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-robot" style="font-size: 1.5em; margin-bottom: 5px;"></i>
+                    <i class="fas fa-robot" style="font-size: 1em; margin-bottom: 2px;"></i>
                     <div>Помощник</div>
                     <div>500 💎</div>
                 </button>
+                
                 <button id="upgradeHelperLevelBtn" class="upgrade-btn btn-unavailable">
                     <div class="helper-level">L1</div>
                     <div class="helper-icon"><i class="fas fa-robot"></i></div>
                     <div class="helper-cost">3000 💎</div>
                 </button>
+                
+                <!-- НОВОЕ: Кнопка улучшения крита помощника -->
+                <button id="upgradeHelperCritBtn" class="upgrade-btn btn-unavailable">
+                    <div class="crit-level">C1</div>
+                    <div class="crit-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="crit-cost">1500 💎</div>
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- НОВОЕ: Звуковые элементы из второго кода -->
+    <audio id="clickSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="breakSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="upgradeSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="comboSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="helperSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="coinSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="rareSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+
     <script>
         // === ОСНОВНЫЕ ПЕРЕМЕННЫЕ ===
         let coins = 0;
@@ -632,15 +936,17 @@
         let gameActive = false;
         let comboCount = 0;
         let lastDestroyTime = 0;
-        const COMBO_TIME_WINDOW = 2000;
+        const COMBO_TIME_WINDOW = 2000; // 2 секунды для комбо
+
+        // Система улучшений
         let clickUpgradeLevel = 1;
         let baseClickUpgradeCost = 50;
         let slowBonus = 0;
         let slowCost = 200;
         let helperActive = false;
         let helperCost = 500;
-        let helperInterval = null;
 
+        // === СИСТЕМА ДОСТИЖЕНИЙ ===
         const achievements = {
             firstBlock: { achieved: false, name: "Первый шаг", desc: "Разрушь свой первый блок", icon: "⭐" },
             level10: { achieved: false, name: "Покоритель Меркурия", desc: "Достигни 10 уровня", icon: "☿" },
@@ -648,47 +954,108 @@
             goldFinder: { achieved: false, name: "Золотоискатель", desc: "Найди 5 золотых блоков", icon: "💰" },
             helperFriend: { achieved: false, name: "Надежный помощник", desc: "Используй помощника 10 раз", icon: "🤝" },
             maxCombo: { achieved: false, name: "Комбо-король", desc: "Достигни максимального комбо x10", icon: "🏆" },
-            planetCollector: { achieved: false, name: "Исследователь", desc: "Открой все планеты", icon: "🚀" }
+            planetCollector: { achieved: false, name: "Исследователь", desc: "Открой все планеты", icon: "🚀" },
+            // НОВОЕ: Достижения для новых типов блоков
+            crystalMaster: { achieved: false, name: "Кристальный мастер", desc: "Разрушь 10 кристальных блоков", icon: "💎" },
+            mysterySolver: { achieved: false, name: "Разгадавший тайну", desc: "Разрушь 5 загадочных блоков", icon: "❓" }
         };
 
         let achievementStats = {
             goldBlocksFound: 0,
             helperUses: 0,
-            maxComboAchieved: 0
+            maxComboAchieved: 0,
+            planetsVisited: ["mercury"],
+            crystalBlocksFound: 0,
+            mysteryBlocksFound: 0
         };
 
+        // === ЭВОЛЮЦИЯ ПОМОЩНИКА ===
         let helperLevel = 1;
         const maxHelperLevel = 5;
-        const helperBaseDamage = 1;
-        const helperBaseCooldown = 1500;
+        let helperBaseDamage = 1;
+        const helperBaseCooldown = 1500; // 1.5 секунды
+
+        // === СИСТЕМА КРИТИЧЕСКОГО УРОНА ПОМОЩНИКА ===
+        let helperCritLevel = 1;
+        const maxHelperCritLevel = 5;
+        let helperCritChance = 0.1; // 10% базовый шанс крита
+        let helperCritMultiplier = 2.0; // 2x базовый множитель крита
+
+        // НОВОЕ: Система редких блоков из второго кода
+        const rareBlocks = {
+            GOLD: {
+                name: "Золотой",
+                chance: 0.03,
+                multiplier: 5,
+                healthMultiplier: 1.5,
+                effect: "Мгновенный бонус",
+                className: "block-gold"
+            },
+            RAINBOW: {
+                name: "Радужный", 
+                chance: 0.02,
+                multiplier: 3,
+                healthMultiplier: 1.3,
+                effect: "Увеличение силы",
+                className: "block-rainbow"
+            },
+            CRYSTAL: {
+                name: "Кристальный",
+                chance: 0.025,
+                multiplier: 4,
+                healthMultiplier: 1.4,
+                effect: "Время помощника",
+                className: "block-crystal"
+            },
+            MYSTERY: {
+                name: "Загадочный",
+                chance: 0.015,
+                multiplier: 6,
+                healthMultiplier: 1.6,
+                effect: "Случайный бонус",
+                className: "block-mystery"
+            }
+        };
 
         // === ФОНОВЫЕ ЭФФЕКТЫ ===
         function createStars() {
             const starsContainer = document.getElementById('stars');
             const starCount = 200;
+            
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
+                
                 const size = Math.random() * 2 + 1;
                 star.style.width = size + 'px';
                 star.style.height = size + 'px';
+                
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
+                
                 star.style.opacity = Math.random() * 0.7 + 0.3;
+                
                 starsContainer.appendChild(star);
             }
         }
+
         function createBackgroundParticles() {
             const container = document.getElementById('backgroundParticles');
             const particleCount = 30;
+            
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'bg-particle';
+                
                 const size = Math.random() * 40 + 10;
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
+                
+                // Случайная начальная позиция
                 particle.style.left = Math.random() * 100 + '%';
                 particle.style.top = Math.random() * 100 + '%';
+                
+                // Случайный цвет
                 const colors = [
                     'rgba(187, 134, 252, 0.2)',
                     'rgba(3, 218, 198, 0.2)',
@@ -696,46 +1063,176 @@
                     'rgba(255, 107, 0, 0.2)'
                 ];
                 particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
                 container.appendChild(particle);
+                
+                // Анимация движения частицы
                 animateParticle(particle);
             }
         }
+
         function animateParticle(particle) {
             let x = parseFloat(particle.style.left);
             let y = parseFloat(particle.style.top);
             let vx = (Math.random() - 0.5) * 0.5;
             let vy = (Math.random() - 0.5) * 0.5;
+            
             function move() {
                 x += vx;
                 y += vy;
+                
+                // Отскок от границ
                 if (x < 0 || x > 100) vx *= -1;
                 if (y < 0 || y > 100) vy *= -1;
+                
+                // Ограничение в пределах экрана
                 x = Math.max(0, Math.min(100, x));
                 y = Math.max(0, Math.min(100, y));
+                
                 particle.style.left = x + '%';
                 particle.style.top = y + '%';
+                
                 requestAnimationFrame(move);
             }
+            
             move();
         }
 
-        // === ИГРОВАЯ ЛОГИКА ===
+        // НОВОЕ: Функция воспроизведения звуков из второго кода
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(e => {});
+            }
+        }
+
+        // НОВОЕ: Функция определения типа редкого блока из второго кода
+        function getRareBlockType() {
+            const rand = Math.random();
+            let cumulativeChance = 0;
+            
+            for (const [type, block] of Object.entries(rareBlocks)) {
+                cumulativeChance += block.chance;
+                if (rand <= cumulativeChance) {
+                    return type;
+                }
+            }
+            
+            return null;
+        }
+
+        // НОВОЕ: Функция анонса редкого блока из второго кода
+        function announceRareBlock(blockName) {
+            const announce = document.createElement('div');
+            announce.className = 'rare-block-announce';
+            announce.textContent = `🌟 ${blockName} блок! 🌟`;
+            
+            document.getElementById("ui").appendChild(announce);
+            playSound('rareSound');
+            
+            setTimeout(() => {
+                if (announce.parentNode) {
+                    document.getElementById("ui").removeChild(announce);
+                }
+            }, 2000);
+        }
+
+        // НОВОЕ: Улучшенная анимация сбора монет из второго кода
+        function createCoinAnimation(amount, startElement) {
+            const coinsElement = document.getElementById('coinsCounter');
+            if (!coinsElement || !startElement) return;
+
+            const startRect = startElement.getBoundingClientRect();
+            const endRect = coinsElement.getBoundingClientRect();
+
+            const startX = startRect.left + startRect.width / 2;
+            const startY = startRect.top + startRect.height / 2;
+            const endX = endRect.left + 15;
+            const endY = endRect.top + 10;
+
+            const coin = document.createElement('div');
+            coin.className = 'coin-collect';
+            coin.textContent = `+${amount} 💎`;
+            coin.style.left = startX + 'px';
+            coin.style.top = startY + 'px';
+            
+            const targetX = (endX - startX) + 'px';
+            const targetY = (endY - startY) + 'px';
+            coin.style.setProperty('--target-x', targetX);
+            coin.style.setProperty('--target-y', targetY);
+
+            document.getElementById("ui").appendChild(coin);
+            playSound('coinSound');
+
+            setTimeout(() => {
+                if (coin.parentNode) {
+                    document.getElementById("ui").removeChild(coin);
+                }
+            }, 1200);
+        }
+
+        // === ОСНОВНЫЕ ФУНКЦИИ ИГРЫ ===
         function startGame() {
-            if (!gameActive && currentBlock === null) {
+            if (gameActive) {
+                // ИЗМЕНЕНО: Сброс игры при повторном нажатии
+                resetGame();
+            } else {
                 gameActive = true;
-                document.getElementById("startBtn").style.display = "none";
+                document.getElementById("startBtn").textContent = "Сбросить игру";
                 createMovingBlock(currentLevel);
                 updateHUD();
             }
         }
 
+        function resetGame() {
+            gameActive = false;
+            
+            // Очищаем текущий блок
+            if (currentBlock && currentBlock.parentNode) {
+                document.getElementById("gameArea").removeChild(currentBlock);
+                currentBlock = null;
+            }
+            
+            // Сбрасываем состояние игры
+            coins = 0;
+            currentLevel = 1;
+            maxLevelReached = 1;
+            currentBlockHealth = 0;
+            comboCount = 0;
+            lastDestroyTime = 0;
+            
+            // Сбрасываем улучшения (кроме достижений)
+            clickUpgradeLevel = 1;
+            slowBonus = 0;
+            helperActive = false;
+            helperLevel = 1;
+            helperCritLevel = 1;
+            helperCritChance = 0.1;
+            helperCritMultiplier = 2.0;
+            
+            // Обновляем интерфейс
+            updateHUD();
+            updateUpgradeButtons();
+            document.getElementById("startBtn").textContent = "Начать игру";
+            
+            showTooltip("Игра сброшена!");
+            setTimeout(hideTooltip, 1500);
+        }
+
         function attackBlock() {
             if (!currentBlock || !gameActive) return;
+            
             const damage = 1 + clickUpgradeLevel;
             currentBlockHealth -= damage;
-            createDamageText(damage, currentBlock);
+            
+            createDamageText(damage, currentBlock, false);
             currentBlock.textContent = currentBlockHealth;
             updateHUD();
+            
+            // НОВОЕ: Воспроизведение звука удара
+            playSound('clickSound');
+            
             if (currentBlockHealth <= 0) {
                 destroyBlock(currentBlock, currentLevel);
             }
@@ -743,41 +1240,72 @@
 
         function createMovingBlock(level) {
             const gameArea = document.getElementById("gameArea");
+            
+            // Очищаем предыдущий блок если есть
             if (currentBlock) {
                 gameArea.removeChild(currentBlock);
             }
+            
             const block = document.createElement("div");
             block.className = "block";
+            
+            // Расчет здоровья блока в зависимости от уровня
             currentBlockHealth = 10 + level * 2;
             block.textContent = currentBlockHealth;
-
-            const blockType = Math.random();
-            if (blockType < 0.05) {
-                block.classList.add("block-gold");
-                currentBlockHealth *= 2;
+            
+            // НОВОЕ: Улучшенная система редких блоков из второго кода
+            let isRare = false;
+            let rareType = null;
+            
+            const potentialRareType = getRareBlockType();
+            if (potentialRareType) {
+                isRare = true;
+                rareType = potentialRareType;
+                const rareBlock = rareBlocks[rareType];
+                block.classList.add(rareBlock.className);
+                currentBlockHealth = Math.floor(currentBlockHealth * rareBlock.healthMultiplier);
                 block.textContent = currentBlockHealth;
-            } else if (blockType < 0.08) {
-                block.classList.add("block-rainbow");
-                currentBlockHealth *= 3;
-                block.textContent = currentBlockHealth;
+                block.innerHTML = `🌟<div style="font-size: 0.7em; margin-top: 5px;">${rareBlock.name}</div>`;
+                announceRareBlock(rareBlock.name);
+            } else {
+                // Обычный блок
+                const blockType = Math.random();
+                if (blockType < 0.05) { // 5% шанс золотого блока
+                    block.classList.add("block-gold");
+                    currentBlockHealth *= 2; // Золотые блоки имеют в 2 раза больше HP
+                    block.textContent = currentBlockHealth;
+                } else if (blockType < 0.08) { // 3% шанс радужного блока
+                    block.classList.add("block-rainbow");
+                    currentBlockHealth *= 3;
+                    block.textContent = currentBlockHealth;
+                }
             }
-
+            
+            // Начальная позиция внизу
             block.style.bottom = "-100px";
             gameArea.appendChild(block);
             currentBlock = block;
+            
+            // Добавляем обработчик клика
             block.addEventListener('click', attackBlock);
+            
+            // Скорость движения блока (вверх)
             const speed = 2 + level * 0.1 - slowBonus;
             moveBlock(block, speed);
         }
 
         function moveBlock(block, speed) {
             if (!gameActive || !block.parentNode) return;
+            
             const currentBottom = parseInt(block.style.bottom);
             const gameAreaHeight = document.getElementById("gameArea").offsetHeight;
+            
+            // Если блок достиг верха
             if (currentBottom > gameAreaHeight - 50) {
                 endGame();
                 return;
             }
+            
             block.style.bottom = (currentBottom + speed) + "px";
             requestAnimationFrame(() => moveBlock(block, speed));
         }
@@ -790,17 +1318,45 @@
                 comboCount = 1;
             }
             lastDestroyTime = now;
-
-            const coinsEarned = 10 + level * 2 + comboCount * 5;
+            
+            // Начисляем монеты
+            let coinsEarned = 10 + level * 2 + comboCount * 5;
+            
+            // НОВОЕ: Бонусы за редкие блоки из второго кода
+            let isRare = false;
+            let rareType = null;
+            
+            for (const type in rareBlocks) {
+                if (block.classList.contains(rareBlocks[type].className)) {
+                    isRare = true;
+                    rareType = type;
+                    coinsEarned = Math.floor(coinsEarned * rareBlocks[type].multiplier);
+                    break;
+                }
+            }
+            
+            // НОВОЕ: Обновление статистики для достижений
+            if (block.classList.contains('block-crystal')) {
+                achievementStats.crystalBlocksFound++;
+            } else if (block.classList.contains('block-mystery')) {
+                achievementStats.mysteryBlocksFound++;
+            }
+            
             coins += coinsEarned;
-
+            
+            // Проверка достижений
             achievementStats.maxComboAchieved = Math.max(achievementStats.maxComboAchieved, comboCount);
             if (block.classList.contains('block-gold')) {
                 achievementStats.goldBlocksFound++;
             }
             checkAchievements();
-
+            
+            // Визуальные эффекты разрушения
             createBlockExplosionEffect(block, level);
+            
+            // НОВОЕ: Воспроизведение звука разрушения
+            playSound('breakSound');
+            
             const gameArea = document.getElementById("gameArea");
             if (gameArea.contains(block)) {
                 gameArea.removeChild(block);
@@ -808,12 +1364,15 @@
             currentBlock = null;
             currentBlockHealth = 0;
             currentLevel++;
+            
             if (currentLevel > maxLevelReached) {
                 maxLevelReached = currentLevel;
                 checkAchievements();
             }
+            
             updateHUD();
             updateUpgradeButtons();
+            
             setTimeout(() => {
                 if (gameActive) {
                     createMovingBlock(currentLevel);
@@ -823,12 +1382,8 @@
 
         function endGame() {
             gameActive = false;
-            if (helperInterval) {
-                clearInterval(helperInterval);
-                helperInterval = null;
-            }
             currentBlock = null;
-            document.getElementById("startBtn").style.display = "block";
+            document.getElementById("startBtn").textContent = "Начать игру";
             showTooltip("Игра окончена! Начните заново.");
             setTimeout(hideTooltip, 2000);
         }
@@ -837,6 +1392,8 @@
             document.getElementById("levelCounter").textContent = currentLevel;
             document.getElementById("coinsCounter").textContent = coins;
             document.getElementById("comboCounter").textContent = comboCount;
+            
+            // Обновляем прогресс уровня
             const progress = document.getElementById("levelProgress");
             if (currentBlock) {
                 const maxHealth = 10 + currentLevel * 2;
@@ -847,7 +1404,7 @@
             }
         }
 
-        // === УЛУЧШЕНИЯ ===
+        // === ФУНКЦИИ УЛУЧШЕНИЙ ===
         function upgradeClickDamage() {
             const cost = Math.floor(baseClickUpgradeCost * Math.pow(1.5, clickUpgradeLevel));
             if (coins >= cost) {
@@ -857,6 +1414,8 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip(`Урон увеличен!<br>Теперь вы наносите ${1 + clickUpgradeLevel} урона`);
+                // НОВОЕ: Воспроизведение звука улучшения
+                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -869,6 +1428,8 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip("Скорость блоков уменьшена!");
+                // НОВОЕ: Воспроизведение звука улучшения
+                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -879,18 +1440,22 @@
                 helperActive = true;
                 achievementStats.helperUses++;
                 checkAchievements();
+                
                 createCoinAnimation(-helperCost, document.getElementById("upgradeHelperBtn"));
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip("Помощник активирован на 1 минуту!");
+                // НОВОЕ: Воспроизведение звука помощника
+                playSound('helperSound');
                 setTimeout(hideTooltip, 1500);
-                helperInterval = setInterval(helperAttack, helperBaseCooldown);
+                
+                // Запускаем помощника
+                let helperInterval = setInterval(helperAttack, helperBaseCooldown);
+                
+                // Через 1 минуту деактивируем
                 setTimeout(() => {
                     helperActive = false;
-                    if (helperInterval) {
-                        clearInterval(helperInterval);
-                        helperInterval = null;
-                    }
+                    clearInterval(helperInterval);
                     updateUpgradeButtons();
                     showTooltip("Время помощника истекло!");
                     setTimeout(hideTooltip, 1500);
@@ -899,14 +1464,32 @@
         }
 
         function upgradeHelperLevel() {
-            const cost = getHelperUpgradeCost();
-            if (coins >= cost && helperLevel < maxHelperLevel) {
-                coins -= cost;
+            if (coins >= getHelperUpgradeCost() && helperLevel < maxHelperLevel) {
+                coins -= getHelperUpgradeCost();
                 helperLevel++;
-                createCoinAnimation(-cost, document.getElementById("upgradeHelperLevelBtn"));
+                createCoinAnimation(-getHelperUpgradeCost(), document.getElementById("upgradeHelperLevelBtn"));
                 updateHUD();
                 updateUpgradeButtons();
-                showTooltip(`Помощник улучшен!<br>Уровень: ${helperLevel}`);
+                showTooltip(`Помощник улучшен!<br>Уровень: ${helperLevel}<br>Урон: ${getHelperDamage()}`);
+                // НОВОЕ: Воспроизведение звука улучшения
+                playSound('upgradeSound');
+                setTimeout(hideTooltip, 1500);
+            }
+        }
+
+        function upgradeHelperCrit() {
+            if (coins >= getHelperCritUpgradeCost() && helperCritLevel < maxHelperCritLevel) {
+                coins -= getHelperCritUpgradeCost();
+                helperCritLevel++;
+                helperCritChance = 0.1 + (helperCritLevel - 1) * 0.1; // +10% за уровень
+                helperCritMultiplier = 2.0 + (helperCritLevel - 1) * 0.5; // +0.5x за уровень
+                
+                createCoinAnimation(-getHelperCritUpgradeCost(), document.getElementById("upgradeHelperCritBtn"));
+                updateHUD();
+                updateUpgradeButtons();
+                showTooltip(`Крит помощника улучшен!<br>Уровень: ${helperCritLevel}<br>Шанс: ${(helperCritChance * 100).toFixed(0)}%<br>Множитель: ${helperCritMultiplier}x`);
+                // НОВОЕ: Воспроизведение звука улучшения
+                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -915,20 +1498,45 @@
             return Math.floor(3000 * Math.pow(1.8, helperLevel - 1));
         }
 
+        function getHelperCritUpgradeCost() {
+            return Math.floor(1500 * Math.pow(1.6, helperCritLevel - 1));
+        }
+
+        function getHelperDamage() {
+            // ИЗМЕНЕНО: Урон помощника увеличен в 2 раза
+            return helperBaseDamage * 2 * (1 + helperLevel * 0.5);
+        }
+
         function helperAttack() {
             if (!currentBlock || !helperActive) return;
+            
+            // НОВОЕ: Улучшенные эффекты помощника из второго кода
             createHelperEffect();
-            const damage = helperBaseDamage * (1 + helperLevel * 0.5);
+            
+            // ИЗМЕНЕНО: Добавлена система критического урона
+            let damage = getHelperDamage();
+            let isCrit = false;
+            
+            // Проверка на критический удар
+            if (Math.random() < helperCritChance) {
+                damage = Math.floor(damage * helperCritMultiplier);
+                isCrit = true;
+            }
+            
             currentBlockHealth -= damage;
+            
+            // Специальные способности помощника
             if (helperLevel >= 3 && Math.random() > 0.7) {
                 currentBlock.style.animation = 'pulse 0.3s ease-in-out 3';
                 setTimeout(() => {
                     if (currentBlock) currentBlock.style.animation = '';
                 }, 1000);
             }
-            createDamageText(Math.floor(damage), currentBlock);
+            
+            createDamageText(Math.floor(damage), currentBlock, isCrit);
             currentBlock.textContent = currentBlockHealth;
             updateHUD();
+            
             if (currentBlockHealth <= 0) {
                 destroyBlock(currentBlock, currentLevel);
             }
@@ -940,21 +1548,25 @@
             const upgradeSlowBtn = document.getElementById("upgradeSlowBtn");
             const upgradeHelperBtn = document.getElementById("upgradeHelperBtn");
             const upgradeHelperLevelBtn = document.getElementById("upgradeHelperLevelBtn");
-
+            const upgradeHelperCritBtn = document.getElementById("upgradeHelperCritBtn");
+            
             if (upgradeClickBtn) {
                 upgradeClickBtn.innerHTML = `
-                    <i class="fas fa-fist-raised" style="font-size: 1.5em; margin-bottom: 5px;"></i>
-                    <div>Урон: ${clickUpgradeLevel}</div>
+                    <i class="fas fa-fist-raised" style="font-size: 1em; margin-bottom: 2px;"></i>
+                    <div>Урон: ${1 + clickUpgradeLevel}</div>
                     <div>${clickCost} 💎</div>
                 `;
                 upgradeClickBtn.className = coins >= clickCost ? "upgrade-btn btn-available" : "upgrade-btn btn-unavailable";
             }
+            
             if (upgradeSlowBtn) {
                 upgradeSlowBtn.className = (coins >= slowCost && slowBonus === 0) ? "upgrade-btn btn-available" : "upgrade-btn btn-unavailable";
             }
+            
             if (upgradeHelperBtn) {
                 upgradeHelperBtn.className = (coins >= helperCost && !helperActive) ? "upgrade-btn btn-available" : "upgrade-btn btn-unavailable";
             }
+            
             if (upgradeHelperLevelBtn) {
                 upgradeHelperLevelBtn.innerHTML = `
                     <div class="helper-level">L${helperLevel}</div>
@@ -963,17 +1575,27 @@
                 `;
                 upgradeHelperLevelBtn.className = (coins >= getHelperUpgradeCost() && helperLevel < maxHelperLevel) ? "upgrade-btn btn-available" : "upgrade-btn btn-unavailable";
             }
+            
+            if (upgradeHelperCritBtn) {
+                upgradeHelperCritBtn.innerHTML = `
+                    <div class="crit-level">C${helperCritLevel}</div>
+                    <div class="crit-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="crit-cost">${getHelperCritUpgradeCost()} 💎</div>
+                `;
+                upgradeHelperCritBtn.className = (coins >= getHelperCritUpgradeCost() && helperCritLevel < maxHelperCritLevel) ? "upgrade-btn btn-available" : "upgrade-btn btn-unavailable";
+            }
         }
 
-        // === ЭФФЕКТЫ ===
-        function createDamageText(damage, block) {
+        // === ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ===
+        function createDamageText(damage, block, isCrit) {
             const rect = block.getBoundingClientRect();
             const damageText = document.createElement('div');
-            damageText.className = 'damage-text';
-            damageText.textContent = '-' + damage;
+            damageText.className = isCrit ? 'crit-damage-text' : 'damage-text';
+            damageText.textContent = '-' + damage + (isCrit ? ' CRIT!' : '');
             damageText.style.left = (rect.left + rect.width / 2) + 'px';
             damageText.style.top = (rect.top) + 'px';
             document.getElementById("ui").appendChild(damageText);
+            
             setTimeout(() => {
                 if (damageText.parentNode) {
                     document.getElementById("ui").removeChild(damageText);
@@ -990,6 +1612,7 @@
             coin.style.left = (rect.left + rect.width / 2) + 'px';
             coin.style.top = (rect.top) + 'px';
             document.getElementById("ui").appendChild(coin);
+            
             setTimeout(() => {
                 if (coin.parentNode) {
                     document.getElementById("ui").removeChild(coin);
@@ -997,54 +1620,78 @@
             }, 1500);
         }
 
+        // НОВОЕ: Улучшенный эффект помощника из второго кода
         function createHelperEffect() {
             if (!currentBlock) return;
-            const rect = currentBlock.getBoundingClientRect();
-            const effect = document.createElement('div');
-            effect.className = 'helper-effect';
-            effect.style.left = (rect.left + rect.width / 2) + 'px';
-            effect.style.top = (rect.top + rect.height / 2) + 'px';
-            document.getElementById("ui").appendChild(effect);
+            
+            const blockRect = currentBlock.getBoundingClientRect();
+            const helperX = blockRect.left + Math.random() * blockRect.width;
+            const helperY = blockRect.top - 50;
+            
+            const helper = document.createElement('div');
+            helper.className = 'helper';
+            helper.style.left = helperX + 'px';
+            helper.style.top = helperY + 'px';
+            document.getElementById("ui").appendChild(helper);
+            
+            const beam = document.createElement('div');
+            beam.className = 'helper-beam';
+            beam.style.left = (helperX + 20) + 'px';
+            beam.style.top = (helperY + 40) + 'px';
+            document.getElementById("ui").appendChild(beam);
+            
             setTimeout(() => {
-                if (effect.parentNode) {
-                    document.getElementById("ui").removeChild(effect);
-                }
-            }, 500);
+                if (helper.parentNode) document.getElementById("ui").removeChild(helper);
+                if (beam.parentNode) document.getElementById("ui").removeChild(beam);
+            }, 1000);
         }
 
         function createBlockExplosionEffect(block, level) {
             const rect = block.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-
+            
+            // Создаем частицы взрыва
             const particleCount = 12 + Math.min(level, 10);
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'block-explosion-particle';
+                
                 let color = '#bb86fc';
                 if (block.classList.contains('block-gold')) {
                     color = '#ffd700';
                 } else if (block.classList.contains('block-rainbow')) {
                     const colors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#8b00ff'];
                     color = colors[Math.floor(Math.random() * colors.length)];
+                } else if (block.classList.contains('block-crystal')) {
+                    color = '#00ffff';
+                } else if (block.classList.contains('block-mystery')) {
+                    color = '#9b59b6';
                 }
+                
                 particle.style.backgroundColor = color;
                 particle.style.left = centerX + 'px';
                 particle.style.top = centerY + 'px';
+                
                 const angle = Math.random() * Math.PI * 2;
                 const speed = 2 + Math.random() * 3;
                 const vx = Math.cos(angle) * speed;
                 const vy = Math.sin(angle) * speed;
+                
                 document.getElementById("ui").appendChild(particle);
+                
                 let posX = centerX;
                 let posY = centerY;
                 let opacity = 1;
+                
                 const animateParticle = () => {
                     posX += vx;
                     posY += vy;
                     opacity -= 0.02;
+                    
                     particle.style.transform = `translate(${posX - centerX}px, ${posY - centerY}px)`;
                     particle.style.opacity = opacity;
+                    
                     if (opacity > 0) {
                         requestAnimationFrame(animateParticle);
                     } else {
@@ -1053,26 +1700,35 @@
                         }
                     }
                 };
+                
                 requestAnimationFrame(animateParticle);
             }
-
+            
+            // Эффект вспышки
             const flash = document.createElement('div');
             flash.className = 'block-explosion-flash';
             flash.style.left = centerX + 'px';
             flash.style.top = centerY + 'px';
-
+            
             if (block.classList.contains('block-gold')) {
                 flash.style.backgroundColor = 'rgba(255, 215, 0, 0.7)';
                 flash.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8)';
             } else if (block.classList.contains('block-rainbow')) {
-                flash.style.backgroundImage = 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff)';
-                flash.style.backgroundColor = 'transparent';
+                flash.style.background = 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff)';
                 flash.style.boxShadow = '0 0 40px rgba(255, 255, 255, 0.8)';
+            } else if (block.classList.contains('block-crystal')) {
+                flash.style.backgroundColor = 'rgba(0, 255, 255, 0.7)';
+                flash.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.8)';
+            } else if (block.classList.contains('block-mystery')) {
+                flash.style.backgroundColor = 'rgba(155, 89, 182, 0.7)';
+                flash.style.boxShadow = '0 0 30px rgba(155, 89, 182, 0.8)';
             } else {
                 flash.style.backgroundColor = 'rgba(187, 134, 252, 0.7)';
                 flash.style.boxShadow = '0 0 20px rgba(187, 134, 252, 0.8)';
             }
+            
             document.getElementById("ui").appendChild(flash);
+            
             setTimeout(() => {
                 if (flash.parentNode) {
                     document.getElementById("ui").removeChild(flash);
@@ -1080,14 +1736,42 @@
             }, 500);
         }
 
-        // === ДОСТИЖЕНИЯ ===
+        // === ФУНКЦИИ ДОСТИЖЕНИЙ ===
         function checkAchievements() {
-            if (!achievements.firstBlock.achieved && maxLevelReached >= 1) unlockAchievement("firstBlock");
-            if (!achievements.level10.achieved && maxLevelReached >= 10) unlockAchievement("level10");
-            if (!achievements.combo5.achieved && comboCount >= 5) unlockAchievement("combo5");
-            if (!achievements.maxCombo.achieved && comboCount >= 10) unlockAchievement("maxCombo");
-            if (!achievements.goldFinder.achieved && achievementStats.goldBlocksFound >= 5) unlockAchievement("goldFinder");
-            if (!achievements.helperFriend.achieved && achievementStats.helperUses >= 10) unlockAchievement("helperFriend");
+            if (!achievements.firstBlock.achieved && maxLevelReached >= 1) {
+                unlockAchievement("firstBlock");
+            }
+            
+            if (!achievements.level10.achieved && maxLevelReached >= 10) {
+                unlockAchievement("level10");
+            }
+            
+            if (!achievements.combo5.achieved && comboCount >= 5) {
+                unlockAchievement("combo5");
+            }
+            
+            if (!achievements.maxCombo.achieved && comboCount >= 10) {
+                unlockAchievement("maxCombo");
+                achievementStats.maxComboAchieved = Math.max(achievementStats.maxComboAchieved, comboCount);
+            }
+            
+            if (!achievements.goldFinder.achieved && achievementStats.goldBlocksFound >= 5) {
+                unlockAchievement("goldFinder");
+            }
+            
+            if (!achievements.helperFriend.achieved && achievementStats.helperUses >= 10) {
+                unlockAchievement("helperFriend");
+            }
+            
+            // НОВОЕ: Проверка достижений для новых типов блоков
+            if (!achievements.crystalMaster.achieved && achievementStats.crystalBlocksFound >= 10) {
+                unlockAchievement("crystalMaster");
+            }
+            
+            if (!achievements.mysterySolver.achieved && achievementStats.mysteryBlocksFound >= 5) {
+                unlockAchievement("mysterySolver");
+            }
+            
             updateAchievementDisplay();
         }
 
@@ -1110,6 +1794,7 @@
                 </div>
             `;
             document.getElementById("ui").appendChild(notification);
+            
             setTimeout(() => {
                 notification.classList.add('fade-out');
                 setTimeout(() => {
@@ -1141,6 +1826,7 @@
             menu.id = 'achievementsMenu';
             menu.className = 'achievements-menu';
             menu.style.display = 'none';
+            
             menu.innerHTML = `
                 <div class="achievements-header">
                     <h3>🏆 Достижения</h3>
@@ -1160,10 +1846,21 @@
                         <span class="stat-value">${achievementStats.helperUses}</span>
                         <span class="stat-label">Использований помощника</span>
                     </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${achievementStats.crystalBlocksFound}</span>
+                        <span class="stat-label">Кристальных блоков</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${achievementStats.mysteryBlocksFound}</span>
+                        <span class="stat-label">Загадочных блоков</span>
+                    </div>
                 </div>
             `;
+            
             document.getElementById("ui").appendChild(menu);
+            
             updateAchievementsMenu();
+            
             document.getElementById('closeAchievementsBtn').addEventListener('click', () => {
                 menu.style.display = 'none';
             });
@@ -1172,16 +1869,24 @@
         function updateAchievementsMenu() {
             const grid = document.getElementById('achievementsGrid');
             if (!grid) return;
+            
             grid.innerHTML = '';
+            
             Object.entries(achievements).forEach(([id, achievement]) => {
                 const achievementElement = document.createElement('div');
                 achievementElement.className = `achievement-item ${achievement.achieved ? 'achieved' : 'locked'}`;
+                
                 let statsText = '';
                 if (id === 'goldFinder') {
                     statsText = `Найдено: ${achievementStats.goldBlocksFound}/5`;
                 } else if (id === 'helperFriend') {
                     statsText = `Использовано: ${achievementStats.helperUses}/10`;
+                } else if (id === 'crystalMaster') {
+                    statsText = `Разрушено: ${achievementStats.crystalBlocksFound}/10`;
+                } else if (id === 'mysterySolver') {
+                    statsText = `Разрушено: ${achievementStats.mysteryBlocksFound}/5`;
                 }
+                
                 achievementElement.innerHTML = `
                     <div class="achievement-icon-large">${achievement.icon}</div>
                     <div class="achievement-details">
@@ -1190,6 +1895,7 @@
                         ${statsText ? `<div class="achievement-stats">${statsText}</div>` : ''}
                     </div>
                 `;
+                
                 grid.appendChild(achievementElement);
             });
         }
@@ -1204,7 +1910,7 @@
             }
         }
 
-        // === ТУЛТИПЫ ===
+        // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
         function showTooltip(text) {
             let tooltip = document.getElementById("tooltip");
             if (!tooltip) {
@@ -1229,9 +1935,11 @@
 
         // === ИНИЦИАЛИЗАЦИЯ ===
         document.addEventListener('DOMContentLoaded', function() {
+            // Создаем фоновые эффекты
             createStars();
             createBackgroundParticles();
-
+            
+            // Инициализация системы достижений
             const achievementsBtn = document.createElement('button');
             achievementsBtn.id = 'achievementsBtn';
             achievementsBtn.className = 'hud-btn';
@@ -1241,34 +1949,62 @@
             achievementsBtn.style.left = '15px';
             achievementsBtn.title = 'Достижения';
             document.getElementById("ui").appendChild(achievementsBtn);
+            
             achievementsBtn.addEventListener('click', toggleAchievementsMenu);
             createAchievementsMenu();
-
+            
+            // Обработчики событий для кнопок
             document.getElementById("startBtn").addEventListener("click", startGame);
             document.getElementById("upgradeClickBtn").addEventListener("click", upgradeClickDamage);
             document.getElementById("upgradeSlowBtn").addEventListener("click", upgradeSlow);
             document.getElementById("upgradeHelperBtn").addEventListener("click", buyHelper);
             document.getElementById("upgradeHelperLevelBtn").addEventListener("click", upgradeHelperLevel);
-
-            // ДИНАМИЧЕСКИЕ ПОДСКАЗКИ
-            document.querySelectorAll('.upgrade-btn').forEach(btn => {
-                btn.addEventListener('mouseenter', () => {
-                    let text = '';
-                    if (btn.id === 'upgradeClickBtn') {
-                        const cost = Math.floor(baseClickUpgradeCost * Math.pow(1.5, clickUpgradeLevel));
-                        text = `Сила удара<br>+1 урон<br>Стоимость: ${cost} 💎`;
-                    } else if (btn.id === 'upgradeSlowBtn') {
-                        text = `Якорь<br>−2 скорости<br>Стоимость: ${slowCost} 💎`;
-                    } else if (btn.id === 'upgradeHelperBtn') {
-                        text = `Помощник<br>Авто-атака на 1 минуту<br>Стоимость: ${helperCost} 💎`;
-                    } else if (btn.id === 'upgradeHelperLevelBtn') {
-                        text = `Улучшить помощника<br>Уровень: ${helperLevel + 1}/${maxHelperLevel}<br>Стоимость: ${getHelperUpgradeCost()} 💎`;
-                    }
-                    showTooltip(text);
-                });
-                btn.addEventListener('mouseleave', hideTooltip);
+            document.getElementById("upgradeHelperCritBtn").addEventListener("click", upgradeHelperCrit);
+            
+            // Инициализация подсказок
+            const buttons = [
+                { 
+                    id: "upgradeClickBtn", 
+                    text: `Сила удара<br>+1 урон<br>Стоимость: ${Math.floor(baseClickUpgradeCost * Math.pow(1.5, clickUpgradeLevel))} 💎` 
+                },
+                { 
+                    id: "upgradeSlowBtn", 
+                    text: `Якорь<br>−2 скорости<br>Стоимость: ${slowCost} 💎` 
+                },
+                { 
+                    id: "upgradeHelperBtn", 
+                    text: `Помощник<br>Авто-атака на 1 минуту<br>Стоимость: ${helperCost} 💎` 
+                },
+                { 
+                    id: "upgradeHelperLevelBtn", 
+                    text: `Улучшить помощника<br>Уровень: ${helperLevel + 1}/${maxHelperLevel}<br>Урон: ${getHelperDamage()}<br>Стоимость: ${getHelperUpgradeCost()} 💎` 
+                },
+                { 
+                    id: "upgradeHelperCritBtn", 
+                    text: `Улучшить крит помощника<br>Уровень: ${helperCritLevel + 1}/${maxHelperCritLevel}<br>Шанс: ${((helperCritChance + 0.1) * 100).toFixed(0)}%<br>Множитель: ${(helperCritMultiplier + 0.5).toFixed(1)}x<br>Стоимость: ${getHelperCritUpgradeCost()} 💎` 
+                }
+            ];
+            
+            buttons.forEach(btn => {
+                const element = document.getElementById(btn.id);
+                if (element) {
+                    element.addEventListener('mouseenter', () => showTooltip(btn.text));
+                    element.addEventListener('mouseleave', hideTooltip);
+                }
             });
+            
+            // НОВОЕ: Предотвращение масштабирования на мобильных из второго кода
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
 
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+            
+            // Обновление UI
             updateUpgradeButtons();
             updateHUD();
         });
