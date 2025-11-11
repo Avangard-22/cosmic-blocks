@@ -28,12 +28,54 @@
             position: relative;
             width: 100%;
             height: 100vh;
-            background: linear-gradient(180deg, #000011 0%, #0a0a2a 50%, #000011 100%);
             overflow: hidden;
         }
 
+        /* НОВОЕ: Контейнеры для локаций планет */
+        .location {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s;
+        }
+        
+        .location.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Фоны планет */
+        #location-mercury { 
+            background: linear-gradient(135deg, #000011 0%, #0a0a2a 50%, #000011 100%);
+        }
+        #location-venus { 
+            background: linear-gradient(135deg, #8c7853 0%, #5a4d3a 50%, #8c7853 100%);
+        }
+        #location-earth { 
+            background: linear-gradient(135deg, #6b93d6 0%, #2c5aa0 50%, #6b93d6 100%);
+        }
+        #location-mars { 
+            background: linear-gradient(135deg, #cd5c5c 0%, #993d3d 50%, #cd5c5c 100%);
+        }
+        #location-jupiter { 
+            background: linear-gradient(135deg, #d8ca9d 0%, #a8996e 50%, #d8ca9d 100%);
+        }
+        #location-saturn { 
+            background: linear-gradient(135deg, #e3cda5 0%, #c9b089 50%, #e3cda5 100%);
+        }
+        #location-uranus { 
+            background: linear-gradient(135deg, #b5e3e3 0%, #8fc9c9 50%, #b5e3e3 100%);
+        }
+        #location-neptune { 
+            background: linear-gradient(135deg, #5b6ee1 0%, #3a4bb3 50%, #5b6ee1 100%);
+        }
+
         /* Фоновые звезды */
-        #stars {
+        .stars {
             position: absolute;
             top: 0;
             left: 0;
@@ -58,7 +100,7 @@
             z-index: 2;
         }
 
-        /* Блоки - УВЕЛИЧЕНЫ ДЛЯ МОБИЛЬНЫХ */
+        /* Блоки - ИЗМЕНЕНО: увеличен размер для мобильных */
         .block {
             position: absolute;
             width: 90px; /* Увеличено с 80px */
@@ -96,7 +138,7 @@
             animation: rainbow 3s ease infinite;
         }
 
-        /* НОВОЕ: Стили для кристальных и загадочных блоков из второго кода */
+        /* Стили для кристальных и загадочных блоков */
         .block-crystal {
             background: linear-gradient(45deg, #00ffff, #ffffff, #00ffff) !important;
             box-shadow: 0 0 25px #00ffff, 0 0 10px #ffffff inset !important;
@@ -151,16 +193,10 @@
             position: relative;
             pointer-events: auto;
             backdrop-filter: blur(6px);
+            transition: all 0.5s ease;
         }
 
-        h1 {
-            color: #bb86fc;
-            margin-bottom: 10px;
-            font-size: 2.2em; /* Увеличено для мобильных */
-            text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
-            font-family: 'Orbitron', sans-serif;
-        }
-
+        /* ИЗМЕНЕНО: Убрали h1 из заголовка */
         .stats-container {
             display: flex;
             justify-content: center;
@@ -171,11 +207,12 @@
 
         .stat {
             background: rgba(187, 134, 252, 0.2);
-            padding: 10px 18px; /* Увеличено для мобильных */
+            padding: 10px 15px; /* Увеличено для мобильных */
             border-radius: 20px;
             border: 1px solid #bb86fc;
             font-family: 'Orbitron', monospace;
-            font-size: 1.1em; /* Увеличено для мобильных */
+            transition: all 0.5s ease;
+            font-size: 1em; /* Увеличено для мобильных */
         }
 
         #levelProgressContainer {
@@ -202,33 +239,16 @@
             pointer-events: auto;
         }
 
-        #startBtn {
-            background: linear-gradient(135deg, #bb86fc, #3700b3);
-            color: white;
-            border: none;
-            padding: 15px 35px; /* Увеличено для мобильных */
-            font-size: 1.3em; /* Увеличено для мобильных */
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(187, 134, 252, 0.5);
-            pointer-events: auto;
-            font-family: 'Orbitron', sans-serif;
-        }
+        /* ИЗМЕНЕНО: Кнопка начала игры теперь в приветственном экране */
 
-        #startBtn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(187, 134, 252, 0.7);
-        }
-
-        /* ИЗМЕНЕНО: Улучшения перемещены в правую часть и УВЕЛИЧЕНЫ для мобильных */
+        /* ИЗМЕНЕНО: Улучшения - увеличены для мобильных */
         .upgrades {
             position: absolute;
             top: 120px;
             right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Увеличено расстояние между кнопками */
+            gap: 12px; /* Увеличено для мобильных */
             padding: 10px;
             pointer-events: auto;
             z-index: 10;
@@ -238,20 +258,20 @@
             width: 70px; /* Увеличено с 60px */
             height: 70px; /* Увеличено с 60px */
             border: none;
-            border-radius: 12px; /* Увеличено с 10px */
+            border-radius: 12px; /* Увеличено */
             color: white;
-            font-size: 0.7em; /* Увеличено с 0.6em */
+            font-size: 0.7em; /* Увеличено */
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 3px; /* Увеличено с 2px */
+            gap: 3px; /* Увеличено */
             text-align: center;
             position: relative;
             pointer-events: auto;
-            padding: 5px; /* Увеличено с 4px */
+            padding: 5px; /* Увеличено */
             font-family: 'Orbitron', monospace;
         }
 
@@ -284,14 +304,14 @@
         }
 
         .achievement-icon-badge {
-            width: 35px; /* Увеличено для мобильных */
-            height: 35px; /* Увеличено для мобильных */
+            width: 35px; /* Увеличено */
+            height: 35px; /* Увеличено */
             background: rgba(0, 0, 0, 0.5);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1em; /* Увеличено для мобильных */
+            font-size: 1.1em; /* Увеличено */
             color: #ffd700;
             border: 1px solid #bb86fc;
             box-shadow: 0 0 5px rgba(187, 134, 252, 0.5);
@@ -499,8 +519,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 70px; /* Увеличено для мобильных */
-            height: 70px; /* Увеличено для мобильных */
+            width: 70px; /* Увеличено */
+            height: 70px; /* Увеличено */
             padding: 0;
             background: linear-gradient(135deg, #304ffe, #651fff);
         }
@@ -511,9 +531,9 @@
             right: -6px;
             background: #ff4444;
             color: white;
-            font-size: 0.7em; /* Увеличено для мобильных */
-            width: 18px; /* Увеличено для мобильных */
-            height: 18px; /* Увеличено для мобильных */
+            font-size: 0.7em; /* Увеличено */
+            width: 18px; /* Увеличено */
+            height: 18px; /* Увеличено */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -523,12 +543,12 @@
         }
 
         #upgradeHelperLevelBtn .helper-icon {
-            font-size: 1.3em; /* Увеличено для мобильных */
+            font-size: 1.3em; /* Увеличено */
             margin-bottom: 3px;
         }
 
         #upgradeHelperLevelBtn .helper-cost {
-            font-size: 0.7em; /* Увеличено для мобильных */
+            font-size: 0.7em; /* Увеличено */
             color: #ffd700;
             font-weight: bold;
         }
@@ -664,8 +684,8 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
-            padding: 10px 14px; /* Увеличено для мобильных */
-            font-size: 1.3em; /* Увеличено для мобильных */
+            padding: 10px 14px; /* Увеличено */
+            font-size: 1.3em; /* Увеличено */
             pointer-events: auto;
         }
 
@@ -689,7 +709,7 @@
         }
 
         /* Фоновые частицы */
-        #backgroundParticles {
+        .backgroundParticles {
             position: absolute;
             top: 0;
             left: 0;
@@ -705,14 +725,14 @@
             pointer-events: none;
         }
 
-        /* НОВОЕ: Кнопка улучшения крита помощника */
+        /* Кнопка улучшения крита помощника */
         #upgradeHelperCritBtn {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 70px; /* Увеличено для мобильных */
-            height: 70px; /* Увеличено для мобильных */
+            width: 70px; /* Увеличено */
+            height: 70px; /* Увеличено */
             padding: 0;
             background: linear-gradient(135deg, #ff4444, #cc0000);
         }
@@ -723,9 +743,9 @@
             right: -6px;
             background: #ff9900;
             color: white;
-            font-size: 0.7em; /* Увеличено для мобильных */
-            width: 18px; /* Увеличено для мобильных */
-            height: 18px; /* Увеличено для мобильных */
+            font-size: 0.7em; /* Увеличено */
+            width: 18px; /* Увеличено */
+            height: 18px; /* Увеличено */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -735,137 +755,456 @@
         }
 
         #upgradeHelperCritBtn .crit-icon {
-            font-size: 1.3em; /* Увеличено для мобильных */
+            font-size: 1.3em; /* Увеличено */
             margin-bottom: 3px;
         }
 
         #upgradeHelperCritBtn .crit-cost {
-            font-size: 0.7em; /* Увеличено для мобильных */
+            font-size: 0.7em; /* Увеличено */
             color: #ffd700;
             font-weight: bold;
+        }
+
+        /* Стили из второго кода для анимаций и эффектов */
+        .rare-block-announce {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8em;
+            font-weight: bold;
+            z-index: 35;
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ff6b00, 0 0 20px #ff6b00;
+            animation: rareAnnounce 2s ease-out;
+            pointer-events: none;
+            font-family: 'Orbitron', monospace;
+        }
+
+        @keyframes rareAnnounce {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .bonus-effect {
+            position: absolute;
+            font-size: 1.4em;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 20;
+            animation: bonusFloat 2s ease-out;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+        }
+
+        @keyframes bonusFloat {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-80px); opacity: 0; }
+        }
+
+        /* Эффекты помощника из второго кода */
+        .helper {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #69f0ae, #00e676);
+            border-radius: 50%;
+            z-index: 12;
+            pointer-events: none;
+            box-shadow: 0 0 15px #69f0ae;
+            animation: helperFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes helperFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .helper-beam {
+            position: absolute;
+            width: 3px;
+            background: linear-gradient(to top, transparent, #69f0ae);
+            z-index: 11;
+            pointer-events: none;
+            animation: beamPulse 0.5s ease-out;
+        }
+
+        @keyframes beamPulse {
+            0% { height: 0; opacity: 1; }
+            100% { height: 100px; opacity: 0; }
+        }
+
+        /* Эффект сбора валюты из второго кода */
+        .coin-collect {
+            position: absolute;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffd700;
+            pointer-events: none;
+            z-index: 15;
+            animation: coinFly 1.2s ease-out forwards;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes coinFly {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.8) translate(var(--target-x), var(--target-y));
+                opacity: 0;
+            }
+        }
+
+        /* Стили для меню выбора планет */
+        #planetSelection {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 2px solid #bb86fc;
+            box-shadow: 0 0 30px rgba(187, 134, 252, 0.5);
+            z-index: 1000;
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            pointer-events: auto;
+            display: none;
+        }
+
+        .planets-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .planet-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            backdrop-filter: blur(5px);
+            border: 2px solid transparent;
+        }
+
+        .planet-card.active {
+            border-color: #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+
+        .planet-card.inactive {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .planet-card:hover:not(.inactive) {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .planet-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .planet-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .planet-requirements {
+            font-size: 0.8em;
+            color: #ccc;
+        }
+
+        .active .planet-requirements {
+            color: #69f0ae;
+        }
+
+        .inactive .planet-requirements {
+            color: #ff6b6b;
+        }
+
+        /* Анимация смены локации */
+        .location-change-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .location-change-animation.active {
+            opacity: 1;
+        }
+
+        .location-announce {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            text-shadow: 0 0 20px currentColor;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* НОВОЕ: Стили для экранов приветствия и завершения */
+        #welcomeScreen, #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #gameOverScreen {
+            display: none;
+        }
+
+        #welcomeScreen h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #bb86fc;
+            text-shadow: 0 0 10px rgba(187, 134, 252, 0.7);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        #gameOverScreen h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #ff4444;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.7);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .screen p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .screen .btn {
+            padding: 15px 30px;
+            margin-top: 20px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #bb86fc, #3700b3);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(187, 134, 252, 0.5);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .screen .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(187, 134, 252, 0.7);
+        }
+
+        .final-stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #bb86fc;
+        }
+
+        .final-stats div {
+            margin: 10px 0;
+            font-size: 1.1em;
         }
 
         /* НОВОЕ: Медиа-запросы для адаптации под мобильные устройства */
         @media (max-width: 768px) {
             .block {
-                width: 70px; /* Уменьшено для маленьких экранов */
-                height: 70px; /* Уменьшено для маленьких экранов */
-                font-size: 1.2em; /* Уменьшено для маленьких экранов */
-            }
-
-            h1 {
-                font-size: 1.8em; /* Уменьшено для маленьких экранов */
+                width: 70px; /* Уменьшено для мобильных */
+                height: 70px; /* Уменьшено для мобильных */
+                font-size: 1.2em; /* Уменьшено для мобильных */
             }
 
             .stat {
-                font-size: 1em; /* Уменьшено для маленьких экранов */
-                padding: 8px 15px; /* Уменьшено для маленьких экранов */
+                padding: 8px 12px;
+                font-size: 0.9em;
             }
 
-            .upgrade-btn {
-                width: 65px; /* Уменьшено для маленьких экранов */
-                height: 65px; /* Уменьшено для маленьких экранов */
-                font-size: 0.65em; /* Уменьшено для маленьких экранов */
-            }
-
-            #upgradeHelperLevelBtn,
-            #upgradeHelperCritBtn {
-                width: 65px; /* Уменьшено для маленьких экранов */
-                height: 65px; /* Уменьшено для маленьких экранов */
+            .stats-container {
+                gap: 15px;
             }
 
             .upgrades {
-                gap: 8px; /* Уменьшено расстояние между кнопками */
+                top: 100px;
+                right: 10px;
+                gap: 8px;
             }
 
-            #startBtn {
-                padding: 12px 25px; /* Уменьшено для маленьких экранов */
-                font-size: 1.1em; /* Уменьшено для маленьких экранов */
+            .upgrade-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 0.6em;
+            }
+
+            #upgradeHelperLevelBtn, #upgradeHelperCritBtn {
+                width: 60px;
+                height: 60px;
             }
 
             .hud-btn {
-                padding: 8px 12px; /* Уменьшено для маленьких экранов */
-                font-size: 1.1em; /* Уменьшено для маленьких экранов */
+                padding: 8px 12px;
+                font-size: 1.1em;
             }
 
-            .achievement-icon-badge {
-                width: 30px; /* Уменьшено для маленьких экранов */
-                height: 30px; /* Уменьшено для маленьких экранов */
-                font-size: 1em; /* Уменьшено для маленьких экранов */
+            #welcomeScreen h1, #gameOverScreen h2 {
+                font-size: 2em;
+            }
+
+            .screen p {
+                font-size: 1em;
+            }
+
+            .screen .btn {
+                padding: 12px 25px;
+                font-size: 1.1em;
             }
         }
 
         @media (max-width: 480px) {
             .block {
-                width: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
-                height: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
-                font-size: 1em; /* Дополнительно уменьшено для очень маленьких экранов */
-            }
-
-            h1 {
-                font-size: 1.5em; /* Дополнительно уменьшено для очень маленьких экранов */
-                margin-bottom: 5px;
-            }
-
-            .stats-container {
-                gap: 15px; /* Уменьшено расстояние между статами */
-                margin-bottom: 5px;
+                width: 60px; /* Еще меньше для очень маленьких экранов */
+                height: 60px;
+                font-size: 1em;
             }
 
             .stat {
-                font-size: 0.9em; /* Дополнительно уменьшено для очень маленьких экранов */
-                padding: 6px 12px; /* Дополнительно уменьшено для очень маленьких экранов */
+                padding: 6px 10px;
+                font-size: 0.8em;
             }
 
-            .upgrade-btn {
-                width: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
-                height: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
-                font-size: 0.6em; /* Дополнительно уменьшено для очень маленьких экранов */
-            }
-
-            #upgradeHelperLevelBtn,
-            #upgradeHelperCritBtn {
-                width: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
-                height: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
+            .stats-container {
+                gap: 10px;
             }
 
             .upgrades {
-                top: 110px; /* Смещено выше */
-                right: 15px; /* Смещено ближе к краю */
-                gap: 6px; /* Уменьшено расстояние между кнопками */
+                top: 90px;
+                right: 5px;
+                gap: 5px;
             }
 
-            #startBtn {
-                padding: 10px 20px; /* Дополнительно уменьшено для очень маленьких экранов */
-                font-size: 1em; /* Дополнительно уменьшено для очень маленьких экранов */
+            .upgrade-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 0.55em;
             }
 
-            .controls {
-                left: 15px; /* Смещено ближе к краю */
-                bottom: 15px; /* Смещено выше */
-            }
-
-            .hud-btn {
-                padding: 6px 10px; /* Дополнительно уменьшено для очень маленьких экранов */
-                font-size: 1em; /* Дополнительно уменьшено для очень маленьких экранов */
+            #upgradeHelperLevelBtn, #upgradeHelperCritBtn {
+                width: 55px;
+                height: 55px;
             }
 
             .achievement-icon-badge {
-                width: 25px; /* Дополнительно уменьшено для очень маленьких экранов */
-                height: 25px; /* Дополнительно уменьшено для очень маленьких экранов */
-                font-size: 0.9em; /* Дополнительно уменьшено для очень маленьких экранов */
+                width: 30px;
+                height: 30px;
+                font-size: 1em;
+            }
+
+            #welcomeScreen h1, #gameOverScreen h2 {
+                font-size: 1.8em;
+            }
+
+            .screen p {
+                font-size: 0.9em;
+            }
+
+            .screen .btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+
+            .final-stats {
+                padding: 15px;
+            }
+
+            .final-stats div {
+                font-size: 1em;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Контейнеры для локаций планет -->
+    <div id="location-mercury" class="location active">
+        <div class="stars" id="mercuryStars"></div>
+        <div class="backgroundParticles" id="mercuryParticles"></div>
+    </div>
+    <div id="location-venus" class="location">
+        <div class="stars" id="venusStars"></div>
+        <div class="backgroundParticles" id="venusParticles"></div>
+    </div>
+    <div id="location-earth" class="location">
+        <div class="stars" id="earthStars"></div>
+        <div class="backgroundParticles" id="earthParticles"></div>
+    </div>
+    <div id="location-mars" class="location">
+        <div class="stars" id="marsStars"></div>
+        <div class="backgroundParticles" id="marsParticles"></div>
+    </div>
+    <div id="location-jupiter" class="location">
+        <div class="stars" id="jupiterStars"></div>
+        <div class="backgroundParticles" id="jupiterParticles"></div>
+    </div>
+    <div id="location-saturn" class="location">
+        <div class="stars" id="saturnStars"></div>
+        <div class="backgroundParticles" id="saturnParticles"></div>
+    </div>
+    <div id="location-uranus" class="location">
+        <div class="stars" id="uranusStars"></div>
+        <div class="backgroundParticles" id="uranusParticles"></div>
+    </div>
+    <div id="location-neptune" class="location">
+        <div class="stars" id="neptuneStars"></div>
+        <div class="backgroundParticles" id="neptuneParticles"></div>
+    </div>
+
     <div id="gameContainer">
-        <div id="stars"></div>
-        <div id="backgroundParticles"></div>
         <div id="gameArea"></div>
         <div id="ui">
             <div id="header">
-                <h1>🚀 Космический кликер</h1>
+                <!-- Заголовок убран в приветственный экран -->
                 <div class="stats-container">
                     <div class="stat">Уровень: <span id="levelCounter">1</span></div>
                     <div class="stat">Монеты: <span id="coinsCounter">0</span> 💎</div>
@@ -877,26 +1216,27 @@
                 <div id="achievementIcons" class="achievement-icons-container"></div>
             </div>
 
-            <div class="controls">
-                <button id="startBtn">Начать игру</button>
-            </div>
+            <!-- Кнопка выбора планет -->
+            <button id="planetSelectBtn" class="hud-btn" style="position: absolute; top: 45px; right: 15px;" title="Выбор планеты">
+                <i class="fas fa-globe-americas"></i>
+            </button>
 
-            <!-- ИЗМЕНЕНО: Улучшения перемещены в правую часть и УВЕЛИЧЕНЫ -->
+            <!-- Улучшения -->
             <div class="upgrades">
                 <button id="upgradeClickBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-fist-raised" style="font-size: 1.1em; margin-bottom: 2px;"></i>
+                    <i class="fas fa-fist-raised" style="font-size: 1em; margin-bottom: 2px;"></i>
                     <div>Урон: 1</div>
                     <div>50 💎</div>
                 </button>
                 
                 <button id="upgradeSlowBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-anchor" style="font-size: 1.1em; margin-bottom: 2px;"></i>
+                    <i class="fas fa-anchor" style="font-size: 1em; margin-bottom: 2px;"></i>
                     <div>Якорь</div>
                     <div>200 💎</div>
                 </button>
                 
                 <button id="upgradeHelperBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-robot" style="font-size: 1.1em; margin-bottom: 2px;"></i>
+                    <i class="fas fa-robot" style="font-size: 1em; margin-bottom: 2px;"></i>
                     <div>Помощник</div>
                     <div>500 💎</div>
                 </button>
@@ -907,7 +1247,7 @@
                     <div class="helper-cost">3000 💎</div>
                 </button>
                 
-                <!-- НОВОЕ: Кнопка улучшения крита помощника -->
+                <!-- Кнопка улучшения крита помощника -->
                 <button id="upgradeHelperCritBtn" class="upgrade-btn btn-unavailable">
                     <div class="crit-level">C1</div>
                     <div class="crit-icon"><i class="fas fa-bolt"></i></div>
@@ -916,6 +1256,71 @@
             </div>
         </div>
     </div>
+
+    <!-- НОВОЕ: Экран приветствия -->
+    <div id="welcomeScreen">
+        <h1>🚀 Космический кликер</h1>
+        <p>Разрушайте восходящие блоки и собирайте монеты!</p>
+        <p>Используйте улучшения для увеличения силы и эффективности.</p>
+        <p>Исследуйте планеты Солнечной системы!</p>
+        <button class="btn" id="startWelcomeBtn">Начать игру</button>
+    </div>
+
+    <!-- НОВОЕ: Экран завершения игры -->
+    <div id="gameOverScreen">
+        <h2>🚀 Конец игры!</h2>
+        <div class="final-stats">
+            <div>Достигнутый уровень: <span id="finalLevel">0</span></div>
+            <div>Собрано монет: <span id="finalCoins">0</span> 💎</div>
+            <div>Максимальное комбо: <span id="finalCombo">0</span></div>
+            <div>Открыто планет: <span id="finalPlanets">0</span></div>
+        </div>
+        <button class="btn" id="restartBtn">Начать заново</button>
+    </div>
+
+    <!-- Меню выбора планет -->
+    <div id="planetSelection">
+        <div class="achievements-header">
+            <h3>🌍 ВЫБОР ПЛАНЕТЫ</h3>
+            <button id="closePlanetSelection" class="close-btn">×</button>
+        </div>
+        <p>Исследуйте планеты Солнечной системы! Открывайте новые локации, достигая определенных уровней.</p>
+        
+        <div class="planets-grid" id="planetsGrid">
+            <!-- Планеты будут добавлены через JavaScript -->
+        </div>
+    </div>
+
+    <!-- Анимация смены локации -->
+    <div id="locationChangeAnimation" class="location-change-animation">
+        <div class="location-announce" id="locationAnnounceText"></div>
+    </div>
+
+    <!-- Звуковые элементы -->
+    <audio id="clickSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="breakSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="upgradeSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="comboSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="helperSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="coinSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="rareSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="locationSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
+    </audio>
 
     <script>
         // === ОСНОВНЫЕ ПЕРЕМЕННЫЕ ===
@@ -932,12 +1337,95 @@
         // Система улучшений
         let clickUpgradeLevel = 1;
         let baseClickUpgradeCost = 50;
-        
-        // ИЗМЕНЕНО: Упрощена система якоря - теперь фиксированное замедление 1
         let slowBonus = 0;
         let slowCost = 200;
         let helperActive = false;
         let helperCost = 500;
+
+        // НОВОЕ: Система локаций (планет)
+        let currentLocation = 'mercury';
+        const locations = {
+            mercury: { 
+                name: "☿ Меркурий", 
+                title: "🚀 Космический кликер",
+                color: "#bb86fc", 
+                borderColor: "#bb86fc",
+                coinColor: "#d7ccc8",
+                requirements: { level: 1 },
+                blockColors: ['#bb86fc', '#3700b3', '#03dac6'],
+                active: true
+            },
+            venus: { 
+                name: "♀ Венера", 
+                title: "♀ Венера - Утренняя звезда",
+                color: "#ffab91", 
+                borderColor: "#e39e54",
+                coinColor: "#ffab91",
+                requirements: { level: 5 },
+                blockColors: ['#e39e54', '#e8b27a', '#edc6a0'],
+                active: false
+            },
+            earth: { 
+                name: "♁ Земля", 
+                title: "♁ Земля - Голубая планета",
+                color: "#80deea", 
+                borderColor: "#6b93d6",
+                coinColor: "#80deea",
+                requirements: { level: 10 },
+                blockColors: ['#6b93d6', '#8aa8de', '#a9bde6'],
+                active: false
+            },
+            mars: { 
+                name: "♂ Марс", 
+                title: "♂ Марс - Красная планета",
+                color: "#ffab91", 
+                borderColor: "#cd5c5c",
+                coinColor: "#ffab91",
+                requirements: { level: 15 },
+                blockColors: ['#cd5c5c', '#d67c7c', '#df9c9c'],
+                active: false
+            },
+            jupiter: { 
+                name: "♃ Юпитер", 
+                title: "♃ Юпитер - Гигант",
+                color: "#ffcc80", 
+                borderColor: "#d8ca9d",
+                coinColor: "#ffcc80",
+                requirements: { level: 20 },
+                blockColors: ['#d8ca9d', '#dfd4b1', '#e6dec5'],
+                active: false
+            },
+            saturn: { 
+                name: "♄ Сатурн", 
+                title: "♄ Сатурн - Властелин колец",
+                color: "#ffcc80", 
+                borderColor: "#e3cda5",
+                coinColor: "#ffcc80",
+                requirements: { level: 25 },
+                blockColors: ['#e3cda5', '#e8d5b4', '#edddc3'],
+                active: false
+            },
+            uranus: { 
+                name: "♅ Уран", 
+                title: "♅ Уран - Ледяной гигант",
+                color: "#80deea", 
+                borderColor: "#b5e3e3",
+                coinColor: "#80deea",
+                requirements: { level: 30 },
+                blockColors: ['#b5e3e3', '#c1e8e8', '#cdeded'],
+                active: false
+            },
+            neptune: { 
+                name: "♆ Нептун", 
+                title: "♆ Нептун - Синий гигант",
+                color: "#80deea", 
+                borderColor: "#5b6ee1",
+                coinColor: "#80deea",
+                requirements: { level: 35 },
+                blockColors: ['#5b6ee1', '#7b88e7', '#9ba2ed'],
+                active: false
+            }
+        };
 
         // === СИСТЕМА ДОСТИЖЕНИЙ ===
         const achievements = {
@@ -947,14 +1435,23 @@
             goldFinder: { achieved: false, name: "Золотоискатель", desc: "Найди 5 золотых блоков", icon: "💰" },
             helperFriend: { achieved: false, name: "Надежный помощник", desc: "Используй помощника 10 раз", icon: "🤝" },
             maxCombo: { achieved: false, name: "Комбо-король", desc: "Достигни максимального комбо x10", icon: "🏆" },
-            planetCollector: { achieved: false, name: "Исследователь", desc: "Открой все планеты", icon: "🚀" }
+            planetCollector: { achieved: false, name: "Исследователь", desc: "Открой все планеты", icon: "🚀" },
+            // Достижения для новых типов блоков
+            crystalMaster: { achieved: false, name: "Кристальный мастер", desc: "Разрушь 10 кристальных блоков", icon: "💎" },
+            mysterySolver: { achieved: false, name: "Разгадавший тайну", desc: "Разрушь 5 загадочных блоков", icon: "❓" },
+            // Достижения для планет
+            venusExplorer: { achieved: false, name: "Исследователь Венеры", desc: "Достигни Венеры", icon: "♀" },
+            earthExplorer: { achieved: false, name: "Исследователь Земли", desc: "Достигни Земли", icon: "♁" },
+            marsExplorer: { achieved: false, name: "Исследователь Марса", desc: "Достигни Марса", icon: "♂" }
         };
 
         let achievementStats = {
             goldBlocksFound: 0,
             helperUses: 0,
             maxComboAchieved: 0,
-            planetsVisited: ["mercury"]
+            planetsVisited: ["mercury"],
+            crystalBlocksFound: 0,
+            mysteryBlocksFound: 0
         };
 
         // === ЭВОЛЮЦИЯ ПОМОЩНИКА ===
@@ -969,10 +1466,48 @@
         let helperCritChance = 0.1; // 10% базовый шанс крита
         let helperCritMultiplier = 2.0; // 2x базовый множитель крита
 
+        // Система редких блоков
+        const rareBlocks = {
+            GOLD: {
+                name: "Золотой",
+                chance: 0.03,
+                multiplier: 5,
+                healthMultiplier: 1.5,
+                effect: "Мгновенный бонус",
+                className: "block-gold"
+            },
+            RAINBOW: {
+                name: "Радужный", 
+                chance: 0.02,
+                multiplier: 3,
+                healthMultiplier: 1.3,
+                effect: "Увеличение силы",
+                className: "block-rainbow"
+            },
+            CRYSTAL: {
+                name: "Кристальный",
+                chance: 0.025,
+                multiplier: 4,
+                healthMultiplier: 1.4,
+                effect: "Время помощника",
+                className: "block-crystal"
+            },
+            MYSTERY: {
+                name: "Загадочный",
+                chance: 0.015,
+                multiplier: 6,
+                healthMultiplier: 1.6,
+                effect: "Случайный бонус",
+                className: "block-mystery"
+            }
+        };
+
         // === ФОНОВЫЕ ЭФФЕКТЫ ===
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            const starCount = 200;
+        function createStars(containerId) {
+            const starsContainer = document.getElementById(containerId);
+            if (!starsContainer) return;
+            
+            const starCount = 150;
             
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
@@ -991,9 +1526,11 @@
             }
         }
 
-        function createBackgroundParticles() {
-            const container = document.getElementById('backgroundParticles');
-            const particleCount = 30;
+        function createBackgroundParticles(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const particleCount = 20;
             
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
@@ -1050,20 +1587,263 @@
             move();
         }
 
-        // === ОСНОВНЫЕ ФУНКЦИИ ИГРЫ ===
-        function startGame() {
-            if (gameActive) {
-                // ИЗМЕНЕНО: Сброс игры при повторном нажатии
-                resetGame();
-            } else {
-                gameActive = true;
-                document.getElementById("startBtn").textContent = "Сбросить игру";
-                createMovingBlock(currentLevel);
-                updateHUD();
+        // Функция воспроизведения звуков
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(e => {});
             }
         }
 
+        // Функция определения типа редкого блока
+        function getRareBlockType() {
+            const rand = Math.random();
+            let cumulativeChance = 0;
+            
+            for (const [type, block] of Object.entries(rareBlocks)) {
+                cumulativeChance += block.chance;
+                if (rand <= cumulativeChance) {
+                    return type;
+                }
+            }
+            
+            return null;
+        }
+
+        // Функция анонса редкого блока
+        function announceRareBlock(blockName) {
+            const announce = document.createElement('div');
+            announce.className = 'rare-block-announce';
+            announce.textContent = `🌟 ${blockName} блок! 🌟`;
+            
+            document.getElementById("ui").appendChild(announce);
+            playSound('rareSound');
+            
+            setTimeout(() => {
+                if (announce.parentNode) {
+                    document.getElementById("ui").removeChild(announce);
+                }
+            }, 2000);
+        }
+
+        // Улучшенная анимация сбора монет
+        function createCoinAnimation(amount, startElement) {
+            const coinsElement = document.getElementById('coinsCounter');
+            if (!coinsElement || !startElement) return;
+
+            const startRect = startElement.getBoundingClientRect();
+            const endRect = coinsElement.getBoundingClientRect();
+
+            const startX = startRect.left + startRect.width / 2;
+            const startY = startRect.top + startRect.height / 2;
+            const endX = endRect.left + 15;
+            const endY = endRect.top + 10;
+
+            const coin = document.createElement('div');
+            coin.className = 'coin-collect';
+            coin.textContent = `+${amount} 💎`;
+            coin.style.left = startX + 'px';
+            coin.style.top = startY + 'px';
+            
+            const targetX = (endX - startX) + 'px';
+            const targetY = (endY - startY) + 'px';
+            coin.style.setProperty('--target-x', targetX);
+            coin.style.setProperty('--target-y', targetY);
+
+            document.getElementById("ui").appendChild(coin);
+            playSound('coinSound');
+
+            setTimeout(() => {
+                if (coin.parentNode) {
+                    document.getElementById("ui").removeChild(coin);
+                }
+            }, 1200);
+        }
+
+        // Функция установки локации
+        function setLocation(locationId) {
+            const location = locations[locationId];
+            if (!location) return;
+            
+            // Проверяем требования
+            if (!location.active && location.requirements.level > maxLevelReached) {
+                showTooltip(`Необходимо достичь уровня ${location.requirements.level} для открытия этой планеты!`);
+                setTimeout(hideTooltip, 2000);
+                return;
+            }
+            
+            // Активируем локацию, если она еще не активна
+            if (!location.active) {
+                location.active = true;
+                achievementStats.planetsVisited.push(locationId);
+                checkAchievements();
+            }
+            
+            // Анимация смены локации
+            const animation = document.getElementById('locationChangeAnimation');
+            const announceText = document.getElementById('locationAnnounceText');
+            announceText.textContent = location.name;
+            announceText.style.color = location.color;
+            
+            animation.classList.add('active');
+            playSound('locationSound');
+            
+            setTimeout(() => {
+                // Скрываем все локации
+                document.querySelectorAll('.location').forEach(loc => {
+                    loc.classList.remove('active');
+                });
+                
+                // Показываем выбранную локацию
+                const targetLocation = document.getElementById(`location-${locationId}`);
+                if (targetLocation) {
+                    targetLocation.classList.add('active');
+                }
+                
+                currentLocation = locationId;
+                
+                // Обновляем интерфейс
+                updateLocationTheme();
+                
+                setTimeout(() => {
+                    animation.classList.remove('active');
+                }, 1000);
+            }, 1500);
+        }
+
+        // Функция обновления темы локации
+        function updateLocationTheme() {
+            const location = locations[currentLocation];
+            if (!location) return;
+            
+            const header = document.getElementById('header');
+            const stats = document.querySelectorAll('.stat');
+            const upgradeButtons = document.querySelectorAll('.upgrade-btn');
+            const planetSelectBtn = document.getElementById('planetSelectBtn');
+            
+            if (header) header.style.borderColor = location.borderColor;
+            
+            stats.forEach(stat => {
+                stat.style.borderColor = location.borderColor;
+                stat.style.background = `rgba(${hexToRgb(location.color)}, 0.2)`;
+            });
+            
+            upgradeButtons.forEach(btn => {
+                if (btn.classList.contains('btn-available')) {
+                    btn.style.background = `linear-gradient(135deg, ${location.color}, ${darkenColor(location.color, 20)})`;
+                }
+            });
+            
+            if (planetSelectBtn) {
+                planetSelectBtn.style.borderColor = location.borderColor;
+                planetSelectBtn.style.color = location.color;
+            }
+        }
+
+        // Вспомогательные функции для работы с цветами
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? 
+                `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` 
+                : '187, 134, 252';
+        }
+
+        function darkenColor(hex, percent) {
+            // Упрощенная функция затемнения цвета
+            return hex; // В реальной реализации здесь был бы код для затемнения цвета
+        }
+
+        // Функция создания меню выбора планет
+        function createPlanetsMenu() {
+            const planetsGrid = document.getElementById('planetsGrid');
+            if (!planetsGrid) return;
+            
+            planetsGrid.innerHTML = '';
+            
+            Object.entries(locations).forEach(([id, location]) => {
+                const planetCard = document.createElement('div');
+                const isActive = location.active;
+                const isUnlocked = maxLevelReached >= location.requirements.level;
+                
+                planetCard.className = `planet-card ${isActive ? 'active' : (isUnlocked ? '' : 'inactive')}`;
+                planetCard.setAttribute('data-planet', id);
+                
+                let statusText = '';
+                if (isActive) {
+                    statusText = 'Активна';
+                } else if (isUnlocked) {
+                    statusText = 'Доступна';
+                } else {
+                    statusText = `Уровень ${location.requirements.level}`;
+                }
+                
+                planetCard.innerHTML = `
+                    <div class="planet-icon">${location.name.split(' ')[0]}</div>
+                    <div class="planet-name">${location.name}</div>
+                    <div class="planet-requirements">${statusText}</div>
+                `;
+                
+                if (isActive || isUnlocked) {
+                    planetCard.addEventListener('click', () => {
+                        setLocation(id);
+                        hidePlanetSelection();
+                    });
+                }
+                
+                planetsGrid.appendChild(planetCard);
+            });
+        }
+
+        // Функции показа/скрытия меню выбора планет
+        function showPlanetSelection() {
+            const planetSelection = document.getElementById('planetSelection');
+            if (planetSelection) {
+                createPlanetsMenu();
+                planetSelection.style.display = 'block';
+            }
+        }
+
+        function hidePlanetSelection() {
+            const planetSelection = document.getElementById('planetSelection');
+            if (planetSelection) {
+                planetSelection.style.display = 'none';
+            }
+        }
+
+        // НОВОЕ: Функции для работы с экранами
+        function showWelcomeScreen() {
+            document.getElementById('welcomeScreen').style.display = 'flex';
+        }
+
+        function hideWelcomeScreen() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+        }
+
+        function showGameOverScreen() {
+            // Обновляем статистику на экране завершения
+            document.getElementById('finalLevel').textContent = maxLevelReached;
+            document.getElementById('finalCoins').textContent = coins;
+            document.getElementById('finalCombo').textContent = achievementStats.maxComboAchieved;
+            document.getElementById('finalPlanets').textContent = achievementStats.planetsVisited.length;
+            
+            document.getElementById('gameOverScreen').style.display = 'flex';
+        }
+
+        function hideGameOverScreen() {
+            document.getElementById('gameOverScreen').style.display = 'none';
+        }
+
+        // === ОСНОВНЫЕ ФУНКЦИИ ИГРЫ ===
+        function startGame() {
+            hideWelcomeScreen();
+            gameActive = true;
+            createMovingBlock(currentLevel);
+            updateHUD();
+        }
+
         function resetGame() {
+            hideGameOverScreen();
             gameActive = false;
             
             // Очищаем текущий блок
@@ -1089,13 +1869,17 @@
             helperCritChance = 0.1;
             helperCritMultiplier = 2.0;
             
+            // Возвращаемся на Меркурий
+            setLocation('mercury');
+            
             // Обновляем интерфейс
             updateHUD();
             updateUpgradeButtons();
-            document.getElementById("startBtn").textContent = "Начать игру";
             
-            showTooltip("Игра сброшена!");
-            setTimeout(hideTooltip, 1500);
+            // Запускаем игру заново
+            setTimeout(() => {
+                startGame();
+            }, 500);
         }
 
         function attackBlock() {
@@ -1107,6 +1891,9 @@
             createDamageText(damage, currentBlock, false);
             currentBlock.textContent = currentBlockHealth;
             updateHUD();
+            
+            // Воспроизведение звука удара
+            playSound('clickSound');
             
             if (currentBlockHealth <= 0) {
                 destroyBlock(currentBlock, currentLevel);
@@ -1128,16 +1915,40 @@
             currentBlockHealth = 10 + level * 2;
             block.textContent = currentBlockHealth;
             
-            // Случайный тип блока (с шансом)
-            const blockType = Math.random();
-            if (blockType < 0.05) { // 5% шанс золотого блока
-                block.classList.add("block-gold");
-                currentBlockHealth *= 2; // Золотые блоки имеют в 2 раза больше HP
+            // Улучшенная система редких блоков
+            let isRare = false;
+            let rareType = null;
+            
+            const potentialRareType = getRareBlockType();
+            if (potentialRareType) {
+                isRare = true;
+                rareType = potentialRareType;
+                const rareBlock = rareBlocks[rareType];
+                block.classList.add(rareBlock.className);
+                currentBlockHealth = Math.floor(currentBlockHealth * rareBlock.healthMultiplier);
                 block.textContent = currentBlockHealth;
-            } else if (blockType < 0.08) { // 3% шанс радужного блока
-                block.classList.add("block-rainbow");
-                currentBlockHealth *= 3;
-                block.textContent = currentBlockHealth;
+                block.innerHTML = `🌟<div style="font-size: 0.7em; margin-top: 5px;">${rareBlock.name}</div>`;
+                announceRareBlock(rareBlock.name);
+            } else {
+                // Обычный блок
+                const blockType = Math.random();
+                if (blockType < 0.05) { // 5% шанс золотого блока
+                    block.classList.add("block-gold");
+                    currentBlockHealth *= 2; // Золотые блоки имеют в 2 раза больше HP
+                    block.textContent = currentBlockHealth;
+                } else if (blockType < 0.08) { // 3% шанс радужного блока
+                    block.classList.add("block-rainbow");
+                    currentBlockHealth *= 3;
+                    block.textContent = currentBlockHealth;
+                }
+            }
+            
+            // Цвет блока в зависимости от локации
+            const location = locations[currentLocation];
+            if (location && !isRare) {
+                const colorIndex = level % location.blockColors.length;
+                block.style.background = `linear-gradient(135deg, ${location.blockColors[colorIndex]}, ${location.blockColors[(colorIndex + 1) % location.blockColors.length]})`;
+                block.style.boxShadow = `0 4px 15px ${location.blockColors[colorIndex]}`;
             }
             
             // Начальная позиция внизу
@@ -1149,8 +1960,11 @@
             block.addEventListener('click', attackBlock);
             
             // ИЗМЕНЕНО: Новая система скорости для мобильных
-            // Начальная скорость 0.8, рост каждые 15 уровней +0.05
-            const speed = 0.8 + (Math.floor(level / 15) * 0.05) - slowBonus;
+            // Начальная скорость: 1.0, рост каждые 25 уровней: +0.25
+            const baseSpeed = 1.0;
+            const speedIncrease = Math.floor(level / 25) * 0.25;
+            const speed = baseSpeed + speedIncrease - slowBonus;
+            
             moveBlock(block, speed);
         }
 
@@ -1180,7 +1994,28 @@
             lastDestroyTime = now;
             
             // Начисляем монеты
-            const coinsEarned = 10 + level * 2 + comboCount * 5;
+            let coinsEarned = 10 + level * 2 + comboCount * 5;
+            
+            // Бонусы за редкие блоки
+            let isRare = false;
+            let rareType = null;
+            
+            for (const type in rareBlocks) {
+                if (block.classList.contains(rareBlocks[type].className)) {
+                    isRare = true;
+                    rareType = type;
+                    coinsEarned = Math.floor(coinsEarned * rareBlocks[type].multiplier);
+                    break;
+                }
+            }
+            
+            // Обновление статистики для достижений
+            if (block.classList.contains('block-crystal')) {
+                achievementStats.crystalBlocksFound++;
+            } else if (block.classList.contains('block-mystery')) {
+                achievementStats.mysteryBlocksFound++;
+            }
+            
             coins += coinsEarned;
             
             // Проверка достижений
@@ -1188,10 +2023,17 @@
             if (block.classList.contains('block-gold')) {
                 achievementStats.goldBlocksFound++;
             }
+            
+            // Проверка открытия новых планет
+            checkPlanetUnlocks();
+            
             checkAchievements();
             
             // Визуальные эффекты разрушения
             createBlockExplosionEffect(block, level);
+            
+            // Воспроизведение звука разрушения
+            playSound('breakSound');
             
             const gameArea = document.getElementById("gameArea");
             if (gameArea.contains(block)) {
@@ -1216,12 +2058,23 @@
             }, 500);
         }
 
+        // Функция проверки открытия новых планет
+        function checkPlanetUnlocks() {
+            Object.entries(locations).forEach(([id, location]) => {
+                if (!location.active && maxLevelReached >= location.requirements.level) {
+                    location.active = true;
+                    achievementStats.planetsVisited.push(id);
+                    showTooltip(`Открыта новая планета: ${location.name}!`);
+                    setTimeout(hideTooltip, 3000);
+                    checkAchievements();
+                }
+            });
+        }
+
         function endGame() {
             gameActive = false;
             currentBlock = null;
-            document.getElementById("startBtn").textContent = "Начать игру";
-            showTooltip("Игра окончена! Начните заново.");
-            setTimeout(hideTooltip, 2000);
+            showGameOverScreen();
         }
 
         function updateHUD() {
@@ -1250,19 +2103,23 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip(`Урон увеличен!<br>Теперь вы наносите ${1 + clickUpgradeLevel} урона`);
+                // Воспроизведение звука улучшения
+                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
 
         function upgradeSlow() {
-            // ИЗМЕНЕНО: Упрощенная система якоря - фиксированное замедление 1
+            // ИЗМЕНЕНО: Упрощенная система якоря - замедление на 1
             if (coins >= slowCost && slowBonus === 0) {
                 coins -= slowCost;
-                slowBonus = 1; // Фиксированное замедление 1 для мобильных
+                slowBonus = 1; // Было 2, теперь 1 для мобильных
                 createCoinAnimation(-slowCost, document.getElementById("upgradeSlowBtn"));
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip("Скорость блоков уменьшена!");
+                // Воспроизведение звука улучшения
+                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -1278,6 +2135,8 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip("Помощник активирован на 1 минуту!");
+                // Воспроизведение звука помощника
+                playSound('helperSound');
                 setTimeout(hideTooltip, 1500);
                 
                 // Запускаем помощника
@@ -1302,6 +2161,8 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip(`Помощник улучшен!<br>Уровень: ${helperLevel}<br>Урон: ${getHelperDamage()}`);
+                // Воспроизведение звука улучшения
+                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -1317,6 +2178,8 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip(`Крит помощника улучшен!<br>Уровень: ${helperCritLevel}<br>Шанс: ${(helperCritChance * 100).toFixed(0)}%<br>Множитель: ${helperCritMultiplier}x`);
+                // Воспроизведение звука улучшения
+                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -1330,16 +2193,15 @@
         }
 
         function getHelperDamage() {
-            // ИЗМЕНЕНО: Урон помощника увеличен в 2 раза
             return helperBaseDamage * 2 * (1 + helperLevel * 0.5);
         }
 
         function helperAttack() {
             if (!currentBlock || !helperActive) return;
             
+            // Улучшенные эффекты помощника
             createHelperEffect();
             
-            // ИЗМЕНЕНО: Добавлена система критического урона
             let damage = getHelperDamage();
             let isCrit = false;
             
@@ -1378,7 +2240,7 @@
             
             if (upgradeClickBtn) {
                 upgradeClickBtn.innerHTML = `
-                    <i class="fas fa-fist-raised" style="font-size: 1.1em; margin-bottom: 2px;"></i>
+                    <i class="fas fa-fist-raised" style="font-size: 1em; margin-bottom: 2px;"></i>
                     <div>Урон: ${1 + clickUpgradeLevel}</div>
                     <div>${clickCost} 💎</div>
                 `;
@@ -1446,21 +2308,30 @@
             }, 1500);
         }
 
+        // Улучшенный эффект помощника
         function createHelperEffect() {
             if (!currentBlock) return;
             
-            const rect = currentBlock.getBoundingClientRect();
-            const effect = document.createElement('div');
-            effect.className = 'helper-effect';
-            effect.style.left = (rect.left + rect.width / 2) + 'px';
-            effect.style.top = (rect.top + rect.height / 2) + 'px';
-            document.getElementById("ui").appendChild(effect);
+            const blockRect = currentBlock.getBoundingClientRect();
+            const helperX = blockRect.left + Math.random() * blockRect.width;
+            const helperY = blockRect.top - 50;
+            
+            const helper = document.createElement('div');
+            helper.className = 'helper';
+            helper.style.left = helperX + 'px';
+            helper.style.top = helperY + 'px';
+            document.getElementById("ui").appendChild(helper);
+            
+            const beam = document.createElement('div');
+            beam.className = 'helper-beam';
+            beam.style.left = (helperX + 20) + 'px';
+            beam.style.top = (helperY + 40) + 'px';
+            document.getElementById("ui").appendChild(beam);
             
             setTimeout(() => {
-                if (effect.parentNode) {
-                    document.getElementById("ui").removeChild(effect);
-                }
-            }, 500);
+                if (helper.parentNode) document.getElementById("ui").removeChild(helper);
+                if (beam.parentNode) document.getElementById("ui").removeChild(beam);
+            }, 1000);
         }
 
         function createBlockExplosionEffect(block, level) {
@@ -1480,6 +2351,10 @@
                 } else if (block.classList.contains('block-rainbow')) {
                     const colors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#8b00ff'];
                     color = colors[Math.floor(Math.random() * colors.length)];
+                } else if (block.classList.contains('block-crystal')) {
+                    color = '#00ffff';
+                } else if (block.classList.contains('block-mystery')) {
+                    color = '#9b59b6';
                 }
                 
                 particle.style.backgroundColor = color;
@@ -1529,6 +2404,12 @@
             } else if (block.classList.contains('block-rainbow')) {
                 flash.style.background = 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff)';
                 flash.style.boxShadow = '0 0 40px rgba(255, 255, 255, 0.8)';
+            } else if (block.classList.contains('block-crystal')) {
+                flash.style.backgroundColor = 'rgba(0, 255, 255, 0.7)';
+                flash.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.8)';
+            } else if (block.classList.contains('block-mystery')) {
+                flash.style.backgroundColor = 'rgba(155, 89, 182, 0.7)';
+                flash.style.boxShadow = '0 0 30px rgba(155, 89, 182, 0.8)';
             } else {
                 flash.style.backgroundColor = 'rgba(187, 134, 252, 0.7)';
                 flash.style.boxShadow = '0 0 20px rgba(187, 134, 252, 0.8)';
@@ -1568,6 +2449,32 @@
             
             if (!achievements.helperFriend.achieved && achievementStats.helperUses >= 10) {
                 unlockAchievement("helperFriend");
+            }
+            
+            // Проверка достижений для новых типов блоков
+            if (!achievements.crystalMaster.achieved && achievementStats.crystalBlocksFound >= 10) {
+                unlockAchievement("crystalMaster");
+            }
+            
+            if (!achievements.mysterySolver.achieved && achievementStats.mysteryBlocksFound >= 5) {
+                unlockAchievement("mysterySolver");
+            }
+            
+            // Проверка достижений для планет
+            if (!achievements.venusExplorer.achieved && achievementStats.planetsVisited.includes('venus')) {
+                unlockAchievement("venusExplorer");
+            }
+            
+            if (!achievements.earthExplorer.achieved && achievementStats.planetsVisited.includes('earth')) {
+                unlockAchievement("earthExplorer");
+            }
+            
+            if (!achievements.marsExplorer.achieved && achievementStats.planetsVisited.includes('mars')) {
+                unlockAchievement("marsExplorer");
+            }
+            
+            if (!achievements.planetCollector.achieved && achievementStats.planetsVisited.length >= 5) {
+                unlockAchievement("planetCollector");
             }
             
             updateAchievementDisplay();
@@ -1644,6 +2551,18 @@
                         <span class="stat-value">${achievementStats.helperUses}</span>
                         <span class="stat-label">Использований помощника</span>
                     </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${achievementStats.crystalBlocksFound}</span>
+                        <span class="stat-label">Кристальных блоков</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${achievementStats.mysteryBlocksFound}</span>
+                        <span class="stat-label">Загадочных блоков</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${achievementStats.planetsVisited.length}</span>
+                        <span class="stat-label">Открытых планет</span>
+                    </div>
                 </div>
             `;
             
@@ -1671,6 +2590,12 @@
                     statsText = `Найдено: ${achievementStats.goldBlocksFound}/5`;
                 } else if (id === 'helperFriend') {
                     statsText = `Использовано: ${achievementStats.helperUses}/10`;
+                } else if (id === 'crystalMaster') {
+                    statsText = `Разрушено: ${achievementStats.crystalBlocksFound}/10`;
+                } else if (id === 'mysterySolver') {
+                    statsText = `Разрушено: ${achievementStats.mysteryBlocksFound}/5`;
+                } else if (id === 'planetCollector') {
+                    statsText = `Открыто: ${achievementStats.planetsVisited.length}/8`;
                 }
                 
                 achievementElement.innerHTML = `
@@ -1721,9 +2646,11 @@
 
         // === ИНИЦИАЛИЗАЦИЯ ===
         document.addEventListener('DOMContentLoaded', function() {
-            // Создаем фоновые эффекты
-            createStars();
-            createBackgroundParticles();
+            // Создаем фоновые эффекты для всех локаций
+            Object.keys(locations).forEach(locationId => {
+                createStars(`${locationId}Stars`);
+                createBackgroundParticles(`${locationId}Particles`);
+            });
             
             // Инициализация системы достижений
             const achievementsBtn = document.createElement('button');
@@ -1740,12 +2667,19 @@
             createAchievementsMenu();
             
             // Обработчики событий для кнопок
-            document.getElementById("startBtn").addEventListener("click", startGame);
             document.getElementById("upgradeClickBtn").addEventListener("click", upgradeClickDamage);
             document.getElementById("upgradeSlowBtn").addEventListener("click", upgradeSlow);
             document.getElementById("upgradeHelperBtn").addEventListener("click", buyHelper);
             document.getElementById("upgradeHelperLevelBtn").addEventListener("click", upgradeHelperLevel);
             document.getElementById("upgradeHelperCritBtn").addEventListener("click", upgradeHelperCrit);
+            
+            // Обработчики для меню выбора планет
+            document.getElementById("planetSelectBtn").addEventListener("click", showPlanetSelection);
+            document.getElementById("closePlanetSelection").addEventListener("click", hidePlanetSelection);
+            
+            // НОВОЕ: Обработчики для экранов
+            document.getElementById("startWelcomeBtn").addEventListener("click", startGame);
+            document.getElementById("restartBtn").addEventListener("click", resetGame);
             
             // Инициализация подсказок
             const buttons = [
@@ -1779,9 +2713,24 @@
                 }
             });
             
+            // Предотвращение масштабирования на мобильных
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+            
+            // Показываем экран приветствия при загрузке
+            showWelcomeScreen();
+            
             // Обновление UI
             updateUpgradeButtons();
             updateHUD();
+            updateLocationTheme();
         });
     </script>
 </body>
