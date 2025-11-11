@@ -22,7 +22,6 @@
             min-height: 100vh;
             overflow: hidden;
             user-select: none;
-            font-size: 16px; /* Базовый размер шрифта */
         }
 
         #gameContainer {
@@ -59,18 +58,18 @@
             z-index: 2;
         }
 
-        /* Блоки - ИЗМЕНЕНО: базовый размер 90px */
+        /* Блоки - УВЕЛИЧЕНЫ ДЛЯ МОБИЛЬНЫХ */
         .block {
             position: absolute;
-            width: 90px;
-            height: 90px;
+            width: 90px; /* Увеличено с 80px */
+            height: 90px; /* Увеличено с 80px */
             background: linear-gradient(135deg, #bb86fc, #3700b3);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.4em; /* Увеличен шрифт */
+            font-size: 1.4em; /* Увеличено для лучшей читаемости */
             color: white;
             box-shadow: 0 4px 15px rgba(187, 134, 252, 0.5);
             cursor: pointer;
@@ -97,6 +96,20 @@
             animation: rainbow 3s ease infinite;
         }
 
+        /* НОВОЕ: Стили для кристальных и загадочных блоков из второго кода */
+        .block-crystal {
+            background: linear-gradient(45deg, #00ffff, #ffffff, #00ffff) !important;
+            box-shadow: 0 0 25px #00ffff, 0 0 10px #ffffff inset !important;
+            animation: crystalPulse 2s ease-in-out infinite !important;
+        }
+
+        .block-mystery {
+            background: linear-gradient(45deg, #9b59b6, #e74c3c, #3498db) !important;
+            background-size: 300% 300% !important;
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.7) !important;
+            animation: mysteryShift 4s ease-in-out infinite !important;
+        }
+
         @keyframes gold-shimmer {
             0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 107, 0, 0.3) inset; }
             50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 107, 0, 0.6) inset; }
@@ -107,6 +120,16 @@
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
+        }
+
+        @keyframes crystalPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+
+        @keyframes mysteryShift {
+            0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+            50% { background-position: 100% 50%; filter: hue-rotate(180deg); }
         }
 
         /* Интерфейс */
@@ -133,7 +156,7 @@
         h1 {
             color: #bb86fc;
             margin-bottom: 10px;
-            font-size: 2.2em; /* Увеличен шрифт */
+            font-size: 2.2em; /* Увеличено для мобильных */
             text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
             font-family: 'Orbitron', sans-serif;
         }
@@ -148,18 +171,18 @@
 
         .stat {
             background: rgba(187, 134, 252, 0.2);
-            padding: 10px 18px; /* Увеличен padding */
+            padding: 10px 18px; /* Увеличено для мобильных */
             border-radius: 20px;
             border: 1px solid #bb86fc;
             font-family: 'Orbitron', monospace;
-            font-size: 1.1em; /* Увеличен шрифт */
+            font-size: 1.1em; /* Увеличено для мобильных */
         }
 
         #levelProgressContainer {
             width: 80%;
-            height: 12px; /* Увеличена высота */
+            height: 10px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
+            border-radius: 5px;
             margin: 10px auto;
             overflow: hidden;
         }
@@ -183,8 +206,8 @@
             background: linear-gradient(135deg, #bb86fc, #3700b3);
             color: white;
             border: none;
-            padding: 15px 35px; /* Увеличен padding */
-            font-size: 1.3em; /* Увеличен шрифт */
+            padding: 15px 35px; /* Увеличено для мобильных */
+            font-size: 1.3em; /* Увеличено для мобильных */
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -198,14 +221,14 @@
             box-shadow: 0 6px 20px rgba(187, 134, 252, 0.7);
         }
 
-        /* ИЗМЕНЕНО: Улучшения - увеличены размеры */
+        /* ИЗМЕНЕНО: Улучшения перемещены в правую часть и УВЕЛИЧЕНЫ для мобильных */
         .upgrades {
             position: absolute;
             top: 120px;
             right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Увеличен gap */
+            gap: 10px; /* Увеличено расстояние между кнопками */
             padding: 10px;
             pointer-events: auto;
             z-index: 10;
@@ -215,20 +238,20 @@
             width: 70px; /* Увеличено с 60px */
             height: 70px; /* Увеличено с 60px */
             border: none;
-            border-radius: 12px; /* Увеличен радиус */
+            border-radius: 12px; /* Увеличено с 10px */
             color: white;
-            font-size: 0.7em; /* Увеличен шрифт */
+            font-size: 0.7em; /* Увеличено с 0.6em */
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 3px; /* Увеличен gap */
+            gap: 3px; /* Увеличено с 2px */
             text-align: center;
             position: relative;
             pointer-events: auto;
-            padding: 5px; /* Увеличен padding */
+            padding: 5px; /* Увеличено с 4px */
             font-family: 'Orbitron', monospace;
         }
 
@@ -261,14 +284,14 @@
         }
 
         .achievement-icon-badge {
-            width: 35px; /* Увеличено */
-            height: 35px; /* Увеличено */
+            width: 35px; /* Увеличено для мобильных */
+            height: 35px; /* Увеличено для мобильных */
             background: rgba(0, 0, 0, 0.5);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1em; /* Увеличен шрифт */
+            font-size: 1.1em; /* Увеличено для мобильных */
             color: #ffd700;
             border: 1px solid #bb86fc;
             box-shadow: 0 0 5px rgba(187, 134, 252, 0.5);
@@ -476,8 +499,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 70px; /* Увеличено */
-            height: 70px; /* Увеличено */
+            width: 70px; /* Увеличено для мобильных */
+            height: 70px; /* Увеличено для мобильных */
             padding: 0;
             background: linear-gradient(135deg, #304ffe, #651fff);
         }
@@ -488,9 +511,9 @@
             right: -6px;
             background: #ff4444;
             color: white;
-            font-size: 0.7em; /* Увеличен шрифт */
-            width: 18px; /* Увеличено */
-            height: 18px; /* Увеличено */
+            font-size: 0.7em; /* Увеличено для мобильных */
+            width: 18px; /* Увеличено для мобильных */
+            height: 18px; /* Увеличено для мобильных */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -500,12 +523,12 @@
         }
 
         #upgradeHelperLevelBtn .helper-icon {
-            font-size: 1.3em; /* Увеличен шрифт */
+            font-size: 1.3em; /* Увеличено для мобильных */
             margin-bottom: 3px;
         }
 
         #upgradeHelperLevelBtn .helper-cost {
-            font-size: 0.7em; /* Увеличен шрифт */
+            font-size: 0.7em; /* Увеличено для мобильных */
             color: #ffd700;
             font-weight: bold;
         }
@@ -641,8 +664,8 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
-            padding: 10px 14px; /* Увеличен padding */
-            font-size: 1.3em; /* Увеличен шрифт */
+            padding: 10px 14px; /* Увеличено для мобильных */
+            font-size: 1.3em; /* Увеличено для мобильных */
             pointer-events: auto;
         }
 
@@ -688,8 +711,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 70px; /* Увеличено */
-            height: 70px; /* Увеличено */
+            width: 70px; /* Увеличено для мобильных */
+            height: 70px; /* Увеличено для мобильных */
             padding: 0;
             background: linear-gradient(135deg, #ff4444, #cc0000);
         }
@@ -700,9 +723,9 @@
             right: -6px;
             background: #ff9900;
             color: white;
-            font-size: 0.7em; /* Увеличен шрифт */
-            width: 18px; /* Увеличено */
-            height: 18px; /* Увеличено */
+            font-size: 0.7em; /* Увеличено для мобильных */
+            width: 18px; /* Увеличено для мобильных */
+            height: 18px; /* Увеличено для мобильных */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -712,168 +735,125 @@
         }
 
         #upgradeHelperCritBtn .crit-icon {
-            font-size: 1.3em; /* Увеличен шрифт */
+            font-size: 1.3em; /* Увеличено для мобильных */
             margin-bottom: 3px;
         }
 
         #upgradeHelperCritBtn .crit-cost {
-            font-size: 0.7em; /* Увеличен шрифт */
+            font-size: 0.7em; /* Увеличено для мобильных */
             color: #ffd700;
             font-weight: bold;
         }
 
-        /* МЕДИА-ЗАПРОСЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
-
-        /* Планшеты и маленькие ноутбуки */
+        /* НОВОЕ: Медиа-запросы для адаптации под мобильные устройства */
         @media (max-width: 768px) {
-            body {
-                font-size: 18px; /* Увеличен базовый шрифт */
-            }
-            
             .block {
-                width: 80px; /* Уменьшены блоки */
-                height: 80px;
-                font-size: 1.3em; /* Уменьшен шрифт в блоках */
+                width: 70px; /* Уменьшено для маленьких экранов */
+                height: 70px; /* Уменьшено для маленьких экранов */
+                font-size: 1.2em; /* Уменьшено для маленьких экранов */
             }
-            
-            h1 {
-                font-size: 1.8em; /* Уменьшен заголовок */
-            }
-            
-            .stat {
-                font-size: 1em; /* Уменьшен шрифт статистики */
-                padding: 8px 15px;
-            }
-            
-            .upgrade-btn {
-                width: 65px; /* Уменьшены кнопки улучшений */
-                height: 65px;
-                font-size: 0.65em;
-            }
-            
-            #upgradeHelperLevelBtn,
-            #upgradeHelperCritBtn {
-                width: 65px;
-                height: 65px;
-            }
-            
-            .upgrades {
-                gap: 8px;
-                right: 15px;
-                top: 110px;
-            }
-            
-            .achievement-icon-badge {
-                width: 32px;
-                height: 32px;
-                font-size: 1em;
-            }
-        }
 
-        /* Мобильные телефоны */
-        @media (max-width: 480px) {
-            body {
-                font-size: 16px; /* Оптимальный размер для маленьких экранов */
-            }
-            
-            .block {
-                width: 70px; /* Еще меньше блоки */
-                height: 70px;
-                font-size: 1.2em;
-            }
-            
             h1 {
-                font-size: 1.6em;
-                margin-bottom: 8px;
+                font-size: 1.8em; /* Уменьшено для маленьких экранов */
             }
-            
-            .stats-container {
-                gap: 15px;
-                margin-bottom: 8px;
-            }
-            
+
             .stat {
-                font-size: 0.9em;
-                padding: 6px 12px;
+                font-size: 1em; /* Уменьшено для маленьких экранов */
+                padding: 8px 15px; /* Уменьшено для маленьких экранов */
             }
-            
-            #levelProgressContainer {
-                width: 85%;
-                height: 10px;
-            }
-            
+
             .upgrade-btn {
-                width: 60px; /* Минимальный размер для удобного нажатия */
-                height: 60px;
-                font-size: 0.6em;
+                width: 65px; /* Уменьшено для маленьких экранов */
+                height: 65px; /* Уменьшено для маленьких экранов */
+                font-size: 0.65em; /* Уменьшено для маленьких экранов */
             }
-            
+
             #upgradeHelperLevelBtn,
             #upgradeHelperCritBtn {
-                width: 60px;
-                height: 60px;
+                width: 65px; /* Уменьшено для маленьких экранов */
+                height: 65px; /* Уменьшено для маленьких экранов */
             }
-            
+
             .upgrades {
-                gap: 6px;
-                right: 10px;
-                top: 100px;
-                padding: 8px;
+                gap: 8px; /* Уменьшено расстояние между кнопками */
             }
-            
+
             #startBtn {
-                padding: 12px 25px;
-                font-size: 1.2em;
+                padding: 12px 25px; /* Уменьшено для маленьких экранов */
+                font-size: 1.1em; /* Уменьшено для маленьких экранов */
             }
-            
-            .controls {
-                left: 10px;
-                bottom: 15px;
-            }
-            
-            .achievement-icon-badge {
-                width: 30px;
-                height: 30px;
-                font-size: 0.9em;
-            }
-            
+
             .hud-btn {
-                padding: 8px 12px;
-                font-size: 1.2em;
+                padding: 8px 12px; /* Уменьшено для маленьких экранов */
+                font-size: 1.1em; /* Уменьшено для маленьких экранов */
+            }
+
+            .achievement-icon-badge {
+                width: 30px; /* Уменьшено для маленьких экранов */
+                height: 30px; /* Уменьшено для маленьких экранов */
+                font-size: 1em; /* Уменьшено для маленьких экранов */
             }
         }
 
-        /* Очень маленькие экраны */
-        @media (max-width: 360px) {
+        @media (max-width: 480px) {
             .block {
-                width: 65px;
-                height: 65px;
-                font-size: 1.1em;
+                width: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
+                height: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
+                font-size: 1em; /* Дополнительно уменьшено для очень маленьких экранов */
             }
-            
+
             h1 {
-                font-size: 1.4em;
+                font-size: 1.5em; /* Дополнительно уменьшено для очень маленьких экранов */
+                margin-bottom: 5px;
             }
-            
+
             .stats-container {
-                gap: 10px;
+                gap: 15px; /* Уменьшено расстояние между статами */
+                margin-bottom: 5px;
             }
-            
+
             .stat {
-                font-size: 0.85em;
-                padding: 5px 10px;
+                font-size: 0.9em; /* Дополнительно уменьшено для очень маленьких экранов */
+                padding: 6px 12px; /* Дополнительно уменьшено для очень маленьких экранов */
             }
-            
+
             .upgrade-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 0.55em;
+                width: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
+                height: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
+                font-size: 0.6em; /* Дополнительно уменьшено для очень маленьких экранов */
             }
-            
+
             #upgradeHelperLevelBtn,
             #upgradeHelperCritBtn {
-                width: 55px;
-                height: 55px;
+                width: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
+                height: 60px; /* Дополнительно уменьшено для очень маленьких экранов */
+            }
+
+            .upgrades {
+                top: 110px; /* Смещено выше */
+                right: 15px; /* Смещено ближе к краю */
+                gap: 6px; /* Уменьшено расстояние между кнопками */
+            }
+
+            #startBtn {
+                padding: 10px 20px; /* Дополнительно уменьшено для очень маленьких экранов */
+                font-size: 1em; /* Дополнительно уменьшено для очень маленьких экранов */
+            }
+
+            .controls {
+                left: 15px; /* Смещено ближе к краю */
+                bottom: 15px; /* Смещено выше */
+            }
+
+            .hud-btn {
+                padding: 6px 10px; /* Дополнительно уменьшено для очень маленьких экранов */
+                font-size: 1em; /* Дополнительно уменьшено для очень маленьких экранов */
+            }
+
+            .achievement-icon-badge {
+                width: 25px; /* Дополнительно уменьшено для очень маленьких экранов */
+                height: 25px; /* Дополнительно уменьшено для очень маленьких экранов */
+                font-size: 0.9em; /* Дополнительно уменьшено для очень маленьких экранов */
             }
         }
     </style>
@@ -901,7 +881,7 @@
                 <button id="startBtn">Начать игру</button>
             </div>
 
-            <!-- ИЗМЕНЕНО: Улучшения с увеличенными размерами -->
+            <!-- ИЗМЕНЕНО: Улучшения перемещены в правую часть и УВЕЛИЧЕНЫ -->
             <div class="upgrades">
                 <button id="upgradeClickBtn" class="upgrade-btn btn-unavailable">
                     <i class="fas fa-fist-raised" style="font-size: 1.1em; margin-bottom: 2px;"></i>
@@ -952,6 +932,8 @@
         // Система улучшений
         let clickUpgradeLevel = 1;
         let baseClickUpgradeCost = 50;
+        
+        // ИЗМЕНЕНО: Упрощена система якоря - теперь фиксированное замедление 1
         let slowBonus = 0;
         let slowCost = 200;
         let helperActive = false;
@@ -1166,10 +1148,9 @@
             // Добавляем обработчик клика
             block.addEventListener('click', attackBlock);
             
-            // ИЗМЕНЕНО: Скорость блоков - изменяется каждые 5 уровней
-            const speedLevelBonus = Math.floor(level / 5) * 0.5; // +0.5 каждые 5 уровней
-            const speed = 2 + speedLevelBonus - slowBonus;
-            
+            // ИЗМЕНЕНО: Новая система скорости для мобильных
+            // Начальная скорость 0.8, рост каждые 15 уровней +0.05
+            const speed = 0.8 + (Math.floor(level / 15) * 0.05) - slowBonus;
             moveBlock(block, speed);
         }
 
@@ -1274,10 +1255,10 @@
         }
 
         function upgradeSlow() {
-            // ИЗМЕНЕНО: Замедление теперь 1 вместо 2
+            // ИЗМЕНЕНО: Упрощенная система якоря - фиксированное замедление 1
             if (coins >= slowCost && slowBonus === 0) {
                 coins -= slowCost;
-                slowBonus = 1; // Было 2
+                slowBonus = 1; // Фиксированное замедление 1 для мобильных
                 createCoinAnimation(-slowCost, document.getElementById("upgradeSlowBtn"));
                 updateHUD();
                 updateUpgradeButtons();
