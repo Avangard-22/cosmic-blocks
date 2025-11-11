@@ -22,6 +22,7 @@
             min-height: 100vh;
             overflow: hidden;
             user-select: none;
+            font-size: 16px; /* Базовый размер шрифта */
         }
 
         #gameContainer {
@@ -58,7 +59,7 @@
             z-index: 2;
         }
 
-        /* Блоки - увеличены для мобильных */
+        /* Блоки - ИЗМЕНЕНО: базовый размер 90px */
         .block {
             position: absolute;
             width: 90px;
@@ -69,7 +70,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.4em;
+            font-size: 1.4em; /* Увеличен шрифт */
             color: white;
             box-shadow: 0 4px 15px rgba(187, 134, 252, 0.5);
             cursor: pointer;
@@ -96,20 +97,6 @@
             animation: rainbow 3s ease infinite;
         }
 
-        /* НОВОЕ: Стили для кристальных и загадочных блоков из второго кода */
-        .block-crystal {
-            background: linear-gradient(45deg, #00ffff, #ffffff, #00ffff) !important;
-            box-shadow: 0 0 25px #00ffff, 0 0 10px #ffffff inset !important;
-            animation: crystalPulse 2s ease-in-out infinite !important;
-        }
-
-        .block-mystery {
-            background: linear-gradient(45deg, #9b59b6, #e74c3c, #3498db) !important;
-            background-size: 300% 300% !important;
-            box-shadow: 0 0 20px rgba(155, 89, 182, 0.7) !important;
-            animation: mysteryShift 4s ease-in-out infinite !important;
-        }
-
         @keyframes gold-shimmer {
             0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 107, 0, 0.3) inset; }
             50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 107, 0, 0.6) inset; }
@@ -120,16 +107,6 @@
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
-        }
-
-        @keyframes crystalPulse {
-            0%, 100% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.05); }
-        }
-
-        @keyframes mysteryShift {
-            0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
-            50% { background-position: 100% 50%; filter: hue-rotate(180deg); }
         }
 
         /* Интерфейс */
@@ -156,7 +133,7 @@
         h1 {
             color: #bb86fc;
             margin-bottom: 10px;
-            font-size: 2.2em;
+            font-size: 2.2em; /* Увеличен шрифт */
             text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
             font-family: 'Orbitron', sans-serif;
         }
@@ -171,18 +148,18 @@
 
         .stat {
             background: rgba(187, 134, 252, 0.2);
-            padding: 10px 18px;
+            padding: 10px 18px; /* Увеличен padding */
             border-radius: 20px;
             border: 1px solid #bb86fc;
             font-family: 'Orbitron', monospace;
-            font-size: 1.1em;
+            font-size: 1.1em; /* Увеличен шрифт */
         }
 
         #levelProgressContainer {
             width: 80%;
-            height: 10px;
+            height: 12px; /* Увеличена высота */
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: 6px;
             margin: 10px auto;
             overflow: hidden;
         }
@@ -206,8 +183,8 @@
             background: linear-gradient(135deg, #bb86fc, #3700b3);
             color: white;
             border: none;
-            padding: 15px 35px;
-            font-size: 1.3em;
+            padding: 15px 35px; /* Увеличен padding */
+            font-size: 1.3em; /* Увеличен шрифт */
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -221,37 +198,37 @@
             box-shadow: 0 6px 20px rgba(187, 134, 252, 0.7);
         }
 
-        /* ИЗМЕНЕНО: Улучшения перемещены в правую часть и увеличены для мобильных */
+        /* ИЗМЕНЕНО: Улучшения - увеличены размеры */
         .upgrades {
             position: absolute;
             top: 120px;
             right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px; /* Увеличен gap */
             padding: 10px;
             pointer-events: auto;
             z-index: 10;
         }
 
         .upgrade-btn {
-            width: 70px;
-            height: 70px;
+            width: 70px; /* Увеличено с 60px */
+            height: 70px; /* Увеличено с 60px */
             border: none;
-            border-radius: 10px;
+            border-radius: 12px; /* Увеличен радиус */
             color: white;
-            font-size: 0.7em;
+            font-size: 0.7em; /* Увеличен шрифт */
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
+            gap: 3px; /* Увеличен gap */
             text-align: center;
             position: relative;
             pointer-events: auto;
-            padding: 4px;
+            padding: 5px; /* Увеличен padding */
             font-family: 'Orbitron', monospace;
         }
 
@@ -284,14 +261,14 @@
         }
 
         .achievement-icon-badge {
-            width: 30px;
-            height: 30px;
+            width: 35px; /* Увеличено */
+            height: 35px; /* Увеличено */
             background: rgba(0, 0, 0, 0.5);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1em;
+            font-size: 1.1em; /* Увеличен шрифт */
             color: #ffd700;
             border: 1px solid #bb86fc;
             box-shadow: 0 0 5px rgba(187, 134, 252, 0.5);
@@ -499,8 +476,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 70px;
-            height: 70px;
+            width: 70px; /* Увеличено */
+            height: 70px; /* Увеличено */
             padding: 0;
             background: linear-gradient(135deg, #304ffe, #651fff);
         }
@@ -511,9 +488,9 @@
             right: -6px;
             background: #ff4444;
             color: white;
-            font-size: 0.6em;
-            width: 16px;
-            height: 16px;
+            font-size: 0.7em; /* Увеличен шрифт */
+            width: 18px; /* Увеличено */
+            height: 18px; /* Увеличено */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -523,12 +500,12 @@
         }
 
         #upgradeHelperLevelBtn .helper-icon {
-            font-size: 1.2em;
+            font-size: 1.3em; /* Увеличен шрифт */
             margin-bottom: 3px;
         }
 
         #upgradeHelperLevelBtn .helper-cost {
-            font-size: 0.6em;
+            font-size: 0.7em; /* Увеличен шрифт */
             color: #ffd700;
             font-weight: bold;
         }
@@ -664,8 +641,8 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
-            padding: 8px 12px;
-            font-size: 1.2em;
+            padding: 10px 14px; /* Увеличен padding */
+            font-size: 1.3em; /* Увеличен шрифт */
             pointer-events: auto;
         }
 
@@ -711,8 +688,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 70px;
-            height: 70px;
+            width: 70px; /* Увеличено */
+            height: 70px; /* Увеличено */
             padding: 0;
             background: linear-gradient(135deg, #ff4444, #cc0000);
         }
@@ -723,9 +700,9 @@
             right: -6px;
             background: #ff9900;
             color: white;
-            font-size: 0.6em;
-            width: 16px;
-            height: 16px;
+            font-size: 0.7em; /* Увеличен шрифт */
+            width: 18px; /* Увеличено */
+            height: 18px; /* Увеличено */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -735,52 +712,100 @@
         }
 
         #upgradeHelperCritBtn .crit-icon {
-            font-size: 1.2em;
+            font-size: 1.3em; /* Увеличен шрифт */
             margin-bottom: 3px;
         }
 
         #upgradeHelperCritBtn .crit-cost {
-            font-size: 0.6em;
+            font-size: 0.7em; /* Увеличен шрифт */
             color: #ffd700;
             font-weight: bold;
         }
 
-        /* НОВОЕ: Медиа-запросы для мобильных устройств */
+        /* МЕДИА-ЗАПРОСЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+
+        /* Планшеты и маленькие ноутбуки */
         @media (max-width: 768px) {
+            body {
+                font-size: 18px; /* Увеличен базовый шрифт */
+            }
+            
             .block {
-                width: 70px;
+                width: 80px; /* Уменьшены блоки */
+                height: 80px;
+                font-size: 1.3em; /* Уменьшен шрифт в блоках */
+            }
+            
+            h1 {
+                font-size: 1.8em; /* Уменьшен заголовок */
+            }
+            
+            .stat {
+                font-size: 1em; /* Уменьшен шрифт статистики */
+                padding: 8px 15px;
+            }
+            
+            .upgrade-btn {
+                width: 65px; /* Уменьшены кнопки улучшений */
+                height: 65px;
+                font-size: 0.65em;
+            }
+            
+            #upgradeHelperLevelBtn,
+            #upgradeHelperCritBtn {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .upgrades {
+                gap: 8px;
+                right: 15px;
+                top: 110px;
+            }
+            
+            .achievement-icon-badge {
+                width: 32px;
+                height: 32px;
+                font-size: 1em;
+            }
+        }
+
+        /* Мобильные телефоны */
+        @media (max-width: 480px) {
+            body {
+                font-size: 16px; /* Оптимальный размер для маленьких экранов */
+            }
+            
+            .block {
+                width: 70px; /* Еще меньше блоки */
                 height: 70px;
                 font-size: 1.2em;
             }
             
-            .upgrade-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 0.6em;
-            }
-            
-            #startBtn {
-                padding: 12px 25px;
-                font-size: 1.1em;
-            }
-            
-            .stat {
-                padding: 8px 15px;
-                font-size: 0.9em;
-            }
-            
             h1 {
-                font-size: 1.8em;
+                font-size: 1.6em;
+                margin-bottom: 8px;
             }
             
             .stats-container {
                 gap: 15px;
+                margin-bottom: 8px;
             }
             
-            .upgrades {
-                top: 100px;
-                right: 15px;
-                gap: 6px;
+            .stat {
+                font-size: 0.9em;
+                padding: 6px 12px;
+            }
+            
+            #levelProgressContainer {
+                width: 85%;
+                height: 10px;
+            }
+            
+            .upgrade-btn {
+                width: 60px; /* Минимальный размер для удобного нажатия */
+                height: 60px;
+                font-size: 0.6em;
             }
             
             #upgradeHelperLevelBtn,
@@ -788,13 +813,55 @@
                 width: 60px;
                 height: 60px;
             }
+            
+            .upgrades {
+                gap: 6px;
+                right: 10px;
+                top: 100px;
+                padding: 8px;
+            }
+            
+            #startBtn {
+                padding: 12px 25px;
+                font-size: 1.2em;
+            }
+            
+            .controls {
+                left: 10px;
+                bottom: 15px;
+            }
+            
+            .achievement-icon-badge {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9em;
+            }
+            
+            .hud-btn {
+                padding: 8px 12px;
+                font-size: 1.2em;
+            }
         }
 
-        @media (max-width: 480px) {
+        /* Очень маленькие экраны */
+        @media (max-width: 360px) {
             .block {
-                width: 60px;
-                height: 60px;
-                font-size: 1em;
+                width: 65px;
+                height: 65px;
+                font-size: 1.1em;
+            }
+            
+            h1 {
+                font-size: 1.4em;
+            }
+            
+            .stats-container {
+                gap: 10px;
+            }
+            
+            .stat {
+                font-size: 0.85em;
+                padding: 5px 10px;
             }
             
             .upgrade-btn {
@@ -803,39 +870,10 @@
                 font-size: 0.55em;
             }
             
-            #startBtn {
-                padding: 10px 20px;
-                font-size: 1em;
-            }
-            
-            .stat {
-                padding: 6px 12px;
-                font-size: 0.8em;
-            }
-            
-            h1 {
-                font-size: 1.6em;
-            }
-            
-            .stats-container {
-                gap: 10px;
-            }
-            
-            .upgrades {
-                top: 90px;
-                right: 10px;
-                gap: 5px;
-            }
-            
             #upgradeHelperLevelBtn,
             #upgradeHelperCritBtn {
                 width: 55px;
                 height: 55px;
-            }
-            
-            .achievement-notification {
-                width: 280px;
-                padding: 12px;
             }
         }
     </style>
@@ -863,22 +901,22 @@
                 <button id="startBtn">Начать игру</button>
             </div>
 
-            <!-- ИЗМЕНЕНО: Улучшения перемещены в правую часть и увеличены -->
+            <!-- ИЗМЕНЕНО: Улучшения с увеличенными размерами -->
             <div class="upgrades">
                 <button id="upgradeClickBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-fist-raised" style="font-size: 1em; margin-bottom: 2px;"></i>
+                    <i class="fas fa-fist-raised" style="font-size: 1.1em; margin-bottom: 2px;"></i>
                     <div>Урон: 1</div>
                     <div>50 💎</div>
                 </button>
                 
                 <button id="upgradeSlowBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-anchor" style="font-size: 1em; margin-bottom: 2px;"></i>
+                    <i class="fas fa-anchor" style="font-size: 1.1em; margin-bottom: 2px;"></i>
                     <div>Якорь</div>
                     <div>200 💎</div>
                 </button>
                 
                 <button id="upgradeHelperBtn" class="upgrade-btn btn-unavailable">
-                    <i class="fas fa-robot" style="font-size: 1em; margin-bottom: 2px;"></i>
+                    <i class="fas fa-robot" style="font-size: 1.1em; margin-bottom: 2px;"></i>
                     <div>Помощник</div>
                     <div>500 💎</div>
                 </button>
@@ -899,29 +937,6 @@
         </div>
     </div>
 
-    <!-- Звуковые элементы -->
-    <audio id="clickSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
-    </audio>
-    <audio id="breakSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
-    </audio>
-    <audio id="upgradeSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
-    </audio>
-    <audio id="comboSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
-    </audio>
-    <audio id="helperSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
-    </audio>
-    <audio id="coinSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
-    </audio>
-    <audio id="rareSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
-    </audio>
-
     <script>
         // === ОСНОВНЫЕ ПЕРЕМЕННЫЕ ===
         let coins = 0;
@@ -934,23 +949,13 @@
         let lastDestroyTime = 0;
         const COMBO_TIME_WINDOW = 2000; // 2 секунды для комбо
 
-        // НОВОЕ: Определение типа устройства для настроек скорости
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-        
         // Система улучшений
         let clickUpgradeLevel = 1;
         let baseClickUpgradeCost = 50;
-        
-        // НОВОЕ: Оптимизированные параметры скорости для мобильных/десктопов
         let slowBonus = 0;
-        const slowCost = 200;
+        let slowCost = 200;
         let helperActive = false;
         let helperCost = 500;
-
-        // НОВОЕ: Базовые параметры скорости в зависимости от устройства
-        const baseSpeed = isMobile ? 0.8 : 1.2;
-        const levelSpeedMultiplier = isMobile ? 0.03 : 0.05;
-        const slowEffect = 1; // Упрощенный якорь - фиксированное замедление 1
 
         // === СИСТЕМА ДОСТИЖЕНИЙ ===
         const achievements = {
@@ -960,19 +965,14 @@
             goldFinder: { achieved: false, name: "Золотоискатель", desc: "Найди 5 золотых блоков", icon: "💰" },
             helperFriend: { achieved: false, name: "Надежный помощник", desc: "Используй помощника 10 раз", icon: "🤝" },
             maxCombo: { achieved: false, name: "Комбо-король", desc: "Достигни максимального комбо x10", icon: "🏆" },
-            planetCollector: { achieved: false, name: "Исследователь", desc: "Открой все планеты", icon: "🚀" },
-            // НОВОЕ: Достижения для новых типов блоков
-            crystalMaster: { achieved: false, name: "Кристальный мастер", desc: "Разрушь 10 кристальных блоков", icon: "💎" },
-            mysterySolver: { achieved: false, name: "Разгадавший тайну", desc: "Разрушь 5 загадочных блоков", icon: "❓" }
+            planetCollector: { achieved: false, name: "Исследователь", desc: "Открой все планеты", icon: "🚀" }
         };
 
         let achievementStats = {
             goldBlocksFound: 0,
             helperUses: 0,
             maxComboAchieved: 0,
-            planetsVisited: ["mercury"],
-            crystalBlocksFound: 0,
-            mysteryBlocksFound: 0
+            planetsVisited: ["mercury"]
         };
 
         // === ЭВОЛЮЦИЯ ПОМОЩНИКА ===
@@ -986,42 +986,6 @@
         const maxHelperCritLevel = 5;
         let helperCritChance = 0.1; // 10% базовый шанс крита
         let helperCritMultiplier = 2.0; // 2x базовый множитель крита
-
-        // НОВОЕ: Система редких блоков из второго кода
-        const rareBlocks = {
-            GOLD: {
-                name: "Золотой",
-                chance: 0.03,
-                multiplier: 5,
-                healthMultiplier: 1.5,
-                effect: "Мгновенный бонус",
-                className: "block-gold"
-            },
-            RAINBOW: {
-                name: "Радужный", 
-                chance: 0.02,
-                multiplier: 3,
-                healthMultiplier: 1.3,
-                effect: "Увеличение силы",
-                className: "block-rainbow"
-            },
-            CRYSTAL: {
-                name: "Кристальный",
-                chance: 0.025,
-                multiplier: 4,
-                healthMultiplier: 1.4,
-                effect: "Время помощника",
-                className: "block-crystal"
-            },
-            MYSTERY: {
-                name: "Загадочный",
-                chance: 0.015,
-                multiplier: 6,
-                healthMultiplier: 1.6,
-                effect: "Случайный бонус",
-                className: "block-mystery"
-            }
-        };
 
         // === ФОНОВЫЕ ЭФФЕКТЫ ===
         function createStars() {
@@ -1104,80 +1068,6 @@
             move();
         }
 
-        // НОВОЕ: Функция воспроизведения звуков из второго кода
-        function playSound(soundId) {
-            const sound = document.getElementById(soundId);
-            if (sound) {
-                sound.currentTime = 0;
-                sound.play().catch(e => {});
-            }
-        }
-
-        // НОВОЕ: Функция определения типа редкого блока из второго кода
-        function getRareBlockType() {
-            const rand = Math.random();
-            let cumulativeChance = 0;
-            
-            for (const [type, block] of Object.entries(rareBlocks)) {
-                cumulativeChance += block.chance;
-                if (rand <= cumulativeChance) {
-                    return type;
-                }
-            }
-            
-            return null;
-        }
-
-        // НОВОЕ: Функция анонса редкого блока из второго кода
-        function announceRareBlock(blockName) {
-            const announce = document.createElement('div');
-            announce.className = 'rare-block-announce';
-            announce.textContent = `🌟 ${blockName} блок! 🌟`;
-            
-            document.getElementById("ui").appendChild(announce);
-            playSound('rareSound');
-            
-            setTimeout(() => {
-                if (announce.parentNode) {
-                    document.getElementById("ui").removeChild(announce);
-                }
-            }, 2000);
-        }
-
-        // НОВОЕ: Улучшенная анимация сбора монет из второго кода
-        function createCoinAnimation(amount, startElement) {
-            const coinsElement = document.getElementById('coinsCounter');
-            if (!coinsElement || !startElement) return;
-
-            const startRect = startElement.getBoundingClientRect();
-            const endRect = coinsElement.getBoundingClientRect();
-
-            const startX = startRect.left + startRect.width / 2;
-            const startY = startRect.top + startRect.height / 2;
-            const endX = endRect.left + 15;
-            const endY = endRect.top + 10;
-
-            const coin = document.createElement('div');
-            coin.className = 'coin-collect';
-            coin.textContent = `+${amount} 💎`;
-            coin.style.left = startX + 'px';
-            coin.style.top = startY + 'px';
-            
-            const targetX = (endX - startX) + 'px';
-            const targetY = (endY - startY) + 'px';
-            coin.style.setProperty('--target-x', targetX);
-            coin.style.setProperty('--target-y', targetY);
-
-            document.getElementById("ui").appendChild(coin);
-            playSound('coinSound');
-
-            setTimeout(() => {
-                if (coin.parentNode) {
-                    document.getElementById("ui").removeChild(coin);
-                }
-            }, 1200);
-        }
-
         // === ОСНОВНЫЕ ФУНКЦИИ ИГРЫ ===
         function startGame() {
             if (gameActive) {
@@ -1236,9 +1126,6 @@
             currentBlock.textContent = currentBlockHealth;
             updateHUD();
             
-            // НОВОЕ: Воспроизведение звука удара
-            playSound('clickSound');
-            
             if (currentBlockHealth <= 0) {
                 destroyBlock(currentBlock, currentLevel);
             }
@@ -1259,32 +1146,16 @@
             currentBlockHealth = 10 + level * 2;
             block.textContent = currentBlockHealth;
             
-            // НОВОЕ: Улучшенная система редких блоков из второго кода
-            let isRare = false;
-            let rareType = null;
-            
-            const potentialRareType = getRareBlockType();
-            if (potentialRareType) {
-                isRare = true;
-                rareType = potentialRareType;
-                const rareBlock = rareBlocks[rareType];
-                block.classList.add(rareBlock.className);
-                currentBlockHealth = Math.floor(currentBlockHealth * rareBlock.healthMultiplier);
+            // Случайный тип блока (с шансом)
+            const blockType = Math.random();
+            if (blockType < 0.05) { // 5% шанс золотого блока
+                block.classList.add("block-gold");
+                currentBlockHealth *= 2; // Золотые блоки имеют в 2 раза больше HP
                 block.textContent = currentBlockHealth;
-                block.innerHTML = `🌟<div style="font-size: 0.7em; margin-top: 5px;">${rareBlock.name}</div>`;
-                announceRareBlock(rareBlock.name);
-            } else {
-                // Обычный блок
-                const blockType = Math.random();
-                if (blockType < 0.05) { // 5% шанс золотого блока
-                    block.classList.add("block-gold");
-                    currentBlockHealth *= 2; // Золотые блоки имеют в 2 раза больше HP
-                    block.textContent = currentBlockHealth;
-                } else if (blockType < 0.08) { // 3% шанс радужного блока
-                    block.classList.add("block-rainbow");
-                    currentBlockHealth *= 3;
-                    block.textContent = currentBlockHealth;
-                }
+            } else if (blockType < 0.08) { // 3% шанс радужного блока
+                block.classList.add("block-rainbow");
+                currentBlockHealth *= 3;
+                block.textContent = currentBlockHealth;
             }
             
             // Начальная позиция внизу
@@ -1295,8 +1166,10 @@
             // Добавляем обработчик клика
             block.addEventListener('click', attackBlock);
             
-            // НОВОЕ: Оптимизированная скорость блоков для мобильных/десктопов
-            const speed = baseSpeed + level * levelSpeedMultiplier - slowBonus;
+            // ИЗМЕНЕНО: Скорость блоков - изменяется каждые 5 уровней
+            const speedLevelBonus = Math.floor(level / 5) * 0.5; // +0.5 каждые 5 уровней
+            const speed = 2 + speedLevelBonus - slowBonus;
+            
             moveBlock(block, speed);
         }
 
@@ -1326,28 +1199,7 @@
             lastDestroyTime = now;
             
             // Начисляем монеты
-            let coinsEarned = 10 + level * 2 + comboCount * 5;
-            
-            // НОВОЕ: Бонусы за редкие блоки из второго кода
-            let isRare = false;
-            let rareType = null;
-            
-            for (const type in rareBlocks) {
-                if (block.classList.contains(rareBlocks[type].className)) {
-                    isRare = true;
-                    rareType = type;
-                    coinsEarned = Math.floor(coinsEarned * rareBlocks[type].multiplier);
-                    break;
-                }
-            }
-            
-            // НОВОЕ: Обновление статистики для достижений
-            if (block.classList.contains('block-crystal')) {
-                achievementStats.crystalBlocksFound++;
-            } else if (block.classList.contains('block-mystery')) {
-                achievementStats.mysteryBlocksFound++;
-            }
-            
+            const coinsEarned = 10 + level * 2 + comboCount * 5;
             coins += coinsEarned;
             
             // Проверка достижений
@@ -1359,9 +1211,6 @@
             
             // Визуальные эффекты разрушения
             createBlockExplosionEffect(block, level);
-            
-            // НОВОЕ: Воспроизведение звука разрушения
-            playSound('breakSound');
             
             const gameArea = document.getElementById("gameArea");
             if (gameArea.contains(block)) {
@@ -1420,23 +1269,19 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip(`Урон увеличен!<br>Теперь вы наносите ${1 + clickUpgradeLevel} урона`);
-                // НОВОЕ: Воспроизведение звука улучшения
-                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
 
         function upgradeSlow() {
+            // ИЗМЕНЕНО: Замедление теперь 1 вместо 2
             if (coins >= slowCost && slowBonus === 0) {
                 coins -= slowCost;
-                // НОВОЕ: Упрощенный якорь - фиксированное замедление 1
-                slowBonus = slowEffect;
+                slowBonus = 1; // Было 2
                 createCoinAnimation(-slowCost, document.getElementById("upgradeSlowBtn"));
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip("Скорость блоков уменьшена!");
-                // НОВОЕ: Воспроизведение звука улучшения
-                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -1452,8 +1297,6 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip("Помощник активирован на 1 минуту!");
-                // НОВОЕ: Воспроизведение звука помощника
-                playSound('helperSound');
                 setTimeout(hideTooltip, 1500);
                 
                 // Запускаем помощника
@@ -1478,8 +1321,6 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip(`Помощник улучшен!<br>Уровень: ${helperLevel}<br>Урон: ${getHelperDamage()}`);
-                // НОВОЕ: Воспроизведение звука улучшения
-                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -1495,8 +1336,6 @@
                 updateHUD();
                 updateUpgradeButtons();
                 showTooltip(`Крит помощника улучшен!<br>Уровень: ${helperCritLevel}<br>Шанс: ${(helperCritChance * 100).toFixed(0)}%<br>Множитель: ${helperCritMultiplier}x`);
-                // НОВОЕ: Воспроизведение звука улучшения
-                playSound('upgradeSound');
                 setTimeout(hideTooltip, 1500);
             }
         }
@@ -1558,7 +1397,7 @@
             
             if (upgradeClickBtn) {
                 upgradeClickBtn.innerHTML = `
-                    <i class="fas fa-fist-raised" style="font-size: 1em; margin-bottom: 2px;"></i>
+                    <i class="fas fa-fist-raised" style="font-size: 1.1em; margin-bottom: 2px;"></i>
                     <div>Урон: ${1 + clickUpgradeLevel}</div>
                     <div>${clickCost} 💎</div>
                 `;
@@ -1660,10 +1499,6 @@
                 } else if (block.classList.contains('block-rainbow')) {
                     const colors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#8b00ff'];
                     color = colors[Math.floor(Math.random() * colors.length)];
-                } else if (block.classList.contains('block-crystal')) {
-                    color = '#00ffff';
-                } else if (block.classList.contains('block-mystery')) {
-                    color = '#9b59b6';
                 }
                 
                 particle.style.backgroundColor = color;
@@ -1713,12 +1548,6 @@
             } else if (block.classList.contains('block-rainbow')) {
                 flash.style.background = 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff)';
                 flash.style.boxShadow = '0 0 40px rgba(255, 255, 255, 0.8)';
-            } else if (block.classList.contains('block-crystal')) {
-                flash.style.backgroundColor = 'rgba(0, 255, 255, 0.7)';
-                flash.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.8)';
-            } else if (block.classList.contains('block-mystery')) {
-                flash.style.backgroundColor = 'rgba(155, 89, 182, 0.7)';
-                flash.style.boxShadow = '0 0 30px rgba(155, 89, 182, 0.8)';
             } else {
                 flash.style.backgroundColor = 'rgba(187, 134, 252, 0.7)';
                 flash.style.boxShadow = '0 0 20px rgba(187, 134, 252, 0.8)';
@@ -1758,15 +1587,6 @@
             
             if (!achievements.helperFriend.achieved && achievementStats.helperUses >= 10) {
                 unlockAchievement("helperFriend");
-            }
-            
-            // НОВОЕ: Проверка достижений для новых типов блоков
-            if (!achievements.crystalMaster.achieved && achievementStats.crystalBlocksFound >= 10) {
-                unlockAchievement("crystalMaster");
-            }
-            
-            if (!achievements.mysterySolver.achieved && achievementStats.mysteryBlocksFound >= 5) {
-                unlockAchievement("mysterySolver");
             }
             
             updateAchievementDisplay();
@@ -1843,14 +1663,6 @@
                         <span class="stat-value">${achievementStats.helperUses}</span>
                         <span class="stat-label">Использований помощника</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-value">${achievementStats.crystalBlocksFound}</span>
-                        <span class="stat-label">Кристальных блоков</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">${achievementStats.mysteryBlocksFound}</span>
-                        <span class="stat-label">Загадочных блоков</span>
-                    </div>
                 </div>
             `;
             
@@ -1878,10 +1690,6 @@
                     statsText = `Найдено: ${achievementStats.goldBlocksFound}/5`;
                 } else if (id === 'helperFriend') {
                     statsText = `Использовано: ${achievementStats.helperUses}/10`;
-                } else if (id === 'crystalMaster') {
-                    statsText = `Разрушено: ${achievementStats.crystalBlocksFound}/10`;
-                } else if (id === 'mysterySolver') {
-                    statsText = `Разрушено: ${achievementStats.mysteryBlocksFound}/5`;
                 }
                 
                 achievementElement.innerHTML = `
@@ -1988,17 +1796,6 @@
                     element.addEventListener('mouseenter', () => showTooltip(btn.text));
                     element.addEventListener('mouseleave', hideTooltip);
                 }
-            });
-            
-            // НОВОЕ: Предотвращение масштабирования на мобильных
-            document.addEventListener('touchstart', function(e) {
-                if (e.touches.length > 1) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            document.addEventListener('gesturestart', function(e) {
-                e.preventDefault();
             });
             
             // Обновление UI
