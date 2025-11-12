@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Космические Блоки</title>
+  <title>Космический Кликер</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
+    /* --- ОСТАВЛЕН БЕЗ ИЗМЕНЕНИЙ --- */
     * {
       box-sizing: border-box;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
-    
     body {
       font-family: 'Orbitron', 'Segoe UI', sans-serif;
       margin: 0;
@@ -23,9 +23,8 @@
       width: 100vw;
       height: 100vh;
     }
-
     /* Фоны локаций */
-    #location-space, #location-lava, #location-ice, #location-bio {
+    #location-mercury, #location-venus, #location-earth, #location-mars {
       position: absolute;
       top: 0;
       left: 0;
@@ -35,12 +34,11 @@
       pointer-events: none;
       transition: opacity 1s;
     }
-    #location-space.active, #location-lava.active, #location-ice.active, #location-bio.active {
+    #location-mercury.active, #location-venus.active, #location-earth.active, #location-mars.active {
       opacity: 1;
       pointer-events: auto;
     }
-
-    #location-cyber {
+    #location-jupiter, #location-saturn, #location-uranus, #location-neptune, #location-pluto {
       position: absolute;
       top: 0;
       left: 0;
@@ -51,7 +49,7 @@
       pointer-events: none;
       transition: opacity 1s;
     }
-    #location-cyber.active {
+    #location-jupiter.active, #location-saturn.active, #location-uranus.active, #location-neptune.active, #location-pluto.active {
       opacity: 1;
       pointer-events: auto;
     }
@@ -72,7 +70,6 @@
       0% { transform: translate(-25%, -25%) scale(1); }
       100% { transform: translate(-25%, -25%) scale(1.2); }
     }
-
     /* UI */
     #header {
       position: absolute;
@@ -91,9 +88,8 @@
       font-size: 1.4em; 
       color: white;
     }
-
     /* HUD */
-    #coins, #clickPowerInfo, #speedInfo, #blockLevelInfo, #blockHealthInfo, #helperTimer {
+    #coins, #clickPowerInfo, #speedInfo, #blockLevelInfo, #blockHealthInfo, #helperTimer, #critChanceInfo, #critMultiplierInfo {
       position: absolute;
       left: 15px;
       font-size: 0.8em;
@@ -107,7 +103,8 @@
     #blockLevelInfo { top: 75px; color: #bb86fc; text-shadow: 0 0 3px rgba(187,134,252,0.6); }
     #blockHealthInfo { top: 95px; color: #ffcc00; text-shadow: 0 0 3px rgba(255,204,0,0.6); }
     #helperTimer { top: 115px; color: #69f0ae; text-shadow: 0 0 3px rgba(105,240,174,0.6); }
-
+    #critChanceInfo { top: 135px; color: #ffd700; text-shadow: 0 0 3px rgba(255,215,0,0.6); }
+    #critMultiplierInfo { top: 155px; color: #ffd700; text-shadow: 0 0 3px rgba(255,215,0,0.6); }
     #levelInfo {
       position: absolute;
       top: 15px;
@@ -116,7 +113,6 @@
       z-index: 25;
       color: white;
     }
-    
     #gameArea {
       position: absolute;
       top: 0;
@@ -126,7 +122,6 @@
       overflow: hidden;
       z-index: 5;
     }
-    
     .moving-block {
       position: absolute;
       left: 50%;
@@ -146,8 +141,6 @@
       text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
       overflow: hidden;
     }
-
-    /* Эффект трещин на блоке */
     .crack-overlay {
       position: absolute;
       top: 0;
@@ -162,11 +155,9 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-
     .crack-1 { opacity: 0.3; }
     .crack-2 { opacity: 0.6; }
     .crack-3 { opacity: 0.9; }
-
     #levelAnnounce {
       position: absolute;
       top: 50%;
@@ -183,7 +174,6 @@
       color: white;
       text-shadow: 0 0 10px rgba(0,0,0,0.8);
     }
-
     .upgrade-btn {
       position: absolute;
       bottom: 20px;
@@ -201,24 +191,22 @@
       transition: transform 0.1s;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
-    
     .upgrade-btn:active { transform: scale(0.92); }
     #upgradeClickBtn { bottom: 90px; }
-    #upgradeSlowBtn { bottom: 20px; }
     #upgradeHelperBtn { bottom: 160px; }
-
+    #upgradeCritChanceBtn { bottom: 230px; }
+    #upgradeCritMultBtn { bottom: 300px; }
+    #upgradeHelperDmgBtn { bottom: 370px; }
     .upgrade-btn.btn-available { 
       background: #4CAF50; 
       color: white; 
     }
-    
     .upgrade-btn.btn-unavailable { 
       background: #666; 
       color: #ccc; 
       cursor: not-allowed; 
       opacity: 0.7;
     }
-
     .tooltip {
       position: absolute;
       bottom: 80px;
@@ -234,21 +222,6 @@
       color: white;
       z-index: 35;
     }
-
-    #pauseBtn {
-      position: absolute;
-      top: 12px;
-      right: 20px;
-      padding: 6px 12px;
-      border: 1px solid;
-      border-radius: 6px;
-      font-size: 0.9em;
-      cursor: pointer;
-      z-index: 30;
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-    }
-
     #particlesCanvas {
       position: absolute;
       top: 0;
@@ -258,7 +231,6 @@
       pointer-events: none;
       z-index: 6;
     }
-
     .damage-text {
       position: absolute;
       font-size: 1.1em;
@@ -270,8 +242,6 @@
       transition: transform 0.5s, opacity 0.5s;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
     }
-
-    /* НОВЫЕ СТИЛИ ДЛЯ УЛУЧШЕНИЙ */
     .combo-text {
       position: absolute;
       font-size: 1.8em;
@@ -283,13 +253,11 @@
       animation: comboPop 0.5s ease-out;
       font-family: 'Orbitron', monospace;
     }
-
     @keyframes comboPop {
       0% { transform: scale(0.5); opacity: 0; }
       70% { transform: scale(1.2); opacity: 1; }
       100% { transform: scale(1); opacity: 1; }
     }
-
     .reward-text {
       position: absolute;
       font-size: 1.3em;
@@ -300,13 +268,10 @@
       animation: rewardFloat 1.5s ease-out;
       font-family: 'Orbitron', monospace;
     }
-
     @keyframes rewardFloat {
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(-50px); opacity: 0; }
     }
-
-    /* Анимация помощника */
     .helper {
       position: absolute;
       width: 40px;
@@ -318,12 +283,10 @@
       box-shadow: 0 0 15px #69f0ae;
       animation: helperFloat 3s ease-in-out infinite;
     }
-
     @keyframes helperFloat {
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-10px); }
     }
-
     .helper-beam {
       position: absolute;
       width: 3px;
@@ -332,13 +295,10 @@
       pointer-events: none;
       animation: beamPulse 0.5s ease-out;
     }
-
     @keyframes beamPulse {
       0% { height: 0; opacity: 1; }
       100% { height: 100px; opacity: 0; }
     }
-
-    /* ЭКРАНЫ */
     #welcomeScreen, #gameOverScreen {
       position: absolute;
       top: 0;
@@ -355,25 +315,21 @@
       padding: 20px;
       box-sizing: border-box;
     }
-    
     #welcomeScreen { 
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     }
-    
     #welcomeScreen h2 {
       font-size: 2em;
       margin-bottom: 20px;
       font-family: 'Orbitron', sans-serif;
       text-shadow: 0 0 10px rgba(187, 134, 252, 0.7);
     }
-    
     #welcomeScreen p {
       max-width: 90%;
       text-align: center;
       margin: 10px 0;
       line-height: 1.5;
     }
-    
     .btn {
       padding: 12px 30px;
       margin-top: 20px;
@@ -386,27 +342,22 @@
       font-family: 'Orbitron', sans-serif;
       transition: transform 0.1s;
     }
-    
     .btn:active {
       transform: scale(0.95);
     }
-
     #gameOverScreen {
       background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(5px);
       display: none;
     }
-    
     #gameOverScreen h2 {
       font-size: 2.2em;
       margin-bottom: 20px;
       font-family: 'Orbitron', sans-serif;
       color: #ff4444;
     }
-    
     #finalScore { font-size: 1.4em; margin-bottom: 20px; color: #ffcc00; }
-    
-    #restartBtn, #shareBtn {
+    #restartBtn, #shareBtn, #dailyRewardBtn {
       padding: 10px 24px;
       margin: 8px;
       font-size: 1em;
@@ -416,65 +367,115 @@
       font-family: 'Orbitron', sans-serif;
       transition: transform 0.1s;
     }
-    
-    #restartBtn:active, #shareBtn:active {
+    #restartBtn:active, #shareBtn:active, #dailyRewardBtn:active {
       transform: scale(0.95);
     }
-    
     #restartBtn { background: #4CAF50; color: white; }
     #shareBtn { background: #00c853; color: white; }
+    #dailyRewardBtn { background: #ffeb3b; color: #000; }
+    /* Стили для редких блоков */
+    .block-gold {
+        background: linear-gradient(135deg, #ffd700, #ff6b00) !important;
+        animation: gold-shimmer 3s infinite;
+    }
+    .block-rainbow {
+        background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff) !important;
+        background-size: 400% 400%;
+        animation: rainbow 3s ease infinite;
+    }
+    .block-crystal {
+        background: linear-gradient(45deg, #00ffff, #ffffff, #00ffff) !important;
+        box-shadow: 0 0 25px #00ffff, 0 0 10px #ffffff inset !important;
+        animation: crystalPulse 2s ease-in-out infinite !important;
+    }
+    .block-mystery {
+        background: linear-gradient(45deg, #9b59b6, #e74c3c, #3498db) !important;
+        background-size: 300% 300% !important;
+        box-shadow: 0 0 20px rgba(155, 89, 182, 0.7) !important;
+        animation: mysteryShift 4s ease-in-out infinite !important;
+    }
+    @keyframes gold-shimmer {
+        0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 107, 0, 0.3) inset; }
+        50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 107, 0, 0.6) inset; }
+        100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 107, 0, 0.3) inset; }
+    }
+    @keyframes rainbow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    @keyframes crystalPulse {
+        0%, 100% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.05); }
+    }
+    @keyframes mysteryShift {
+        0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+        50% { background-position: 100% 50%; filter: hue-rotate(180deg); }
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- Локации с Canvas -->
-  <div id="location-space" class="location active">
+  <div id="location-mercury" class="location active">
     <canvas id="starsCanvas"></canvas>
   </div>
-  <div id="location-lava" class="location">
+  <div id="location-venus" class="location">
     <canvas id="lavaCanvas"></canvas>
   </div>
-  <div id="location-ice" class="location">
+  <div id="location-earth" class="location">
     <canvas id="iceCanvas"></canvas>
   </div>
-  <div id="location-bio" class="location">
+  <div id="location-mars" class="location">
     <canvas id="bioCanvas"></canvas>
   </div>
-  <div id="location-cyber" class="location">
+  <div id="location-jupiter" class="location">
     <div id="cyberGrid"></div>
   </div>
-
+  <div id="location-saturn" class="location">
+    <div id="cyberGrid"></div>
+  </div>
+  <div id="location-uranus" class="location">
+    <div id="cyberGrid"></div>
+  </div>
+  <div id="location-neptune" class="location">
+    <div id="cyberGrid"></div>
+  </div>
+  <div id="location-pluto" class="location">
+    <div id="cyberGrid"></div>
+  </div>
   <!-- UI -->
   <div id="header">
-    <h2 id="gameTitle">🌌 Космос</h2>
+    <h2 id="gameTitle">☿ Меркурий</h2>
   </div>
-  
-  <div id="coins">Камушки: 0</div>
+  <div id="coins">Кристаллы: 0</div>
   <div id="clickPowerInfo">Сила: 1</div>
   <div id="speedInfo">Скорость: 30</div>
   <div id="blockLevelInfo">Блок: —</div>
   <div id="blockHealthInfo">Осталось: —</div>
-  <div id="helperTimer">Помощник: —</div>
-
+  <div id="helperTimer">Bobo: —</div>
+  <div id="critChanceInfo">Крит: 10%</div>
+  <div id="critMultiplierInfo">Множ: x2.0</div>
   <div id="levelInfo">Уровень: —</div>
-  <button id="pauseBtn">⏸ Пауза</button>
-
   <div id="gameArea"></div>
   <div id="levelAnnounce"></div>
-
   <button id="upgradeClickBtn" class="upgrade-btn btn-unavailable">
     <i class="fas fa-hammer"></i>
-  </button>
-  <button id="upgradeSlowBtn" class="upgrade-btn btn-unavailable">
-    <i class="fas fa-anchor"></i>
   </button>
   <button id="upgradeHelperBtn" class="upgrade-btn btn-unavailable">
     <i class="fas fa-robot"></i>
   </button>
+  <button id="upgradeCritChanceBtn" class="upgrade-btn btn-unavailable">
+    <i class="fas fa-dice"></i>
+  </button>
+  <button id="upgradeCritMultBtn" class="upgrade-btn btn-unavailable">
+    <i class="fas fa-star"></i>
+  </button>
+  <button id="upgradeHelperDmgBtn" class="upgrade-btn btn-unavailable">
+    <i class="fas fa-bolt"></i>
+  </button>
   <div id="tooltip" class="tooltip"></div>
-
   <canvas id="particlesCanvas"></canvas>
-
   <!-- Звуковые элементы -->
   <audio id="clickSound" preload="auto">
     <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
@@ -491,30 +492,157 @@
   <audio id="helperSound" preload="auto">
     <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
   </audio>
-
   <div id="welcomeScreen">
-    <h2>🌌 КОСМИЧЕСКИЕ БЛОКИ</h2>
-    <p>Разрушайте восходящие блоки и собирайте <strong>камушки</strong>!</p>
+    <h2>🚀 КОСМИЧЕСКИЙ КЛИКЕР</h2>
+    <p>Разрушайте восходящие блоки и собирайте <strong>космические Кристаллы</strong>!</p>
     <p>Каждый блок требует определённого количества ударов для разрушения.</p>
     <p><strong>Улучшения:</strong></p>
     <p>🔨 <strong>Сила удара</strong> — увеличивает урон за удар</p>
-    <p>⚓ <strong>Якорь</strong> — замедляет блоки</p>
-    <p>🤖 <strong>Помощник</strong> — автоматически атакует блоки</p>
-    <p>🔥 <strong>Комбо-система</strong> — разрушайте блоки быстро для бонусов!</p>
+    <p>💥 <strong>Крит. урон</strong> — шанс нанести x2 урона</p>
+    <p>🤖 <strong>Bobo</strong> — ваш верный помощник (+30% урона)</p>
+    <p>✨ <strong>Редкие блоки</strong> — несите удачу и огромные награды!</p>
     <button class="btn">Начать добычу</button>
   </div>
-
   <div id="gameOverScreen">
     <h2>ДОБЫЧА ПРЕРВАНА!</h2>
     <div id="finalScore">Макс. уровень: —</div>
     <button id="restartBtn">Новая добыча</button>
     <button id="shareBtn">Поделиться</button>
+    <button id="dailyRewardBtn">🎁 Ежедневная награда</button>
   </div>
-
   <script>
-    // === ВЫСОКОПРИОРИТЕТНЫЕ ИСПРАВЛЕНИЯ ===
+    // === СИСТЕМА РЕДКИХ БЛОКОВ ===
+    const rareBlocks = {
+        GOLD: {
+            name: "Золотой",
+            chance: 0.03,
+            multiplier: 5,
+            healthMultiplier: 1.5,
+            effect: "Мгновенный бонус",
+            className: "block-gold"
+        },
+        RAINBOW: {
+            name: "Радужный", 
+            chance: 0.02,
+            multiplier: 3,
+            healthMultiplier: 1.3,
+            effect: "Увеличение силы",
+            className: "block-rainbow"
+        },
+        CRYSTAL: {
+            name: "Кристальный",
+            chance: 0.025,
+            multiplier: 4,
+            healthMultiplier: 1.4,
+            effect: "Время помощника",
+            className: "block-crystal"
+        },
+        MYSTERY: {
+            name: "Загадочный",
+            chance: 0.015,
+            multiplier: 6,
+            healthMultiplier: 1.6,
+            effect: "Случайный бонус",
+            className: "block-mystery"
+        }
+    };
 
-    // 1. Инициализация переменных ДО их использования
+    // Объявляем глобальные переменные для анимаций
+    let stars = [], lavaParticles = [], snowflakes = [], bioDots = [];
+
+    function getRareBlockType() {
+        const rand = Math.random();
+        let cumulativeChance = 0;
+        for (const [type, block] of Object.entries(rareBlocks)) {
+            cumulativeChance += block.chance;
+            if (rand <= cumulativeChance) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    function announceRareBlock(blockName) {
+        const announce = document.createElement('div');
+        announce.className = 'rare-block-announce';
+        announce.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8em;
+            font-weight: bold;
+            color: gold;
+            z-index: 50;
+            text-shadow: 0 0 10px black;
+            animation: fadeInOut 2s;
+        `;
+        announce.textContent = `🌟 ${blockName} блок! 🌟`;
+        document.body.appendChild(announce);
+        setTimeout(() => {
+            if (announce.parentNode) {
+                document.body.removeChild(announce);
+            }
+        }, 2000);
+    }
+
+    // === СОХРАНЕНИЕ ===
+    function saveGame() {
+      const saveData = {
+        coins,
+        clickPower,
+        clickUpgradeLevel,
+        critChance,
+        critMultiplier,
+        helperDamageBonus,
+        helperUpgradeLevel,
+        maxLevelReached,
+        lastDailyReward: localStorage.getItem('lastDailyReward')
+      };
+      localStorage.setItem('cosmicBlocksSave', JSON.stringify(saveData));
+    }
+    
+    function loadGame() {
+      const saved = localStorage.getItem('cosmicBlocksSave');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          coins = data.coins || 0;
+          clickPower = data.clickPower || 1;
+          clickUpgradeLevel = data.clickUpgradeLevel || 0;
+          critChance = data.critChance || 0.1;
+          critMultiplier = data.critMultiplier || 2.0;
+          helperDamageBonus = data.helperDamageBonus || 0.3;
+          helperUpgradeLevel = data.helperUpgradeLevel || 0;
+          maxLevelReached = data.maxLevelReached || 0;
+          // ВАЖНО: начинаем с текущего уровня, а не maxLevelReached + 1
+          currentLevel = Math.max(1, maxLevelReached);
+        } catch (e) {
+          console.warn('Ошибка загрузки сохранения', e);
+        }
+      }
+    }
+    
+    function checkDailyReward() {
+      const now = Date.now();
+      const last = localStorage.getItem('lastDailyReward');
+      if (!last || now - parseInt(last) >= 24 * 60 * 60 * 1000) {
+        coins += 1000;
+        updateCoins();
+        localStorage.setItem('lastDailyReward', now.toString());
+        showTooltip('🎁 +1000 Кристаллов!');
+        setTimeout(hideTooltip, 2000);
+        saveGame();
+        return true;
+      } else {
+        const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - (now - parseInt(last))) / (1000 * 60 * 60));
+        showTooltip(`Награда через ${hoursLeft} ч.`);
+        setTimeout(hideTooltip, 2000);
+        return false;
+      }
+    }
+
+    // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
     let coins = 0;
     let currentLevel = 1;
     let maxLevelReached = 0;
@@ -523,28 +651,28 @@
     let clickPower = 1;
     let clickUpgradeLevel = 0;
     const baseClickUpgradeCost = 80;
-    let slowBonus = 0;
-    const slowCost = 2000;
-    let paused = false;
     let gameActive = false;
-    let currentLocation = 'space';
+    let currentLocation = 'mercury';
     let currentBlockHealth = 0;
     let currentBlock = null;
     let blockSpeed = 30;
-
-    // 2. Комбо-система
     let comboCount = 0;
     let lastDestroyTime = 0;
     const COMBO_TIME_WINDOW = 2000;
-
-    // 3. Система помощника
     let helperActive = false;
     let helperTimeLeft = 0;
-    const helperDuration = 60000; // 1 минута в миллисекундах
+    const helperDuration = 60000;
     const helperCost = 1500;
     let helperInterval;
+    let helperUpgradeLevel = 0;
+    const baseHelperUpgradeCost = 1000;
+    const helperUpgradeMultiplier = 1.8;
+    let critChance = 0.1;
+    let critMultiplier = 2.0;
+    const critChanceCost = 500;
+    const critMultiplierCost = 800;
+    let helperDamageBonus = 0.3;
 
-    // 4. Отслеживание метрик
     const gameMetrics = {
         startTime: Date.now(),
         blocksDestroyed: 0,
@@ -553,46 +681,66 @@
         sessions: parseInt(localStorage.getItem('gameSessions') || '0') + 1
     };
 
-    // 5. Canvas анимации фонов
-    let stars = [];
-    let lavaParticles = [];
-    let snowflakes = [];
-    let bioDots = [];
-
-    // 6. Инициализация при загрузке DOM
     document.addEventListener('DOMContentLoaded', function() {
-        // Получение DOM элементов
-        const coinsDisplay = document.getElementById("coins");
-        const clickPowerDisplay = document.getElementById("clickPowerInfo");
-        const speedDisplay = document.getElementById("speedInfo");
-        const blockLevelDisplay = document.getElementById("blockLevelInfo");
-        const blockHealthDisplay = document.getElementById("blockHealthInfo");
-        const helperTimerDisplay = document.getElementById("helperTimer");
-        const levelInfo = document.getElementById("levelInfo");
-        const levelAnnounce = document.getElementById("levelAnnounce");
-        const gameTitle = document.getElementById("gameTitle");
-        const upgradeClickBtn = document.getElementById("upgradeClickBtn");
-        const upgradeSlowBtn = document.getElementById("upgradeSlowBtn");
-        const upgradeHelperBtn = document.getElementById("upgradeHelperBtn");
-        const pauseBtn = document.getElementById("pauseBtn");
-        const gameOverScreen = document.getElementById("gameOverScreen");
-        const finalScoreDisplay = document.getElementById("finalScore");
-        const tooltip = document.getElementById("tooltip");
-        const welcomeScreen = document.getElementById("welcomeScreen");
-        const header = document.getElementById("header");
-        const gameArea = document.getElementById("gameArea");
-        const particlesCanvas = document.getElementById("particlesCanvas");
-        const startBtn = document.querySelector('#welcomeScreen .btn');
-        const restartBtn = document.getElementById("restartBtn");
-        const shareBtn = document.getElementById("shareBtn");
+        // Добавляем проверку наличия элементов
+        const DOMElements = {
+            coinsDisplay: document.getElementById("coins"),
+            clickPowerDisplay: document.getElementById("clickPowerInfo"),
+            speedDisplay: document.getElementById("speedInfo"),
+            blockLevelDisplay: document.getElementById("blockLevelInfo"),
+            blockHealthDisplay: document.getElementById("blockHealthInfo"),
+            helperTimerDisplay: document.getElementById("helperTimer"),
+            critChanceDisplay: document.getElementById("critChanceInfo"),
+            critMultiplierDisplay: document.getElementById("critMultiplierInfo"),
+            levelInfo: document.getElementById("levelInfo"),
+            levelAnnounce: document.getElementById("levelAnnounce"),
+            gameTitle: document.getElementById("gameTitle"),
+            upgradeClickBtn: document.getElementById("upgradeClickBtn"),
+            upgradeHelperBtn: document.getElementById("upgradeHelperBtn"),
+            upgradeCritChanceBtn: document.getElementById("upgradeCritChanceBtn"),
+            upgradeCritMultBtn: document.getElementById("upgradeCritMultBtn"),
+            upgradeHelperDmgBtn: document.getElementById("upgradeHelperDmgBtn"),
+            gameOverScreen: document.getElementById("gameOverScreen"),
+            finalScoreDisplay: document.getElementById("finalScore"),
+            tooltip: document.getElementById("tooltip"),
+            welcomeScreen: document.getElementById("welcomeScreen"),
+            header: document.getElementById("header"),
+            gameArea: document.getElementById("gameArea"),
+            particlesCanvas: document.getElementById("particlesCanvas"),
+            startBtn: document.querySelector('#welcomeScreen .btn'),
+            restartBtn: document.getElementById("restartBtn"),
+            shareBtn: document.getElementById("shareBtn"),
+            dailyRewardBtn: document.getElementById("dailyRewardBtn"),
+            starsCanvas: document.getElementById('starsCanvas'),
+            lavaCanvas: document.getElementById('lavaCanvas'),
+            iceCanvas: document.getElementById('iceCanvas'),
+            bioCanvas: document.getElementById('bioCanvas')
+        };
 
-        // Canvas элементы для фонов
-        const starsCanvas = document.getElementById('starsCanvas');
-        const lavaCanvas = document.getElementById('lavaCanvas');
-        const iceCanvas = document.getElementById('iceCanvas');
-        const bioCanvas = document.getElementById('bioCanvas');
+        // Проверяем наличие всех необходимых элементов
+        let missingElements = [];
+        Object.entries(DOMElements).forEach(([name, element]) => {
+            if (!element) missingElements.push(name);
+        });
+        
+        if (missingElements.length > 0) {
+            console.error("Отсутствуют элементы:", missingElements.join(", "));
+            return;
+        }
 
-        // Настройка размеров canvas
+        // Присваиваем переменные
+        const {
+            coinsDisplay, clickPowerDisplay, speedDisplay, blockLevelDisplay, blockHealthDisplay,
+            helperTimerDisplay, critChanceDisplay, critMultiplierDisplay, levelInfo, levelAnnounce,
+            gameTitle, upgradeClickBtn, upgradeHelperBtn, upgradeCritChanceBtn, upgradeCritMultBtn,
+            upgradeHelperDmgBtn, gameOverScreen, finalScoreDisplay, tooltip, welcomeScreen, header,
+            gameArea, particlesCanvas, startBtn, restartBtn, shareBtn, dailyRewardBtn,
+            starsCanvas, lavaCanvas, iceCanvas, bioCanvas
+        } = DOMElements;
+
+        // ЗАГРУЗКА СОХРАНЕНИЯ ПРИ СТАРТЕ
+        loadGame();
+
         function resizeCanvases() {
             const w = window.innerWidth;
             const h = window.innerHeight;
@@ -602,30 +750,25 @@
                     c.height = h;
                 }
             });
-            
-            // Переинициализация анимаций после изменения размеров
-            if (currentLocation === 'space') initStars();
-            if (currentLocation === 'lava') initLava();
-            if (currentLocation === 'ice') initSnow();
-            if (currentLocation === 'bio') initBio();
+            if (currentLocation === 'mercury') initStars();
+            if (currentLocation === 'venus') initLava();
+            if (currentLocation === 'earth') initSnow();
+            if (currentLocation === 'mars') initBio();
         }
         
-        resizeCanvases();
-        window.addEventListener('resize', resizeCanvases);
-
-        // === CANVAS АНИМАЦИИ ФОНОВ ===
-
+        // === ФОНОВЫЕ АНИМАЦИИ ===
         // --- ЗВЁЗДЫ (Космос) ---
         function initStars() {
             stars = [];
+            const centerX = starsCanvas.width / 2;
+            const centerY = starsCanvas.height / 2;
             for (let i = 0; i < 150; i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const speed = 1.5;
                 const distance = Math.random() * Math.max(starsCanvas.width, starsCanvas.height) * 0.8;
-                
                 stars.push({
-                    x: starsCanvas.width / 2 + Math.cos(angle) * distance,
-                    y: starsCanvas.height / 2 + Math.sin(angle) * distance,
+                    x: centerX + Math.cos(angle) * distance,
+                    y: centerY + Math.sin(angle) * distance,
                     size: Math.random() * 3 + 0.5,
                     speed: speed,
                     angle: angle,
@@ -635,26 +778,21 @@
                 });
             }
         }
-
+        
         function animateStars() {
             const ctx = starsCanvas.getContext('2d');
             ctx.fillStyle = 'rgba(11, 11, 29, 0.1)';
             ctx.fillRect(0, 0, starsCanvas.width, starsCanvas.height);
-            
             const centerX = starsCanvas.width / 2;
             const centerY = starsCanvas.height / 2;
-            
             ctx.fillStyle = '#fff';
             stars.forEach(star => {
                 star.x += star.vx;
                 star.y += star.vy;
-                
                 if (star.x < -50 || star.x > starsCanvas.width + 50 || 
                     star.y < -50 || star.y > starsCanvas.height + 50) {
-                    
                     const angle = Math.random() * Math.PI * 2;
                     const speed = 1.5;
-                    
                     star.x = centerX;
                     star.y = centerY;
                     star.vx = Math.cos(angle) * speed;
@@ -662,15 +800,13 @@
                     star.size = Math.random() * 3 + 0.5;
                     star.opacity = Math.random() * 0.8 + 0.2;
                 }
-                
                 ctx.globalAlpha = star.opacity;
                 ctx.beginPath();
                 ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
                 ctx.fill();
             });
-            
             ctx.globalAlpha = 1;
-            if (currentLocation === 'space') {
+            if (currentLocation === 'mercury') {
                 requestAnimationFrame(animateStars);
             }
         }
@@ -689,35 +825,31 @@
                 });
             }
         }
-
+        
         function animateLava() {
             const ctx = lavaCanvas.getContext('2d');
             ctx.fillStyle = 'rgba(62, 39, 35, 0.1)';
             ctx.fillRect(0, 0, lavaCanvas.width, lavaCanvas.height);
-            
             lavaParticles.forEach(p => {
                 p.y -= p.speed;
                 p.x += p.sway;
-                
                 if (p.y < -20) {
                     p.y = lavaCanvas.height + 20;
                     p.x = Math.random() * lavaCanvas.width;
                     p.speed = Math.random() * 3 + 1;
                     p.sway = (Math.random() - 0.5) * 0.5;
                 }
-                
                 ctx.fillStyle = p.color;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
             });
-            
-            if (currentLocation === 'lava') {
+            if (currentLocation === 'venus') {
                 requestAnimationFrame(animateLava);
             }
         }
 
-        // --- СНЕГ (Ледяной мир) ---
+        // --- СНЕГ ---
         function initSnow() {
             snowflakes = [];
             for (let i = 0; i < 80; i++) {
@@ -731,29 +863,25 @@
                 });
             }
         }
-
+        
         function animateSnow() {
             const ctx = iceCanvas.getContext('2d');
             ctx.fillStyle = 'rgba(13, 71, 161, 0.05)';
             ctx.fillRect(0, 0, iceCanvas.width, iceCanvas.height);
-            
             snowflakes.forEach(f => {
                 f.y += f.speed;
                 f.x += Math.sin(f.y * f.swaySpeed) * f.sway;
-                
                 if (f.y > iceCanvas.height) {
                     f.y = -10;
                     f.x = Math.random() * iceCanvas.width;
                     f.speed = Math.random() * 2 + 0.5;
                 }
-                
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
                 ctx.beginPath();
                 ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
                 ctx.fill();
             });
-            
-            if (currentLocation === 'ice') {
+            if (currentLocation === 'earth') {
                 requestAnimationFrame(animateSnow);
             }
         }
@@ -774,12 +902,11 @@
                 });
             }
         }
-
+        
         function animateBio() {
             const ctx = bioCanvas.getContext('2d');
             ctx.fillStyle = 'rgba(27, 94, 32, 0.05)';
             ctx.fillRect(0, 0, bioCanvas.width, bioCanvas.height);
-            
             bioDots.forEach(d => {
                 d.changeCounter++;
                 if (d.changeCounter > 60) {
@@ -787,126 +914,99 @@
                     d.speedY += (Math.random() - 0.5) * d.directionChange;
                     d.changeCounter = 0;
                 }
-                
                 d.speedX = Math.max(-1.5, Math.min(1.5, d.speedX));
                 d.speedY = Math.max(-1.5, Math.min(1.5, d.speedY));
-                
                 d.x += d.speedX;
                 d.y += d.speedY;
-                
                 if (d.x < 0 || d.x > bioCanvas.width) d.speedX *= -1;
                 if (d.y < 0 || d.y > bioCanvas.height) d.speedY *= -1;
-                
                 ctx.fillStyle = d.color;
                 ctx.beginPath();
                 ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
                 ctx.fill();
             });
-            
-            if (currentLocation === 'bio') {
+            if (currentLocation === 'mars') {
                 requestAnimationFrame(animateBio);
             }
         }
 
-        // Локации
         const locations = {
-            space: { name: "🌌 Космос", color: "#bb86fc", coinColor: "#d7ccc8", borderColor: "#4a55e0", blockColors: ['#2962ff', '#4fc3f7', '#bb86fc', '#f8bbd0'] },
-            lava: { name: "🌋 Лавовое ядро", color: "#ffab91", coinColor: "#d7ccc8", borderColor: "#ff5722", blockColors: ['#ff5722', '#ff9800', '#ff5722', '#e91e63'] },
-            ice: { name: "❄️ Ледяной мир", color: "#80deea", coinColor: "#d7ccc8", borderColor: "#0288d1", blockColors: ['#0288d1', '#29b6f6', '#00bcd4', '#00e5ff'] },
-            bio: { name: "🧪 Биолаборатория", color: "#a5d6a7", coinColor: "#d7ccc8", borderColor: "#388e3c", blockColors: ['#388e3c', '#66bb6a', '#9ccc65', '#d4e157'] },
-            cyber: { name: "🧠 Нейронная сеть", color: "#ce93d8", coinColor: "#d7ccc8", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] }
+            mercury: { name: "☿ Меркурий", color: "#bb86fc", coinColor: "#a0d2ff", borderColor: "#4a55e0", blockColors: ['#2962ff', '#4fc3f7', '#bb86fc', '#f8bbd0'] },
+            venus: { name: "♀ Венера", color: "#ffab91", coinColor: "#a0d2ff", borderColor: "#ff5722", blockColors: ['#ff5722', '#ff9800', '#ff5722', '#e91e63'] },
+            earth: { name: "♁ Земля", color: "#80deea", coinColor: "#a0d2ff", borderColor: "#0288d1", blockColors: ['#0288d1', '#29b6f6', '#00bcd4', '#00e5ff'] },
+            mars: { name: "♂ Марс", color: "#a5d6a7", coinColor: "#a0d2ff", borderColor: "#388e3c", blockColors: ['#388e3c', '#66bb6a', '#9ccc65', '#d4e157'] },
+            jupiter: { name: "♃ Юпитер (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
+            saturn: { name: "♄ Сатурн (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
+            uranus: { name: "♅ Уран (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
+            neptune: { name: "♆ Нептун (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
+            pluto: { name: "♇ Плутон (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] }
         };
 
-        // === НОВЫЕ ФУНКЦИОНАЛЬНОСТИ ===
-
-        // 1. СИСТЕМА ПОМОЩНИКА
+        // === ПОМОЩНИК (BOBO) ===
         function activateHelper() {
             if (helperActive) return;
-            
             helperActive = true;
             helperTimeLeft = helperDuration;
             gameMetrics.upgradesBought++;
-            
-            // Интервал для атаки помощника
             helperInterval = setInterval(() => {
-                if (helperActive && currentBlock && gameActive && !paused) {
+                if (helperActive && currentBlock && gameActive) {
                     helperAttack();
                 }
-            }, 1500); // Атака каждые 1.5 секунды
-            
-            // Таймер для отображения оставшегося времени
+            }, 1500);
             const helperTimer = setInterval(() => {
                 if (!helperActive) {
                     clearInterval(helperTimer);
                     return;
                 }
-                
                 helperTimeLeft -= 1000;
                 updateHelperTimer();
-                
                 if (helperTimeLeft <= 0) {
                     helperActive = false;
                     clearInterval(helperInterval);
                     clearInterval(helperTimer);
                     updateHelperTimer();
                     updateUpgradeButtons();
-                    showTooltip('Помощник закончил работу!');
+                    showTooltip('Bobo закончил работу!');
                     setTimeout(hideTooltip, 1500);
                 }
             }, 1000);
-            
             updateUpgradeButtons();
-            playSound('helperSound');
-            showTooltip('Помощник активирован на 1 минуту!');
+            showTooltip('Bobo активирован на 1 минуту!');
             setTimeout(hideTooltip, 1500);
         }
 
         function helperAttack() {
             if (!currentBlock || !helperActive) return;
-            
-            // Создание визуального эффекта помощника
             createHelperEffect();
-            
-            // Нанесение урона
-            currentBlockHealth -= clickPower;
+            const baseHelperDmg = clickPower * (1 + helperDamageBonus);
+            const upgradedHelperDmg = baseHelperDmg * (1 + helperUpgradeLevel * 0.2);
+            currentBlockHealth -= upgradedHelperDmg;
             gameMetrics.totalClicks++;
-            
-            // Визуальный эффект удара
-            createDamageText(clickPower, currentBlock);
-            currentBlock.textContent = currentBlockHealth;
-            
-            // Обновление трещин
-            updateCracks(currentBlock, currentBlockHealth);
-            
+            createDamageText(Math.floor(upgradedHelperDmg), currentBlock, '#69f0ae');
             if (currentBlockHealth <= 0) {
                 destroyBlock(currentBlock, currentLevel);
+            } else {
+                currentBlock.textContent = Math.floor(currentBlockHealth);
+                updateCracks(currentBlock, currentBlockHealth);
+                updateHUD();
             }
-            
-            updateHUD();
         }
 
         function createHelperEffect() {
             if (!currentBlock) return;
-            
             const blockRect = currentBlock.getBoundingClientRect();
             const helperX = blockRect.left + Math.random() * blockRect.width;
             const helperY = blockRect.top - 50;
-            
-            // Создание помощника
             const helper = document.createElement('div');
             helper.className = 'helper';
             helper.style.left = helperX + 'px';
             helper.style.top = helperY + 'px';
             document.body.appendChild(helper);
-            
-            // Создание луча атаки
             const beam = document.createElement('div');
             beam.className = 'helper-beam';
             beam.style.left = (helperX + 20) + 'px';
             beam.style.top = (helperY + 40) + 'px';
             document.body.appendChild(beam);
-            
-            // Удаление эффектов через анимацию
             setTimeout(() => {
                 if (helper.parentNode) document.body.removeChild(helper);
                 if (beam.parentNode) document.body.removeChild(beam);
@@ -917,27 +1017,21 @@
             if (helperTimerDisplay) {
                 if (helperActive) {
                     const seconds = Math.ceil(helperTimeLeft / 1000);
-                    helperTimerDisplay.textContent = `Помощник: ${seconds}с`;
+                    helperTimerDisplay.textContent = `Bobo: ${seconds}с`;
                 } else {
-                    helperTimerDisplay.textContent = `Помощник: —`;
+                    helperTimerDisplay.textContent = `Bobo: —`;
                 }
             }
         }
 
-        // 2. СИСТЕМА ТРЕЩИН НА БЛОКАХ
         function updateCracks(block, health) {
             if (!block) return;
-            
-            // Удаляем старые трещины
             const existingCrack = block.querySelector('.crack-overlay');
             if (existingCrack) {
                 block.removeChild(existingCrack);
             }
-            
-            // Определяем уровень повреждения
             const maxHealth = parseInt(block.dataset.maxHealth);
             const damageRatio = 1 - (health / maxHealth);
-            
             if (damageRatio > 0.7) {
                 addCracks(block, 'crack-3');
             } else if (damageRatio > 0.4) {
@@ -954,7 +1048,6 @@
         }
 
         // === ОСНОВНЫЕ ФУНКЦИИ ИГРЫ ===
-
         function playSound(soundId) {
             const sound = document.getElementById(soundId);
             if (sound) {
@@ -964,81 +1057,92 @@
         }
 
         function hitBlock(block, level) {
-            if (paused || !gameActive) return;
-            
+            if (!gameActive) return;
             if (navigator.vibrate) {
                 navigator.vibrate(50);
             }
-            
             playSound('clickSound');
-            
             block.style.transform = 'translateX(-50%) scale(0.85)';
             setTimeout(() => {
                 block.style.transform = 'translateX(-50%) scale(1)';
             }, 100);
-            
-            currentBlockHealth -= clickPower;
+            let finalDamage = clickPower;
+            let isCrit = false;
+            if (Math.random() < critChance) {
+                finalDamage = Math.floor(clickPower * critMultiplier);
+                isCrit = true;
+            }
+            currentBlockHealth -= finalDamage;
             gameMetrics.totalClicks++;
-            
-            createDamageText(clickPower, block);
-            block.textContent = currentBlockHealth;
-            
-            // Обновление трещин при ударе
-            updateCracks(block, currentBlockHealth);
-            
-            updateHUD();
-            
+            createDamageText(finalDamage, block, isCrit ? '#FFD700' : '#ff4444');
             if (currentBlockHealth <= 0) {
                 destroyBlock(block, level);
+            } else {
+                block.textContent = Math.floor(currentBlockHealth);
+                updateCracks(block, currentBlockHealth);
+                updateHUD();
             }
         }
 
         function destroyBlock(block, level) {
             const now = Date.now();
-            
             if (now - lastDestroyTime < COMBO_TIME_WINDOW) {
                 comboCount++;
             } else {
                 comboCount = 1;
             }
             lastDestroyTime = now;
-            
             let reward = Math.floor(15 * Math.pow(1.15, level - 1));
+            
+            // Обработка награды за редкий блок
+            let isRare = false;
+            let rareType = null;
+            for (const type in rareBlocks) {
+                if (block.classList.contains(rareBlocks[type].className)) {
+                    isRare = true;
+                    rareType = type;
+                    reward = Math.floor(reward * rareBlocks[type].multiplier);
+                    break;
+                }
+            }
+
             if (comboCount > 1) {
                 const comboBonus = Math.floor(reward * (comboCount * 0.2));
                 reward += comboBonus;
                 showComboText(comboCount, comboBonus, block);
                 playSound('comboSound');
             }
-            
             coins += reward;
             gameMetrics.blocksDestroyed++;
             updateCoins();
-            
             playSound('breakSound');
             showRewardText(reward, block);
             createExplosion(block);
-            
             if (gameArea.contains(block)) {
                 gameArea.removeChild(block);
             }
             currentBlock = null;
             currentBlockHealth = 0;
-            
             currentLevel++;
             if (currentLevel > maxLevelReached) {
                 maxLevelReached = currentLevel;
             }
             
-            const locationIndex = Math.min(4, Math.floor((currentLevel - 1) / 10));
-            const locationKeys = ['space', 'lava', 'ice', 'bio', 'cyber'];
+            // Смена локации каждые 10 уровней (с проверкой на локацию Юпитер)
+            const locationIndex = Math.min(8, Math.floor((currentLevel - 1) / 10));
+            const locationKeys = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
             const newLocation = locationKeys[locationIndex];
+            
+            // Завершение игры на 5-й локации
+            if (newLocation === 'jupiter' && currentLocation !== 'jupiter') {
+                gameOver("Локация Юпитер (в разработке)");
+                return;
+            }
+
             if (newLocation !== currentLocation) {
                 setLocation(newLocation);
             }
-            
             updateHUD();
-            
             setTimeout(() => {
                 if (gameActive) {
                     createMovingBlock(currentLevel);
@@ -1053,9 +1157,7 @@
             text.textContent = `Комбо x${combo}! +${bonus}`;
             text.style.left = (rect.left + rect.width / 2) + 'px';
             text.style.top = (rect.top) + 'px';
-            
             document.body.appendChild(text);
-            
             setTimeout(() => {
                 if (text.parentNode) {
                     document.body.removeChild(text);
@@ -1070,9 +1172,7 @@
             text.textContent = `+${reward} 💎`;
             text.style.left = (rect.left + rect.width / 2) + 'px';
             text.style.top = (rect.top + rect.height / 2) + 'px';
-            
             document.body.appendChild(text);
-            
             setTimeout(() => {
                 if (text.parentNode) {
                     document.body.removeChild(text);
@@ -1080,26 +1180,22 @@
             }, 1500);
         }
 
-        function createDamageText(damage, block) {
+        function createDamageText(damage, block, color = '#ff4444') {
             const rect = block.getBoundingClientRect();
             const text = document.createElement('div');
             text.className = 'damage-text';
             text.textContent = `-${damage}`;
-            text.style.color = '#ff4444';
+            text.style.color = color;
             text.style.left = (rect.left + rect.width / 2) + 'px';
             text.style.top = (rect.top) + 'px';
-            
             document.body.appendChild(text);
-            
             let opacity = 1;
             let yPos = parseInt(text.style.top);
-            
             function animate() {
                 opacity -= 0.02;
                 yPos -= 2;
                 text.style.opacity = opacity;
                 text.style.top = yPos + 'px';
-                
                 if (opacity > 0) {
                     requestAnimationFrame(animate);
                 } else {
@@ -1108,18 +1204,15 @@
                     }
                 }
             }
-            
             animate();
         }
 
         const particles = [];
-        
         function createExplosion(block) {
             const rect = block.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
             const theme = locations[currentLocation];
-            
             for (let i = 0; i < 30; i++) {
                 particles.push({
                     x: centerX,
@@ -1135,69 +1228,63 @@
 
         function animateParticles() {
             if (!gameActive || !particlesCanvas) return;
-            
             const ctx = particlesCanvas.getContext('2d');
             ctx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
-            
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
                 p.x += p.speedX;
                 p.y += p.speedY;
-                p.life -= 0.02;
-                
+                p.life -= 0.01;
                 ctx.globalAlpha = p.life;
                 ctx.fillStyle = p.color;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
-                
                 if (p.life <= 0) {
                     particles.splice(i, 1);
                 }
             }
-            
-            requestAnimationFrame(animateParticles);
+            if (gameActive) {
+                requestAnimationFrame(animateParticles);
+            }
         }
 
         function setLocation(loc) {
             document.querySelectorAll('.location').forEach(el => el.classList.remove('active'));
             document.getElementById(`location-${loc}`).classList.add('active');
             currentLocation = loc;
-
             const theme = locations[loc];
             if (gameTitle) gameTitle.textContent = theme.name;
-            if (pauseBtn) {
-                pauseBtn.style.borderColor = theme.borderColor;
-                pauseBtn.style.color = theme.color;
-            }
             if (levelInfo) levelInfo.style.color = theme.color;
             if (coinsDisplay) {
                 coinsDisplay.style.color = theme.coinColor;
                 coinsDisplay.style.textShadow = `0 0 4px ${theme.coinColor}80`;
             }
             if (header) header.style.borderColor = theme.borderColor;
-            
             switch(loc) {
-                case 'space':
+                case 'mercury':
                     initStars();
                     animateStars();
                     break;
-                case 'lava':
+                case 'venus':
                     initLava();
                     animateLava();
                     break;
-                case 'ice':
+                case 'earth':
                     initSnow();
                     animateSnow();
                     break;
-                case 'bio':
+                case 'mars':
                     initBio();
                     animateBio();
                     break;
-                case 'cyber':
+                case 'jupiter':
+                case 'saturn':
+                case 'uranus':
+                case 'neptune':
+                case 'pluto':
                     break;
             }
-            
             if (levelAnnounce) {
                 levelAnnounce.textContent = theme.name;
                 levelAnnounce.style.color = theme.color;
@@ -1209,7 +1296,7 @@
         }
 
         function getCurrentSpeed() {
-            return Math.max(5, blockSpeed - slowBonus * 2);
+            return blockSpeed;
         }
 
         function updateHUD() {
@@ -1217,18 +1304,19 @@
             if (clickPowerDisplay) clickPowerDisplay.textContent = `Сила: ${clickPower}`;
             if (speedDisplay) speedDisplay.textContent = `Скорость: ${Math.round(getCurrentSpeed())}`;
             if (blockLevelDisplay) blockLevelDisplay.textContent = `Блок: ${currentLevel}`;
-            if (blockHealthDisplay) blockHealthDisplay.textContent = `Осталось: ${currentBlockHealth > 0 ? currentBlockHealth : '—'}`;
+            if (blockHealthDisplay) blockHealthDisplay.textContent = `Осталось: ${currentBlockHealth > 0 ? Math.floor(currentBlockHealth) : '—'}`;
+            if (critChanceDisplay) critChanceDisplay.textContent = `Крит: ${(critChance * 100).toFixed(0)}%`;
+            if (critMultiplierDisplay) critMultiplierDisplay.textContent = `Множ: x${critMultiplier.toFixed(1)}`;
             updateHelperTimer();
         }
 
         function updateCoins() {
-            if (coinsDisplay) coinsDisplay.textContent = `Камушки: ${Math.floor(coins).toLocaleString()}`;
+            if (coinsDisplay) coinsDisplay.textContent = `Кристаллы: ${Math.floor(coins).toLocaleString()}`;
             updateUpgradeButtons();
         }
 
         function updateUpgradeButtons() {
             const clickCost = Math.floor(baseClickUpgradeCost * Math.pow(1.5, clickUpgradeLevel));
-            
             if (upgradeClickBtn) {
                 if (coins >= clickCost) {
                     upgradeClickBtn.className = "upgrade-btn btn-available";
@@ -1236,20 +1324,33 @@
                     upgradeClickBtn.className = "upgrade-btn btn-unavailable";
                 }
             }
-
-            if (upgradeSlowBtn) {
-                if (coins >= slowCost && slowBonus === 0) {
-                    upgradeSlowBtn.className = "upgrade-btn btn-available";
-                } else {
-                    upgradeSlowBtn.className = "upgrade-btn btn-unavailable";
-                }
-            }
-
             if (upgradeHelperBtn) {
                 if (coins >= helperCost && !helperActive) {
                     upgradeHelperBtn.className = "upgrade-btn btn-available";
                 } else {
                     upgradeHelperBtn.className = "upgrade-btn btn-unavailable";
+                }
+            }
+            if (upgradeCritChanceBtn) {
+                if (coins >= critChanceCost) {
+                    upgradeCritChanceBtn.className = "upgrade-btn btn-available";
+                } else {
+                    upgradeCritChanceBtn.className = "upgrade-btn btn-unavailable";
+                }
+            }
+            if (upgradeCritMultBtn) {
+                if (coins >= critMultiplierCost) {
+                    upgradeCritMultBtn.className = "upgrade-btn btn-available";
+                } else {
+                    upgradeCritMultBtn.className = "upgrade-btn btn-unavailable";
+                }
+            }
+            if (upgradeHelperDmgBtn) {
+                const helperDmgCost = Math.floor(baseHelperUpgradeCost * Math.pow(helperUpgradeMultiplier, helperUpgradeLevel));
+                if (coins >= helperDmgCost) {
+                    upgradeHelperDmgBtn.className = "upgrade-btn btn-available";
+                } else {
+                    upgradeHelperDmgBtn.className = "upgrade-btn btn-unavailable";
                 }
             }
         }
@@ -1266,19 +1367,7 @@
                 playSound('upgradeSound');
                 showTooltip(`Сила увеличена!<br>Теперь: ${clickPower}`);
                 setTimeout(hideTooltip, 1500);
-            }
-        }
-
-        function buySlow() {
-            if (coins >= slowCost && slowBonus === 0) {
-                coins -= slowCost;
-                slowBonus += 1;
-                gameMetrics.upgradesBought++;
-                updateCoins();
-                updateHUD();
-                playSound('upgradeSound');
-                showTooltip(`Скорость блоков уменьшена!`);
-                setTimeout(hideTooltip, 1500);
+                saveGame();
             }
         }
 
@@ -1287,6 +1376,50 @@
                 coins -= helperCost;
                 activateHelper();
                 updateCoins();
+                saveGame();
+            }
+        }
+
+        function buyCritChance() {
+            if (coins >= critChanceCost) {
+                coins -= critChanceCost;
+                critChance = Math.min(1.0, critChance + 0.05);
+                gameMetrics.upgradesBought++;
+                updateCoins();
+                updateHUD();
+                playSound('upgradeSound');
+                showTooltip(`Шанс крита +5%!<br>Теперь: ${(critChance * 100).toFixed(0)}%`);
+                setTimeout(hideTooltip, 1500);
+                saveGame();
+            }
+        }
+
+        function buyCritMultiplier() {
+            if (coins >= critMultiplierCost) {
+                coins -= critMultiplierCost;
+                critMultiplier += 0.2;
+                gameMetrics.upgradesBought++;
+                updateCoins();
+                updateHUD();
+                playSound('upgradeSound');
+                showTooltip(`Множитель крита +0.2x!<br>Теперь: x${critMultiplier.toFixed(1)}`);
+                setTimeout(hideTooltip, 1500);
+                saveGame();
+            }
+        }
+
+        function buyHelperDamage() {
+            const cost = Math.floor(baseHelperUpgradeCost * Math.pow(helperUpgradeMultiplier, helperUpgradeLevel));
+            if (coins >= cost) {
+                coins -= cost;
+                helperUpgradeLevel += 1;
+                gameMetrics.upgradesBought++;
+                updateCoins();
+                updateHUD();
+                playSound('upgradeSound');
+                showTooltip(`Урон Bobo +20%!<br>Уровень: ${helperUpgradeLevel}`);
+                setTimeout(hideTooltip, 1500);
+                saveGame();
             }
         }
 
@@ -1305,228 +1438,254 @@
             if (currentBlock && gameArea.contains(currentBlock)) {
                 gameArea.removeChild(currentBlock);
             }
-
             const blockHealth = Math.floor(baseHealth * Math.pow(healthMultiplier, level - 1));
             currentBlockHealth = blockHealth;
-            
             maxLevelReached = Math.max(maxLevelReached, level);
-            
             const block = document.createElement("div");
             block.className = "moving-block";
             const size = Math.max(60, 120 - level * 0.5);
             block.style.width = size + "px";
             block.style.height = size + "px";
             block.style.bottom = "0px";
-            
-            // Сохраняем максимальное здоровье для системы трещин
             block.dataset.maxHealth = blockHealth;
-            
             const theme = locations[currentLocation];
             const colorIndex = level % theme.blockColors.length;
-            block.style.background = `linear-gradient(135deg, ${theme.blockColors[colorIndex]}, ${theme.blockColors[(colorIndex + 1) % theme.blockColors.length]})`;
-            block.style.boxShadow = `0 0 15px ${theme.blockColors[colorIndex]}`;
-            block.style.border = `2px solid ${theme.borderColor}`;
             
-            block.textContent = level;
+            // Создание редкого блока
+            let isRare = false;
+            let rareType = null;
+            const potentialRareType = getRareBlockType();
+            if (potentialRareType) {
+                isRare = true;
+                rareType = potentialRareType;
+                const rareBlock = rareBlocks[rareType];
+                block.classList.add(rareBlock.className);
+                currentBlockHealth = Math.floor(currentBlockHealth * rareBlock.healthMultiplier);
+                block.textContent = currentBlockHealth;
+                block.innerHTML = `🌟<div style="font-size: 0.7em; margin-top: 5px;">${rareBlock.name}</div>`;
+                announceRareBlock(rareBlock.name);
+            } else {
+                block.style.background = `linear-gradient(135deg, ${theme.blockColors[colorIndex]}, ${theme.blockColors[(colorIndex + 1) % theme.blockColors.length]})`;
+                block.style.boxShadow = `0 0 15px ${theme.blockColors[colorIndex]}`;
+                block.style.border = `2px solid ${theme.borderColor}`;
+                block.textContent = blockHealth;
+            }
             
             block.addEventListener('click', () => hitBlock(block, level));
-            
             gameArea.appendChild(block);
             currentBlock = block;
-            
             updateHUD();
             animateBlock(block, level);
         }
 
         function animateBlock(block, level) {
-            if (paused || !gameActive) return;
-            
+            if (!gameActive) return;
             const speed = getCurrentSpeed();
             let position = parseInt(block.style.bottom) || 0;
-            
             function move() {
-                if (paused || !gameActive || currentBlock !== block) return;
-                
+                if (!gameActive || currentBlock !== block) return;
                 position += speed / 30;
                 block.style.bottom = position + "px";
-                
                 if (position > window.innerHeight) {
                     gameOver();
                     return;
                 }
-                
                 requestAnimationFrame(move);
             }
-            
             move();
         }
 
-        function gameOver() {
+        function gameOver(customMessage = null) {
             gameActive = false;
-            paused = false;
             helperActive = false;
             if (helperInterval) clearInterval(helperInterval);
-            
             const sessionTime = Date.now() - gameMetrics.startTime;
-            console.log('Session stats:', {
-                time: sessionTime,
-                level: maxLevelReached,
-                coins: coins,
-                blocks: gameMetrics.blocksDestroyed,
-                upgrades: gameMetrics.upgradesBought,
-                clicks: gameMetrics.totalClicks
+            console.log('🎮 [Космический Кликер] Сессия завершена:', {
+                session: gameMetrics.sessions,
+                duration_sec: Math.round(sessionTime / 1000),
+                max_level: maxLevelReached,
+                total_coins: coins,
+                blocks_destroyed: gameMetrics.blocksDestroyed,
+                upgrades_bought: gameMetrics.upgradesBought,
+                total_clicks: gameMetrics.totalClicks
             });
-            
             localStorage.setItem('gameSessions', gameMetrics.sessions.toString());
-            
             if (currentBlock && gameArea.contains(currentBlock)) {
                 gameArea.removeChild(currentBlock);
                 currentBlock = null;
             }
-            
             if (finalScoreDisplay) {
                 finalScoreDisplay.textContent = `Макс. уровень: ${maxLevelReached}`;
             }
             if (gameOverScreen) {
                 gameOverScreen.style.display = "flex";
             }
-        }
-
-        function togglePause() {
-            if (!gameActive) return;
-            paused = !paused;
-            if (pauseBtn) {
-                pauseBtn.textContent = paused ? "▶ Продолжить" : "⏸ Пауза";
+            if (customMessage) {
+                const h2 = gameOverScreen.querySelector('h2');
+                if (h2) h2.textContent = customMessage;
             }
+            saveGame();
         }
 
         function shareResult() {
-            const shareText = `🎮 Я достиг ${maxLevelReached} уровня и собрал ${coins} камушков в Космических Блоках! 🌌\n\nСможешь побить мой рекорд?`;
-            
+            const shareText = `🎮 Я достиг ${maxLevelReached} уровня и собрал ${Math.floor(coins)} Кристаллов в Космическом Кликере! 🌌
+Сможешь побить мой рекорд?`;
             if (navigator.share) {
                 navigator.share({
-                    title: 'Мой рекорд в Космических Блоках!',
+                    title: 'Мой рекорд в Космическом Кликере!',
                     text: shareText
                 }).then(() => {
                     coins += 50;
                     updateCoins();
-                    showTooltip('+50 камушков за распространение!');
+                    showTooltip('+50 Кристаллов за распространение!');
                     setTimeout(hideTooltip, 2000);
+                    saveGame();
                 });
             } else {
                 navigator.clipboard.writeText(shareText).then(() => {
-                    alert('Результат скопирован в буфер обмена! Поделись с друзьями!');
+                    alert('Результат скопирован! Поделись с друзьями!');
                     coins += 50;
                     updateCoins();
+                    saveGame();
                 });
             }
         }
 
         function startGame() {
+            // Убедимся, что игра начинается с правильного состояния
             if (welcomeScreen) {
                 welcomeScreen.style.display = "none";
             }
             gameActive = true;
-            currentLevel = 1;
-            currentBlockHealth = 0;
             comboCount = 0;
             lastDestroyTime = 0;
             helperActive = false;
             helperTimeLeft = 0;
-            
             gameMetrics.startTime = Date.now();
             gameMetrics.blocksDestroyed = 0;
             gameMetrics.upgradesBought = 0;
             gameMetrics.totalClicks = 0;
             
+            // Сбрасываем уровень на 1 при начале новой игры
+            currentLevel = 1;
+            
             updateCoins();
             updateHUD();
-            setLocation('space');
+            setLocation('mercury');
             animateParticles();
             setTimeout(() => createMovingBlock(currentLevel), 500);
         }
 
         function restartGame() {
+            // ПОЛНЫЙ СБРОС ВСЕХ ПАРАМЕТРОВ ДО НАЧАЛЬНЫХ ЗНАЧЕНИЙ
             coins = 0;
             currentLevel = 1;
             maxLevelReached = 0;
             clickPower = 1;
             clickUpgradeLevel = 0;
-            slowBonus = 0;
-            paused = false;
-            gameActive = true;
-            comboCount = 0;
-            lastDestroyTime = 0;
+            helperUpgradeLevel = 0;
+            helperDamageBonus = 0.3;
+            critChance = 0.1;
+            critMultiplier = 2.0;
             helperActive = false;
             helperTimeLeft = 0;
-            if (helperInterval) clearInterval(helperInterval);
             
+            // Остановка всех интервалов
+            if (helperInterval) {
+                clearInterval(helperInterval);
+                helperInterval = null;
+            }
+            
+            // Очистка игрового поля
             gameArea.innerHTML = "";
+            
+            // Сброс UI
             if (gameOverScreen) gameOverScreen.style.display = "none";
-            if (pauseBtn) pauseBtn.textContent = "⏸ Пауза";
             if (levelInfo) levelInfo.textContent = "Уровень: —";
             if (levelAnnounce) levelAnnounce.style.opacity = "0";
             
+            // Сброс метрик текущей сессии (но не общего количества сессий)
             gameMetrics.startTime = Date.now();
             gameMetrics.blocksDestroyed = 0;
             gameMetrics.upgradesBought = 0;
             gameMetrics.totalClicks = 0;
             
-            setLocation('space');
+            // Установка начальной локации
+            setLocation('mercury');
+            
+            // Обновление интерфейса
             updateCoins();
             updateHUD();
+            updateUpgradeButtons();
+            
+            // Запуск анимаций
             animateParticles();
+            
+            // Сохранение сброшенного состояния
+            saveGame();
+            
+            // Запуск новой игры
+            gameActive = true;
             setTimeout(() => createMovingBlock(currentLevel), 500);
         }
 
-        // НАЗНАЧЕНИЕ ОБРАБОТЧИКОВ СОБЫТИЙ
+        function showStartError() {
+            showTooltip("Ошибка при запуске игры. Попробуйте перезагрузить страницу.");
+            setTimeout(hideTooltip, 3000);
+        }
+
+        // === ОБРАБОТЧИКИ СОБЫТИЙ ===
         if (startBtn) {
-            startBtn.addEventListener('click', startGame);
+            startBtn.addEventListener('click', function() {
+                try {
+                    startGame();
+                } catch (error) {
+                    console.error("Ошибка при запуске игры:", error);
+                    showStartError();
+                }
+            });
+        } else {
+            console.error("Кнопка 'Начать добычу' не найдена в DOM");
         }
-        
-        if (pauseBtn) {
-            pauseBtn.addEventListener('click', togglePause);
-        }
-        
+
         if (upgradeClickBtn) {
             upgradeClickBtn.addEventListener('click', buyClickPower);
             upgradeClickBtn.addEventListener('mouseenter', () => showTooltip('Сила удара<br>+1 урон'));
             upgradeClickBtn.addEventListener('mouseleave', hideTooltip);
         }
-        
-        if (upgradeSlowBtn) {
-            upgradeSlowBtn.addEventListener('click', buySlow);
-            upgradeSlowBtn.addEventListener('mouseenter', () => showTooltip('Якорь<br>−2 скорости'));
-            upgradeSlowBtn.addEventListener('mouseleave', hideTooltip);
-        }
-        
         if (upgradeHelperBtn) {
             upgradeHelperBtn.addEventListener('click', buyHelper);
-            upgradeHelperBtn.addEventListener('mouseenter', () => showTooltip('Помощник<br>Авто-атака на 1 минуту'));
+            upgradeHelperBtn.addEventListener('mouseenter', () => showTooltip('Bobo<br>Авто-атака на 1 минуту<br>+30% урона'));
             upgradeHelperBtn.addEventListener('mouseleave', hideTooltip);
         }
-        
-        if (restartBtn) {
-            restartBtn.addEventListener('click', restartGame);
+        if (upgradeCritChanceBtn) {
+            upgradeCritChanceBtn.addEventListener('click', buyCritChance);
+            upgradeCritChanceBtn.addEventListener('mouseenter', () => showTooltip('Шанс крита<br>+5% шанс крит. урона'));
+            upgradeCritChanceBtn.addEventListener('mouseleave', hideTooltip);
         }
-        
-        if (shareBtn) {
-            shareBtn.addEventListener('click', shareResult);
+        if (upgradeCritMultBtn) {
+            upgradeCritMultBtn.addEventListener('click', buyCritMultiplier);
+            upgradeCritMultBtn.addEventListener('mouseenter', () => showTooltip('Множитель крита<br>+0.2x крит. урона'));
+            upgradeCritMultBtn.addEventListener('mouseleave', hideTooltip);
         }
-
-        if (window.Telegram && Telegram.WebApp) {
-            const tg = Telegram.WebApp;
-            tg.expand();
+        if (upgradeHelperDmgBtn) {
+            upgradeHelperDmgBtn.addEventListener('click', buyHelperDamage);
+            upgradeHelperDmgBtn.addEventListener('mouseenter', () => showTooltip('Урон Bobo<br>+20% урона за апгрейд'));
+            upgradeHelperDmgBtn.addEventListener('mouseleave', hideTooltip);
         }
+        if (restartBtn) restartBtn.addEventListener('click', restartGame);
+        if (shareBtn) shareBtn.addEventListener('click', shareResult);
+        if (dailyRewardBtn) dailyRewardBtn.addEventListener('click', checkDailyReward);
 
         // ИНИЦИАЛИЗАЦИЯ
+        resizeCanvases();
+        window.addEventListener('resize', resizeCanvases);
         updateCoins();
         updateHUD();
-        setLocation('space');
+        setLocation('mercury');
         animateParticles();
     });
 
-    // ПРЕДОТВРАЩЕНИЕ МАСШТАБИРОВАНИЯ НА МОБИЛЬНЫХ
     document.addEventListener('touchstart', function(e) {
         if (e.touches.length > 1) {
             e.preventDefault();
@@ -1535,7 +1694,7 @@
 
     document.addEventListener('gesturestart', function(e) {
         e.preventDefault();
-    });
+    }, { passive: false });
   </script>
 </body>
 </html>
