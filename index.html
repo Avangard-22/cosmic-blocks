@@ -6,7 +6,6 @@
   <title>Космический Кликер</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* --- ОСТАВЛЕН БЕЗ ИЗМЕНЕНИЙ --- */
     * {
       box-sizing: border-box;
       touch-action: manipulation;
@@ -89,7 +88,7 @@
       color: white;
     }
     /* HUD */
-    #coins, #clickPowerInfo, #speedInfo, #blockLevelInfo, #blockHealthInfo, #helperTimer, #critChanceInfo, #critMultiplierInfo {
+    #coins, #clickPowerInfo, #speedInfo, #helperTimer, #critChanceInfo, #critMultiplierInfo {
       position: absolute;
       left: 15px;
       font-size: 0.8em;
@@ -100,19 +99,41 @@
     #coins { top: 15px; color: #d7ccc8; text-shadow: 0 0 4px rgba(215,204,200,0.7); }
     #clickPowerInfo { top: 35px; color: #a0d2ff; text-shadow: 0 0 3px rgba(160,210,255,0.6); }
     #speedInfo { top: 55px; color: #ffab91; text-shadow: 0 0 3px rgba(255,171,145,0.6); }
-    #blockLevelInfo { top: 75px; color: #bb86fc; text-shadow: 0 0 3px rgba(187,134,252,0.6); }
-    #blockHealthInfo { top: 95px; color: #ffcc00; text-shadow: 0 0 3px rgba(255,204,0,0.6); }
     #helperTimer { top: 115px; color: #69f0ae; text-shadow: 0 0 3px rgba(105,240,174,0.6); }
     #critChanceInfo { top: 135px; color: #ffd700; text-shadow: 0 0 3px rgba(255,215,0,0.6); }
     #critMultiplierInfo { top: 155px; color: #ffd700; text-shadow: 0 0 3px rgba(255,215,0,0.6); }
-    #levelInfo {
+    
+    /* Прогресс-бар */
+    #progressContainer {
       position: absolute;
-      top: 15px;
-      right: 20px;
-      font-size: 1.1em;
+      top: 75px;
+      left: 15px;
+      width: 200px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      overflow: hidden;
       z-index: 25;
-      color: white;
     }
+    
+    #progressBar {
+      height: 100%;
+      background: linear-gradient(90deg, #bb86fc, #4a55e0);
+      border-radius: 6px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    #progressText {
+      position: absolute;
+      top: 90px;
+      left: 15px;
+      font-size: 0.7em;
+      color: #a0d2ff;
+      text-shadow: 0 0 3px rgba(160,210,255,0.6);
+      z-index: 25;
+    }
+
     #gameArea {
       position: absolute;
       top: 0;
@@ -451,12 +472,17 @@
   <div id="coins">Кристаллы: 0</div>
   <div id="clickPowerInfo">Сила: 1</div>
   <div id="speedInfo">Скорость: 30</div>
-  <div id="blockLevelInfo">Блок: —</div>
-  <div id="blockHealthInfo">Осталось: —</div>
+  
+  <!-- Прогресс-бар вместо уровня и здоровья -->
+  <div id="progressContainer">
+    <div id="progressBar"></div>
+  </div>
+  <div id="progressText">Прогресс: 0/5000</div>
+  
   <div id="helperTimer">Bobo: —</div>
   <div id="critChanceInfo">Крит: 10%</div>
   <div id="critMultiplierInfo">Множ: x2.0</div>
-  <div id="levelInfo">Уровень: —</div>
+  
   <div id="gameArea"></div>
   <div id="levelAnnounce"></div>
   <button id="upgradeClickBtn" class="upgrade-btn btn-unavailable">
@@ -476,6 +502,7 @@
   </button>
   <div id="tooltip" class="tooltip"></div>
   <canvas id="particlesCanvas"></canvas>
+  
   <!-- Звуковые элементы -->
   <audio id="clickSound" preload="auto">
     <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
@@ -492,24 +519,27 @@
   <audio id="helperSound" preload="auto">
     <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" type="audio/wav">
   </audio>
+  
   <div id="welcomeScreen">
     <h2>🚀 КОСМИЧЕСКИЙ КЛИКЕР</h2>
     <p>Разрушайте восходящие блоки и собирайте <strong>космические Кристаллы</strong>!</p>
     <p>Каждый блок требует определённого количества ударов для разрушения.</p>
-    <p><strong>Улучшения:</strong></p>
-    <p>🔨 <strong>Сила удара</strong> — увеличивает урон за удар</p>
-    <p>💥 <strong>Крит. урон</strong> — шанс нанести x2 урона</p>
-    <p>🤖 <strong>Bobo</strong> — ваш верный помощник (+30% урона)</p>
-    <p>✨ <strong>Редкие блоки</strong> — несите удачу и огромные награды!</p>
+    <p><strong>Новая система прогресса:</strong></p>
+    <p>🌌 <strong>Прогресс через урон</strong> — накапливайте урон для открытия новых локаций</p>
+    <p>🪐 <strong>9 локаций</strong> — от Меркурия до Плутона</p>
+    <p>🚀 <strong>Улучшения</strong> — увеличивайте силу, криты и активируйте помощника</p>
+    <p>✨ <strong>Редкие блоки</strong> — дают бонусы и огромные награды!</p>
     <button class="btn">Начать добычу</button>
   </div>
+  
   <div id="gameOverScreen">
     <h2>ДОБЫЧА ПРЕРВАНА!</h2>
-    <div id="finalScore">Макс. уровень: —</div>
+    <div id="finalScore">Всего урона: 0</div>
     <button id="restartBtn">Новая добыча</button>
     <button id="shareBtn">Поделиться</button>
     <button id="dailyRewardBtn">🎁 Ежедневная награда</button>
   </div>
+
   <script>
     // === СИСТЕМА РЕДКИХ БЛОКОВ ===
     const rareBlocks = {
@@ -545,6 +575,19 @@
             effect: "Случайный бонус",
             className: "block-mystery"
         }
+    };
+
+    // === СИСТЕМА ПРОГРЕССА ЧЕРЕЗ УРОН ===
+    const locationRequirements = {
+        mercury: { damageRequired: 0, nextLocation: 'venus' },
+        venus: { damageRequired: 5000, nextLocation: 'earth' },
+        earth: { damageRequired: 20000, nextLocation: 'mars' },
+        mars: { damageRequired: 50000, nextLocation: 'jupiter' },
+        jupiter: { damageRequired: 100000, nextLocation: 'saturn' },
+        saturn: { damageRequired: 200000, nextLocation: 'uranus' },
+        uranus: { damageRequired: 500000, nextLocation: 'neptune' },
+        neptune: { damageRequired: 1000000, nextLocation: 'pluto' },
+        pluto: { damageRequired: 2000000, nextLocation: null }
     };
 
     // Объявляем глобальные переменные для анимаций
@@ -596,7 +639,8 @@
         critMultiplier,
         helperDamageBonus,
         helperUpgradeLevel,
-        maxLevelReached,
+        totalDamageDealt,
+        currentLocation,
         lastDailyReward: localStorage.getItem('lastDailyReward')
       };
       localStorage.setItem('cosmicBlocksSave', JSON.stringify(saveData));
@@ -614,9 +658,8 @@
           critMultiplier = data.critMultiplier || 2.0;
           helperDamageBonus = data.helperDamageBonus || 0.3;
           helperUpgradeLevel = data.helperUpgradeLevel || 0;
-          maxLevelReached = data.maxLevelReached || 0;
-          // ВАЖНО: начинаем с текущего уровня, а не maxLevelReached + 1
-          currentLevel = Math.max(1, maxLevelReached);
+          totalDamageDealt = data.totalDamageDealt || 0;
+          currentLocation = data.currentLocation || 'mercury';
         } catch (e) {
           console.warn('Ошибка загрузки сохранения', e);
         }
@@ -644,10 +687,9 @@
 
     // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
     let coins = 0;
-    let currentLevel = 1;
-    let maxLevelReached = 0;
-    const baseHealth = 8;
-    const healthMultiplier = 1.15;
+    let totalDamageDealt = 0;
+    const baseHealth = 50;
+    const healthMultiplier = 1.1;
     let clickPower = 1;
     let clickUpgradeLevel = 0;
     const baseClickUpgradeCost = 80;
@@ -687,12 +729,11 @@
             coinsDisplay: document.getElementById("coins"),
             clickPowerDisplay: document.getElementById("clickPowerInfo"),
             speedDisplay: document.getElementById("speedInfo"),
-            blockLevelDisplay: document.getElementById("blockLevelInfo"),
-            blockHealthDisplay: document.getElementById("blockHealthInfo"),
             helperTimerDisplay: document.getElementById("helperTimer"),
             critChanceDisplay: document.getElementById("critChanceInfo"),
             critMultiplierDisplay: document.getElementById("critMultiplierInfo"),
-            levelInfo: document.getElementById("levelInfo"),
+            progressBar: document.getElementById("progressBar"),
+            progressText: document.getElementById("progressText"),
             levelAnnounce: document.getElementById("levelAnnounce"),
             gameTitle: document.getElementById("gameTitle"),
             upgradeClickBtn: document.getElementById("upgradeClickBtn"),
@@ -730,10 +771,11 @@
 
         // Присваиваем переменные
         const {
-            coinsDisplay, clickPowerDisplay, speedDisplay, blockLevelDisplay, blockHealthDisplay,
-            helperTimerDisplay, critChanceDisplay, critMultiplierDisplay, levelInfo, levelAnnounce,
-            gameTitle, upgradeClickBtn, upgradeHelperBtn, upgradeCritChanceBtn, upgradeCritMultBtn,
-            upgradeHelperDmgBtn, gameOverScreen, finalScoreDisplay, tooltip, welcomeScreen, header,
+            coinsDisplay, clickPowerDisplay, speedDisplay, helperTimerDisplay, 
+            critChanceDisplay, critMultiplierDisplay, progressBar, progressText,
+            levelAnnounce, gameTitle, upgradeClickBtn, upgradeHelperBtn, 
+            upgradeCritChanceBtn, upgradeCritMultBtn, upgradeHelperDmgBtn, 
+            gameOverScreen, finalScoreDisplay, tooltip, welcomeScreen, header,
             gameArea, particlesCanvas, startBtn, restartBtn, shareBtn, dailyRewardBtn,
             starsCanvas, lavaCanvas, iceCanvas, bioCanvas
         } = DOMElements;
@@ -935,12 +977,45 @@
             venus: { name: "♀ Венера", color: "#ffab91", coinColor: "#a0d2ff", borderColor: "#ff5722", blockColors: ['#ff5722', '#ff9800', '#ff5722', '#e91e63'] },
             earth: { name: "♁ Земля", color: "#80deea", coinColor: "#a0d2ff", borderColor: "#0288d1", blockColors: ['#0288d1', '#29b6f6', '#00bcd4', '#00e5ff'] },
             mars: { name: "♂ Марс", color: "#a5d6a7", coinColor: "#a0d2ff", borderColor: "#388e3c", blockColors: ['#388e3c', '#66bb6a', '#9ccc65', '#d4e157'] },
-            jupiter: { name: "♃ Юпитер (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
-            saturn: { name: "♄ Сатурн (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
-            uranus: { name: "♅ Уран (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
-            neptune: { name: "♆ Нептун (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
-            pluto: { name: "♇ Плутон (в разработке)", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] }
+            jupiter: { name: "♃ Юпитер", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
+            saturn: { name: "♄ Сатурн", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
+            uranus: { name: "♅ Уран", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
+            neptune: { name: "♆ Нептун", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] },
+            pluto: { name: "♇ Плутон", color: "#ce93d8", coinColor: "#a0d2ff", borderColor: "#7b1fa2", blockColors: ['#7b1fa2', '#9c27b0', '#ab47bc', '#e1bee7'] }
         };
+
+        // === СИСТЕМА ПРОГРЕССА ===
+        function updateProgressBar() {
+            const currentReq = locationRequirements[currentLocation];
+            const nextLocation = currentReq.nextLocation;
+            
+            if (nextLocation) {
+                const nextReq = locationRequirements[nextLocation];
+                const progress = totalDamageDealt - currentReq.damageRequired;
+                const requiredForNext = nextReq.damageRequired - currentReq.damageRequired;
+                const percentage = Math.min(100, (progress / requiredForNext) * 100);
+                
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = `Прогресс: ${Math.floor(progress).toLocaleString()}/${requiredForNext.toLocaleString()}`;
+            } else {
+                // Финальная локация
+                progressBar.style.width = '100%';
+                progressText.textContent = 'Макс. прогресс достигнут!';
+            }
+        }
+
+        function checkLocationUpgrade() {
+            const currentReq = locationRequirements[currentLocation];
+            const nextLocation = currentReq.nextLocation;
+            
+            if (nextLocation && totalDamageDealt >= locationRequirements[nextLocation].damageRequired) {
+                setLocation(nextLocation);
+                showTooltip(`Открыта локация: ${locations[nextLocation].name}!`);
+                setTimeout(hideTooltip, 3000);
+            }
+            
+            updateProgressBar();
+        }
 
         // === ПОМОЩНИК (BOBO) ===
         function activateHelper() {
@@ -981,14 +1056,15 @@
             const baseHelperDmg = clickPower * (1 + helperDamageBonus);
             const upgradedHelperDmg = baseHelperDmg * (1 + helperUpgradeLevel * 0.2);
             currentBlockHealth -= upgradedHelperDmg;
+            totalDamageDealt += upgradedHelperDmg;
             gameMetrics.totalClicks++;
             createDamageText(Math.floor(upgradedHelperDmg), currentBlock, '#69f0ae');
+            checkLocationUpgrade();
             if (currentBlockHealth <= 0) {
-                destroyBlock(currentBlock, currentLevel);
+                destroyBlock(currentBlock);
             } else {
                 currentBlock.textContent = Math.floor(currentBlockHealth);
                 updateCracks(currentBlock, currentBlockHealth);
-                updateHUD();
             }
         }
 
@@ -1056,7 +1132,7 @@
             }
         }
 
-        function hitBlock(block, level) {
+        function hitBlock(block, damage) {
             if (!gameActive) return;
             if (navigator.vibrate) {
                 navigator.vibrate(50);
@@ -1066,25 +1142,26 @@
             setTimeout(() => {
                 block.style.transform = 'translateX(-50%) scale(1)';
             }, 100);
-            let finalDamage = clickPower;
+            let finalDamage = damage;
             let isCrit = false;
             if (Math.random() < critChance) {
-                finalDamage = Math.floor(clickPower * critMultiplier);
+                finalDamage = Math.floor(damage * critMultiplier);
                 isCrit = true;
             }
             currentBlockHealth -= finalDamage;
+            totalDamageDealt += finalDamage;
             gameMetrics.totalClicks++;
             createDamageText(finalDamage, block, isCrit ? '#FFD700' : '#ff4444');
+            checkLocationUpgrade();
             if (currentBlockHealth <= 0) {
-                destroyBlock(block, level);
+                destroyBlock(block);
             } else {
                 block.textContent = Math.floor(currentBlockHealth);
                 updateCracks(block, currentBlockHealth);
-                updateHUD();
             }
         }
 
-        function destroyBlock(block, level) {
+        function destroyBlock(block) {
             const now = Date.now();
             if (now - lastDestroyTime < COMBO_TIME_WINDOW) {
                 comboCount++;
@@ -1092,9 +1169,10 @@
                 comboCount = 1;
             }
             lastDestroyTime = now;
-            let reward = Math.floor(15 * Math.pow(1.15, level - 1));
             
-            // Обработка награды за редкий блок
+            const baseReward = 10 + (locationRequirements[currentLocation].damageRequired / 1000);
+            let reward = Math.floor(baseReward * (1 + comboCount * 0.2));
+            
             let isRare = false;
             let rareType = null;
             for (const type in rareBlocks) {
@@ -1123,29 +1201,10 @@
             }
             currentBlock = null;
             currentBlockHealth = 0;
-            currentLevel++;
-            if (currentLevel > maxLevelReached) {
-                maxLevelReached = currentLevel;
-            }
             
-            // Смена локации каждые 10 уровней (с проверкой на локацию Юпитер)
-            const locationIndex = Math.min(8, Math.floor((currentLevel - 1) / 10));
-            const locationKeys = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
-            const newLocation = locationKeys[locationIndex];
-            
-            // Завершение игры на 5-й локации
-            if (newLocation === 'jupiter' && currentLocation !== 'jupiter') {
-                gameOver("Локация Юпитер (в разработке)");
-                return;
-            }
-
-            if (newLocation !== currentLocation) {
-                setLocation(newLocation);
-            }
-            updateHUD();
             setTimeout(() => {
                 if (gameActive) {
-                    createMovingBlock(currentLevel);
+                    createMovingBlock();
                 }
             }, 500);
         }
@@ -1255,7 +1314,6 @@
             currentLocation = loc;
             const theme = locations[loc];
             if (gameTitle) gameTitle.textContent = theme.name;
-            if (levelInfo) levelInfo.style.color = theme.color;
             if (coinsDisplay) {
                 coinsDisplay.style.color = theme.coinColor;
                 coinsDisplay.style.textShadow = `0 0 4px ${theme.coinColor}80`;
@@ -1293,21 +1351,11 @@
                     levelAnnounce.style.opacity = "0";
                 }, 2000);
             }
+            updateProgressBar();
         }
 
         function getCurrentSpeed() {
             return blockSpeed;
-        }
-
-        function updateHUD() {
-            if (levelInfo) levelInfo.textContent = `Уровень: ${currentLevel}`;
-            if (clickPowerDisplay) clickPowerDisplay.textContent = `Сила: ${clickPower}`;
-            if (speedDisplay) speedDisplay.textContent = `Скорость: ${Math.round(getCurrentSpeed())}`;
-            if (blockLevelDisplay) blockLevelDisplay.textContent = `Блок: ${currentLevel}`;
-            if (blockHealthDisplay) blockHealthDisplay.textContent = `Осталось: ${currentBlockHealth > 0 ? Math.floor(currentBlockHealth) : '—'}`;
-            if (critChanceDisplay) critChanceDisplay.textContent = `Крит: ${(critChance * 100).toFixed(0)}%`;
-            if (critMultiplierDisplay) critMultiplierDisplay.textContent = `Множ: x${critMultiplier.toFixed(1)}`;
-            updateHelperTimer();
         }
 
         function updateCoins() {
@@ -1363,7 +1411,7 @@
                 clickUpgradeLevel += 1;
                 gameMetrics.upgradesBought++;
                 updateCoins();
-                updateHUD();
+                if (clickPowerDisplay) clickPowerDisplay.textContent = `Сила: ${clickPower}`;
                 playSound('upgradeSound');
                 showTooltip(`Сила увеличена!<br>Теперь: ${clickPower}`);
                 setTimeout(hideTooltip, 1500);
@@ -1386,7 +1434,7 @@
                 critChance = Math.min(1.0, critChance + 0.05);
                 gameMetrics.upgradesBought++;
                 updateCoins();
-                updateHUD();
+                if (critChanceDisplay) critChanceDisplay.textContent = `Крит: ${(critChance * 100).toFixed(0)}%`;
                 playSound('upgradeSound');
                 showTooltip(`Шанс крита +5%!<br>Теперь: ${(critChance * 100).toFixed(0)}%`);
                 setTimeout(hideTooltip, 1500);
@@ -1400,7 +1448,7 @@
                 critMultiplier += 0.2;
                 gameMetrics.upgradesBought++;
                 updateCoins();
-                updateHUD();
+                if (critMultiplierDisplay) critMultiplierDisplay.textContent = `Множ: x${critMultiplier.toFixed(1)}`;
                 playSound('upgradeSound');
                 showTooltip(`Множитель крита +0.2x!<br>Теперь: x${critMultiplier.toFixed(1)}`);
                 setTimeout(hideTooltip, 1500);
@@ -1415,7 +1463,6 @@
                 helperUpgradeLevel += 1;
                 gameMetrics.upgradesBought++;
                 updateCoins();
-                updateHUD();
                 playSound('upgradeSound');
                 showTooltip(`Урон Bobo +20%!<br>Уровень: ${helperUpgradeLevel}`);
                 setTimeout(hideTooltip, 1500);
@@ -1434,24 +1481,26 @@
             if (tooltip) tooltip.style.opacity = "0";
         }
 
-        function createMovingBlock(level) {
+        function createMovingBlock() {
             if (currentBlock && gameArea.contains(currentBlock)) {
                 gameArea.removeChild(currentBlock);
             }
-            const blockHealth = Math.floor(baseHealth * Math.pow(healthMultiplier, level - 1));
+            
+            const locationMultiplier = 1 + (locationRequirements[currentLocation].damageRequired / 50000);
+            const blockHealth = Math.floor(baseHealth * locationMultiplier * (0.5 + Math.random()));
             currentBlockHealth = blockHealth;
-            maxLevelReached = Math.max(maxLevelReached, level);
+            
             const block = document.createElement("div");
             block.className = "moving-block";
-            const size = Math.max(60, 120 - level * 0.5);
+            const size = Math.max(60, 100 - (locationRequirements[currentLocation].damageRequired / 10000));
             block.style.width = size + "px";
             block.style.height = size + "px";
             block.style.bottom = "0px";
             block.dataset.maxHealth = blockHealth;
-            const theme = locations[currentLocation];
-            const colorIndex = level % theme.blockColors.length;
             
-            // Создание редкого блока
+            const theme = locations[currentLocation];
+            const colorIndex = Math.floor(Math.random() * theme.blockColors.length);
+            
             let isRare = false;
             let rareType = null;
             const potentialRareType = getRareBlockType();
@@ -1471,14 +1520,13 @@
                 block.textContent = blockHealth;
             }
             
-            block.addEventListener('click', () => hitBlock(block, level));
+            block.addEventListener('click', () => hitBlock(block, clickPower));
             gameArea.appendChild(block);
             currentBlock = block;
-            updateHUD();
-            animateBlock(block, level);
+            animateBlock(block);
         }
 
-        function animateBlock(block, level) {
+        function animateBlock(block) {
             if (!gameActive) return;
             const speed = getCurrentSpeed();
             let position = parseInt(block.style.bottom) || 0;
@@ -1503,32 +1551,39 @@
             console.log('🎮 [Космический Кликер] Сессия завершена:', {
                 session: gameMetrics.sessions,
                 duration_sec: Math.round(sessionTime / 1000),
-                max_level: maxLevelReached,
+                total_damage: totalDamageDealt,
+                current_location: currentLocation,
                 total_coins: coins,
                 blocks_destroyed: gameMetrics.blocksDestroyed,
                 upgrades_bought: gameMetrics.upgradesBought,
                 total_clicks: gameMetrics.totalClicks
             });
+            
             localStorage.setItem('gameSessions', gameMetrics.sessions.toString());
+            
             if (currentBlock && gameArea.contains(currentBlock)) {
                 gameArea.removeChild(currentBlock);
                 currentBlock = null;
             }
+            
             if (finalScoreDisplay) {
-                finalScoreDisplay.textContent = `Макс. уровень: ${maxLevelReached}`;
+                finalScoreDisplay.textContent = `Всего урона: ${Math.floor(totalDamageDealt).toLocaleString()}`;
             }
+            
             if (gameOverScreen) {
                 gameOverScreen.style.display = "flex";
             }
+            
             if (customMessage) {
                 const h2 = gameOverScreen.querySelector('h2');
                 if (h2) h2.textContent = customMessage;
             }
+            
             saveGame();
         }
 
         function shareResult() {
-            const shareText = `🎮 Я достиг ${maxLevelReached} уровня и собрал ${Math.floor(coins)} Кристаллов в Космическом Кликере! 🌌
+            const shareText = `🎮 Я нанес ${Math.floor(totalDamageDealt).toLocaleString()} урона и собрал ${Math.floor(coins)} Кристаллов в Космическом Кликере! 🌌
 Сможешь побить мой рекорд?`;
             if (navigator.share) {
                 navigator.share({
@@ -1552,7 +1607,6 @@
         }
 
         function startGame() {
-            // Убедимся, что игра начинается с правильного состояния
             if (welcomeScreen) {
                 welcomeScreen.style.display = "none";
             }
@@ -1566,21 +1620,17 @@
             gameMetrics.upgradesBought = 0;
             gameMetrics.totalClicks = 0;
             
-            // Сбрасываем уровень на 1 при начале новой игры
-            currentLevel = 1;
-            
             updateCoins();
-            updateHUD();
-            setLocation('mercury');
+            updateProgressBar();
+            setLocation(currentLocation);
             animateParticles();
-            setTimeout(() => createMovingBlock(currentLevel), 500);
+            setTimeout(() => createMovingBlock(), 500);
         }
 
         function restartGame() {
-            // ПОЛНЫЙ СБРОС ВСЕХ ПАРАМЕТРОВ ДО НАЧАЛЬНЫХ ЗНАЧЕНИЙ
             coins = 0;
-            currentLevel = 1;
-            maxLevelReached = 0;
+            totalDamageDealt = 0;
+            currentLocation = 'mercury';
             clickPower = 1;
             clickUpgradeLevel = 0;
             helperUpgradeLevel = 0;
@@ -1590,43 +1640,32 @@
             helperActive = false;
             helperTimeLeft = 0;
             
-            // Остановка всех интервалов
             if (helperInterval) {
                 clearInterval(helperInterval);
                 helperInterval = null;
             }
             
-            // Очистка игрового поля
             gameArea.innerHTML = "";
             
-            // Сброс UI
             if (gameOverScreen) gameOverScreen.style.display = "none";
-            if (levelInfo) levelInfo.textContent = "Уровень: —";
-            if (levelAnnounce) levelAnnounce.style.opacity = "0";
             
-            // Сброс метрик текущей сессии (но не общего количества сессий)
             gameMetrics.startTime = Date.now();
             gameMetrics.blocksDestroyed = 0;
             gameMetrics.upgradesBought = 0;
             gameMetrics.totalClicks = 0;
             
-            // Установка начальной локации
             setLocation('mercury');
             
-            // Обновление интерфейса
             updateCoins();
-            updateHUD();
+            updateProgressBar();
             updateUpgradeButtons();
             
-            // Запуск анимаций
             animateParticles();
             
-            // Сохранение сброшенного состояния
             saveGame();
             
-            // Запуск новой игры
             gameActive = true;
-            setTimeout(() => createMovingBlock(currentLevel), 500);
+            setTimeout(() => createMovingBlock(), 500);
         }
 
         function showStartError() {
@@ -1681,8 +1720,8 @@
         resizeCanvases();
         window.addEventListener('resize', resizeCanvases);
         updateCoins();
-        updateHUD();
-        setLocation('mercury');
+        updateProgressBar();
+        setLocation(currentLocation);
         animateParticles();
     });
 
