@@ -2,11 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#000000">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Космический Кликер</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -14,8 +10,6 @@
       box-sizing: border-box;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
     }
     body {
       font-family: 'Orbitron', 'Segoe UI', sans-serif;
@@ -27,12 +21,6 @@
       background: #000;
       width: 100vw;
       height: 100vh;
-    }
-    /* Фикс для Safari */
-    @supports (-webkit-touch-callout: none) {
-      body {
-        height: -webkit-fill-available;
-      }
     }
     /* Фоны локаций */
     #location-mercury, #location-venus, #location-earth, #location-mars {
@@ -100,7 +88,7 @@
       color: white;
     }
     /* HUD */
-    #coins, #clickPowerInfo, #speedInfo, #helperTimer, #critChanceInfo, #critMultiplierInfo {
+    #coins, #clickPowerInfo, #helperTimer, #critChanceInfo, #critMultiplierInfo {
       position: absolute;
       left: 15px;
       font-size: 0.8em;
@@ -110,15 +98,14 @@
     }
     #coins { top: 15px; color: #d7ccc8; text-shadow: 0 0 4px rgba(215,204,200,0.7); }
     #clickPowerInfo { top: 35px; color: #a0d2ff; text-shadow: 0 0 3px rgba(160,210,255,0.6); }
-    #speedInfo { top: 55px; color: #ffab91; text-shadow: 0 0 3px rgba(255,171,145,0.6); }
-    #helperTimer { top: 115px; color: #69f0ae; text-shadow: 0 0 3px rgba(105,240,174,0.6); }
-    #critChanceInfo { top: 135px; color: #ffd700; text-shadow: 0 0 3px rgba(255,215,0,0.6); }
-    #critMultiplierInfo { top: 155px; color: #ffd700; text-shadow: 0 0 3px rgba(255,215,0,0.6); }
+    #helperTimer { top: 55px; color: #69f0ae; text-shadow: 0 0 3px rgba(105,240,174,0.6); }
+    #critChanceInfo { top: 75px; color: #ffd700; text-shadow: 0 0 3px rgba(255,215,0,0.6); }
+    #critMultiplierInfo { top: 95px; color: #ffd700; text-shadow: 0 0 3px rgba(255,215,0,0.6); }
     
     /* Прогресс-бар */
     #progressContainer {
       position: absolute;
-      top: 75px;
+      top: 115px;
       left: 15px;
       width: 200px;
       height: 12px;
@@ -138,7 +125,7 @@
     
     #progressText {
       position: absolute;
-      top: 90px;
+      top: 130px;
       left: 15px;
       font-size: 0.7em;
       color: #a0d2ff;
@@ -207,38 +194,47 @@
       color: white;
       text-shadow: 0 0 10px rgba(0,0,0,0.8);
     }
+    /* ОБНОВЛЕННЫЕ СТИЛИ КНОПОК */
     .upgrade-btn {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
-      width: 56px;
-      height: 56px;
+      right: 15px;
+      width: 52px;
+      height: 52px;
       border: none;
-      border-radius: 50%;
-      font-size: 1.6em;
+      border-radius: 10px;
+      font-size: 1.3em;
       cursor: pointer;
       z-index: 30;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       transition: transform 0.1s;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+      padding: 4px;
+      overflow: hidden;
     }
     .upgrade-btn:active { transform: scale(0.92); }
-    #upgradeClickBtn { bottom: 90px; }
-    #upgradeHelperBtn { bottom: 160px; }
-    #upgradeCritChanceBtn { bottom: 230px; }
-    #upgradeCritMultBtn { bottom: 300px; }
-    #upgradeHelperDmgBtn { bottom: 370px; }
+    #upgradeClickBtn { bottom: 85px; }
+    #upgradeHelperBtn { bottom: 145px; }
+    #upgradeCritChanceBtn { bottom: 205px; }
+    #upgradeCritMultBtn { bottom: 265px; }
+    #upgradeHelperDmgBtn { bottom: 325px; }
     .upgrade-btn.btn-available { 
-      background: #4CAF50; 
+      background: linear-gradient(135deg, #4CAF50, #388E3C); 
       color: white; 
     }
     .upgrade-btn.btn-unavailable { 
-      background: #666; 
+      background: linear-gradient(135deg, #666, #444); 
       color: #ccc; 
       cursor: not-allowed; 
       opacity: 0.7;
+    }
+    .upgrade-cost {
+      font-size: 0.55em;
+      margin-top: 2px;
+      font-weight: bold;
+      text-shadow: 0 0 2px rgba(0,0,0,0.8);
     }
     .tooltip {
       position: absolute;
@@ -445,107 +441,6 @@
         0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
         50% { background-position: 100% 50%; filter: hue-rotate(180deg); }
     }
-
-    /* Мобильная адаптация */
-    @media (max-width: 768px) {
-      #header {
-        padding: 8px 40px 8px 0;
-      }
-      
-      #gameTitle {
-        font-size: 1.1em;
-      }
-      
-      #coins, #clickPowerInfo, #speedInfo, #helperTimer, #critChanceInfo, #critMultiplierInfo {
-        font-size: 0.7em;
-        left: 10px;
-      }
-      
-      #coins { top: 10px; }
-      #clickPowerInfo { top: 25px; }
-      #speedInfo { top: 40px; }
-      #helperTimer { top: 70px; }
-      #critChanceInfo { top: 85px; }
-      #critMultiplierInfo { top: 100px; }
-      
-      /* Прогресс-бар для мобильных */
-      #progressContainer {
-        top: 55px;
-        left: 10px;
-        width: 150px;
-        height: 10px;
-      }
-      
-      #progressText {
-        top: 68px;
-        left: 10px;
-        font-size: 0.6em;
-      }
-      
-      /* Кнопки улучшений для мобильных */
-      .upgrade-btn {
-        width: 48px;
-        height: 48px;
-        font-size: 1.3em;
-        bottom: 15px;
-        right: 15px;
-      }
-      
-      #upgradeClickBtn { bottom: 75px; }
-      #upgradeHelperBtn { bottom: 135px; }
-      #upgradeCritChanceBtn { bottom: 195px; }
-      #upgradeCritMultBtn { bottom: 255px; }
-      #upgradeHelperDmgBtn { bottom: 315px; }
-      
-      .tooltip {
-        bottom: 70px;
-        right: 15px;
-        font-size: 0.75em;
-        max-width: 120px;
-        white-space: normal;
-        text-align: center;
-      }
-      
-      /* Блоки для мобильных */
-      .moving-block {
-        font-size: 0.8em;
-        min-width: 50px;
-        min-height: 50px;
-      }
-      
-      /* Экран приветствия и завершения */
-      #welcomeScreen h2 {
-        font-size: 1.6em;
-      }
-      
-      #welcomeScreen p, #gameOverScreen p {
-        font-size: 0.9em;
-      }
-      
-      .btn {
-        padding: 10px 20px;
-        font-size: 1em;
-      }
-    }
-
-    /* Для очень маленьких экранов */
-    @media (max-width: 360px) {
-      #progressContainer {
-        width: 120px;
-      }
-      
-      .upgrade-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.2em;
-      }
-      
-      #upgradeClickBtn { bottom: 70px; }
-      #upgradeHelperBtn { bottom: 125px; }
-      #upgradeCritChanceBtn { bottom: 180px; }
-      #upgradeCritMultBtn { bottom: 235px; }
-      #upgradeHelperDmgBtn { bottom: 290px; }
-    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -584,7 +479,6 @@
   </div>
   <div id="coins">Кристаллы: 0</div>
   <div id="clickPowerInfo">Сила: 1</div>
-  <div id="speedInfo">Скорость: 30</div>
   
   <!-- Прогресс-бар вместо уровня и здоровья -->
   <div id="progressContainer">
@@ -593,26 +487,34 @@
   <div id="progressText">Прогресс: 0/5000</div>
   
   <div id="helperTimer">Bobo: —</div>
-  <div id="critChanceInfo">Крит: 10%</div>
+  <div id="critChanceInfo">Крит: 1%</div>
   <div id="critMultiplierInfo">Множ: x2.0</div>
   
   <div id="gameArea"></div>
   <div id="levelAnnounce"></div>
+  
+  <!-- ОБНОВЛЕННЫЕ КНОПКИ С ЦЕНАМИ -->
   <button id="upgradeClickBtn" class="upgrade-btn btn-unavailable">
     <i class="fas fa-hammer"></i>
+    <div class="upgrade-cost">80</div>
   </button>
   <button id="upgradeHelperBtn" class="upgrade-btn btn-unavailable">
     <i class="fas fa-robot"></i>
+    <div class="upgrade-cost">1500</div>
   </button>
   <button id="upgradeCritChanceBtn" class="upgrade-btn btn-unavailable">
     <i class="fas fa-dice"></i>
+    <div class="upgrade-cost">500</div>
   </button>
   <button id="upgradeCritMultBtn" class="upgrade-btn btn-unavailable">
     <i class="fas fa-star"></i>
+    <div class="upgrade-cost">800</div>
   </button>
   <button id="upgradeHelperDmgBtn" class="upgrade-btn btn-unavailable">
     <i class="fas fa-bolt"></i>
+    <div class="upgrade-cost">1000</div>
   </button>
+  
   <div id="tooltip" class="tooltip"></div>
   <canvas id="particlesCanvas"></canvas>
   
@@ -659,32 +561,32 @@
         GOLD: {
             name: "Золотой",
             chance: 0.03,
-            multiplier: 5,
-            healthMultiplier: 1.5,
+            multiplier: 8, // УВЕЛИЧЕН С 5 ДО 8
+            healthMultiplier: 1.8, // УВЕЛИЧЕН С 1.5 ДО 1.8
             effect: "Мгновенный бонус",
             className: "block-gold"
         },
         RAINBOW: {
             name: "Радужный", 
             chance: 0.02,
-            multiplier: 3,
-            healthMultiplier: 1.3,
+            multiplier: 5, // УВЕЛИЧЕН С 3 ДО 5
+            healthMultiplier: 1.5, // УВЕЛИЧЕН С 1.3 ДО 1.5
             effect: "Увеличение силы",
             className: "block-rainbow"
         },
         CRYSTAL: {
             name: "Кристальный",
             chance: 0.025,
-            multiplier: 4,
-            healthMultiplier: 1.4,
+            multiplier: 6, // УВЕЛИЧЕН С 4 ДО 6
+            healthMultiplier: 1.6, // УВЕЛИЧЕН С 1.4 ДО 1.6
             effect: "Время помощника",
             className: "block-crystal"
         },
         MYSTERY: {
             name: "Загадочный",
             chance: 0.015,
-            multiplier: 6,
-            healthMultiplier: 1.6,
+            multiplier: 10, // УВЕЛИЧЕН С 6 ДО 10
+            healthMultiplier: 2.0, // УВЕЛИЧЕН С 1.6 ДО 2.0
             effect: "Случайный бонус",
             className: "block-mystery"
         }
@@ -703,97 +605,64 @@
         pluto: { damageRequired: 2000000, nextLocation: null }
     };
 
-    // === ПОЛНОЭКРАННЫЙ РЕЖИМ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ ===
-    let isFullscreen = false;
-
-    function isMobileDevice() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
-
-    function requestFullscreen() {
-        const docEl = document.documentElement;
+    // === ОБНОВЛЕННЫЕ БАЛАНСИРОВОЧНЫЕ НАСТРОЙКИ ===
+    const balanceConfig = {
+        // БАЛАНС ПРОЧНОСТИ БЛОКОВ - ЦЕЛЕВОЕ КОЛИЧЕСТВО КЛИКОВ 60-80
+        baseHealth: 80, // БАЗОВАЯ ПРОЧНОСТЬ ПРИ СИЛЕ 1
+        targetClicks: 70, // ЦЕЛЕВОЕ КОЛИЧЕСТВО КЛИКОВ
+        healthRandomRange: { min: 0.8, max: 1.3 },
         
-        if (docEl.requestFullscreen) {
-            docEl.requestFullscreen();
-        } else if (docEl.mozRequestFullScreen) { /* Firefox */
-            docEl.mozRequestFullScreen();
-        } else if (docEl.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-            docEl.webkitRequestFullscreen();
-        } else if (docEl.msRequestFullscreen) { /* IE/Edge */
-            docEl.msRequestFullscreen();
-        }
+        // БАЛАНС УРОНА
+        damageProgression: {
+            baseMultiplier: 1.15, // СНИЖЕН С 1.2 ДО 1.15
+            diminishingReturns: 0.96, // УВЕЛИЧЕН С 0.95 ДО 0.96
+            maxLevelEffect: 60 // УВЕЛИЧЕН С 50 ДО 60
+        },
         
-        isFullscreen = true;
-    }
-
-    function exitFullscreen() {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) { /* Firefox */
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) { /* Chrome, Safari & Opera */
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) { /* IE/Edge */
-            document.msExitFullscreen();
-        }
-        
-        isFullscreen = false;
-    }
-
-    function toggleFullscreen() {
-        if (!isFullscreen) {
-            requestFullscreen();
-        } else {
-            exitFullscreen();
-        }
-    }
-
-    // Автоматический полноэкранный режим для мобильных устройств
-    function setupMobileFullscreen() {
-        if (!isMobileDevice()) return;
-        
-        // Запрос полноэкранного режима при первом касании
-        const enableFullscreen = () => {
-            if (!isFullscreen) {
-                requestFullscreen();
-            }
-            document.removeEventListener('click', enableFullscreen);
-            document.removeEventListener('touchstart', enableFullscreen);
-        };
-        
-        document.addEventListener('click', enableFullscreen);
-        document.addEventListener('touchstart', enableFullscreen);
-        
-        // Обработка изменения ориентации
-        window.addEventListener('resize', handleMobileResize);
-        window.addEventListener('orientationchange', handleMobileResize);
-    }
-
-    // Обработчик изменения размера для мобильных
-    function handleMobileResize() {
-        setTimeout(() => {
-            resizeCanvases();
-            updateMobileLayout();
-        }, 100);
-    }
-
-    // Обновление layout для мобильных
-    function updateMobileLayout() {
-        if (!isMobileDevice()) return;
-        
-        // Динамическая адаптация размеров блоков
-        const blockSize = Math.max(40, Math.min(80, window.innerWidth * 0.15));
-        document.querySelectorAll('.moving-block').forEach(block => {
-            const currentSize = parseInt(block.style.width);
-            if (currentSize > blockSize) {
-                block.style.width = blockSize + 'px';
-                block.style.height = blockSize + 'px';
-            }
-        });
-    }
+        // БАЛАНС БОНУСОВ
+        rewardMultiplier: 2.5, // БАЗОВЫЙ МНОЖИТЕЛЬ НАГРАД
+        comboMultiplier: 0.25, // УВЕЛИЧЕН С 0.15 ДО 0.25
+        randomBonusRange: { min: 0.8, max: 1.5 } // ДИАПАЗОН СЛУЧАЙНОГО БОНУСА
+    };
 
     // Объявляем глобальные переменные для анимаций
     let stars = [], lavaParticles = [], snowflakes = [], bioDots = [];
+
+    // === ОБНОВЛЕННЫЕ ФУНКЦИИ БАЛАНСИРОВКИ ===
+    function calculateBlockHealth() {
+        const location = locationRequirements[currentLocation];
+        const locationBonus = 1 + (location.damageRequired / 100000); // БОЛЕЕ ПЛАВНЫЙ РОСТ
+        
+        // ОСНОВНАЯ ПРОЧНОСТЬ БЛОКА - РАССЧИТЫВАЕМ ИСХОДЯ ИЗ ЦЕЛЕВОГО КОЛИЧЕСТВА КЛИКОВ
+        let baseHealth = balanceConfig.baseHealth * locationBonus;
+        
+        // УЧИТЫВАЕМ СИЛУ ИГРОКА - БЛОКИ ДОЛЖНЫ ТРЕБОВАТЬ ~70 КЛИКОВ НЕЗАВИСИМО ОТ СИЛЫ
+        const targetHealth = clickPower * balanceConfig.targetClicks;
+        
+        // КОМБИНИРУЕМ БАЗОВУЮ ПРОЧНОСТЬ И ЦЕЛЕВУЮ С УЧЕТОМ СИЛЫ
+        const combinedHealth = (baseHealth + targetHealth) / 2;
+        
+        const randomFactor = balanceConfig.healthRandomRange.min + 
+                            Math.random() * (balanceConfig.healthRandomRange.max - balanceConfig.healthRandomRange.min);
+        
+        return Math.floor(combinedHealth * randomFactor);
+    }
+
+    function calculateClickPower() {
+        const basePower = 1;
+        const upgradeBonus = clickUpgradeLevel;
+        
+        const diminishingEffect = Math.pow(balanceConfig.damageProgression.diminishingReturns, 
+                                         Math.min(clickUpgradeLevel, balanceConfig.damageProgression.maxLevelEffect));
+        
+        const nonLinearGrowth = Math.sqrt(clickUpgradeLevel + 1);
+        
+        return basePower + (upgradeBonus * diminishingEffect * nonLinearGrowth * balanceConfig.damageProgression.baseMultiplier);
+    }
+
+    function getExpectedClicks(blockHealth, playerDamage) {
+        return Math.ceil(blockHealth / playerDamage);
+    }
 
     function getRareBlockType() {
         const rand = Math.random();
@@ -856,7 +725,7 @@
           coins = data.coins || 0;
           clickPower = data.clickPower || 1;
           clickUpgradeLevel = data.clickUpgradeLevel || 0;
-          critChance = data.critChance || 0.1;
+          critChance = data.critChance || 0.01; // ИЗМЕНЕНО С 0.1 НА 0.01
           critMultiplier = data.critMultiplier || 2.0;
           helperDamageBonus = data.helperDamageBonus || 0.3;
           helperUpgradeLevel = data.helperUpgradeLevel || 0;
@@ -890,8 +759,6 @@
     // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
     let coins = 0;
     let totalDamageDealt = 0;
-    const baseHealth = 50;
-    const healthMultiplier = 1.1;
     let clickPower = 1;
     let clickUpgradeLevel = 0;
     const baseClickUpgradeCost = 80;
@@ -899,7 +766,7 @@
     let currentLocation = 'mercury';
     let currentBlockHealth = 0;
     let currentBlock = null;
-    let blockSpeed = 30;
+    let blockSpeed = 20;
     let comboCount = 0;
     let lastDestroyTime = 0;
     const COMBO_TIME_WINDOW = 2000;
@@ -911,7 +778,7 @@
     let helperUpgradeLevel = 0;
     const baseHelperUpgradeCost = 1000;
     const helperUpgradeMultiplier = 1.8;
-    let critChance = 0.1;
+    let critChance = 0.01; // ИЗМЕНЕНО С 0.1 НА 0.01
     let critMultiplier = 2.0;
     const critChanceCost = 500;
     const critMultiplierCost = 800;
@@ -930,7 +797,6 @@
         const DOMElements = {
             coinsDisplay: document.getElementById("coins"),
             clickPowerDisplay: document.getElementById("clickPowerInfo"),
-            speedDisplay: document.getElementById("speedInfo"),
             helperTimerDisplay: document.getElementById("helperTimer"),
             critChanceDisplay: document.getElementById("critChanceInfo"),
             critMultiplierDisplay: document.getElementById("critMultiplierInfo"),
@@ -973,7 +839,7 @@
 
         // Присваиваем переменные
         const {
-            coinsDisplay, clickPowerDisplay, speedDisplay, helperTimerDisplay, 
+            coinsDisplay, clickPowerDisplay, helperTimerDisplay, 
             critChanceDisplay, critMultiplierDisplay, progressBar, progressText,
             levelAnnounce, gameTitle, upgradeClickBtn, upgradeHelperBtn, 
             upgradeCritChanceBtn, upgradeCritMultBtn, upgradeHelperDmgBtn, 
@@ -984,43 +850,22 @@
 
         // ЗАГРУЗКА СОХРАНЕНИЯ ПРИ СТАРТЕ
         loadGame();
+        // Пересчитываем урон по новой формуле после загрузки
+        clickPower = calculateClickPower();
 
         function resizeCanvases() {
             const w = window.innerWidth;
             const h = window.innerHeight;
-            
-            // Устанавливаем размеры canvas с учетом pixel ratio
-            const canvases = [starsCanvas, lavaCanvas, iceCanvas, bioCanvas, particlesCanvas];
-            canvases.forEach(canvas => {
-                if (canvas) {
-                    const rect = canvas.getBoundingClientRect();
-                    canvas.width = rect.width * window.devicePixelRatio;
-                    canvas.height = rect.height * window.devicePixelRatio;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            [starsCanvas, lavaCanvas, iceCanvas, bioCanvas, particlesCanvas].forEach(c => {
+                if (c) {
+                    c.width = w;
+                    c.height = h;
                 }
             });
-            
-            // Переинициализация анимаций для текущей локации
-            if (currentLocation === 'mercury') {
-                initStars();
-                if (gameActive) animateStars();
-            } else if (currentLocation === 'venus') {
-                initLava();
-                if (gameActive) animateLava();
-            } else if (currentLocation === 'earth') {
-                initSnow();
-                if (gameActive) animateSnow();
-            } else if (currentLocation === 'mars') {
-                initBio();
-                if (gameActive) animateBio();
-            }
-            
-            // Обновление layout для мобильных
-            if (isMobileDevice()) {
-                updateMobileLayout();
-            }
+            if (currentLocation === 'mercury') initStars();
+            if (currentLocation === 'venus') initLava();
+            if (currentLocation === 'earth') initSnow();
+            if (currentLocation === 'mars') initBio();
         }
         
         // === ФОНОВЫЕ АНИМАЦИИ ===
@@ -1283,7 +1128,8 @@
             currentBlockHealth -= upgradedHelperDmg;
             totalDamageDealt += upgradedHelperDmg;
             gameMetrics.totalClicks++;
-            createDamageText(Math.floor(upgradedHelperDmg), currentBlock, '#69f0ae');
+            // ОКРУГЛЕНИЕ УРОНА ДО ЦЕЛОГО ЧИСЛА
+            createDamageText(Math.round(upgradedHelperDmg), currentBlock, '#69f0ae');
             checkLocationUpgrade();
             if (currentBlockHealth <= 0) {
                 destroyBlock(currentBlock);
@@ -1359,21 +1205,19 @@
 
         function hitBlock(block, damage) {
             if (!gameActive) return;
-            
-            // Тактильный отклик для мобильных устройств
-            if (navigator.vibrate && isMobileDevice()) {
-                navigator.vibrate(30); // 30ms вибрации
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
             }
-            
             playSound('clickSound');
             block.style.transform = 'translateX(-50%) scale(0.85)';
             setTimeout(() => {
                 block.style.transform = 'translateX(-50%) scale(1)';
             }, 100);
-            let finalDamage = damage;
+            // ОКРУГЛЕНИЕ УРОНА ДО ЦЕЛОГО ЧИСЛА ВО ВСЕХ СЛУЧАЯХ
+            let finalDamage = Math.round(damage);
             let isCrit = false;
             if (Math.random() < critChance) {
-                finalDamage = Math.floor(damage * critMultiplier);
+                finalDamage = Math.round(damage * critMultiplier);
                 isCrit = true;
             }
             currentBlockHealth -= finalDamage;
@@ -1398,8 +1242,14 @@
             }
             lastDestroyTime = now;
             
-            const baseReward = 10 + (locationRequirements[currentLocation].damageRequired / 1000);
-            let reward = Math.floor(baseReward * (1 + comboCount * 0.2));
+            // ОБНОВЛЕННАЯ СИСТЕМА БОНУСОВ
+            const baseReward = 25 + (locationRequirements[currentLocation].damageRequired / 500); // УВЕЛИЧЕНА БАЗОВАЯ НАГРАДА
+            let reward = Math.floor(baseReward * balanceConfig.rewardMultiplier);
+            
+            // ДОБАВЛЯЕМ СЛУЧАЙНЫЙ БОНУС
+            const randomBonus = balanceConfig.randomBonusRange.min + 
+                               Math.random() * (balanceConfig.randomBonusRange.max - balanceConfig.randomBonusRange.min);
+            reward = Math.floor(reward * randomBonus);
             
             let isRare = false;
             let rareType = null;
@@ -1413,7 +1263,7 @@
             }
 
             if (comboCount > 1) {
-                const comboBonus = Math.floor(reward * (comboCount * 0.2));
+                const comboBonus = Math.floor(reward * (comboCount * balanceConfig.comboMultiplier));
                 reward += comboBonus;
                 showComboText(comboCount, comboBonus, block);
                 playSound('comboSound');
@@ -1591,9 +1441,11 @@
             updateUpgradeButtons();
         }
 
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ КНОПОК
         function updateUpgradeButtons() {
             const clickCost = Math.floor(baseClickUpgradeCost * Math.pow(1.5, clickUpgradeLevel));
             if (upgradeClickBtn) {
+                upgradeClickBtn.querySelector('.upgrade-cost').textContent = clickCost.toLocaleString();
                 if (coins >= clickCost) {
                     upgradeClickBtn.className = "upgrade-btn btn-available";
                 } else {
@@ -1601,6 +1453,7 @@
                 }
             }
             if (upgradeHelperBtn) {
+                upgradeHelperBtn.querySelector('.upgrade-cost').textContent = helperCost.toLocaleString();
                 if (coins >= helperCost && !helperActive) {
                     upgradeHelperBtn.className = "upgrade-btn btn-available";
                 } else {
@@ -1608,6 +1461,7 @@
                 }
             }
             if (upgradeCritChanceBtn) {
+                upgradeCritChanceBtn.querySelector('.upgrade-cost').textContent = critChanceCost.toLocaleString();
                 if (coins >= critChanceCost) {
                     upgradeCritChanceBtn.className = "upgrade-btn btn-available";
                 } else {
@@ -1615,6 +1469,7 @@
                 }
             }
             if (upgradeCritMultBtn) {
+                upgradeCritMultBtn.querySelector('.upgrade-cost').textContent = critMultiplierCost.toLocaleString();
                 if (coins >= critMultiplierCost) {
                     upgradeCritMultBtn.className = "upgrade-btn btn-available";
                 } else {
@@ -1623,6 +1478,7 @@
             }
             if (upgradeHelperDmgBtn) {
                 const helperDmgCost = Math.floor(baseHelperUpgradeCost * Math.pow(helperUpgradeMultiplier, helperUpgradeLevel));
+                upgradeHelperDmgBtn.querySelector('.upgrade-cost').textContent = helperDmgCost.toLocaleString();
                 if (coins >= helperDmgCost) {
                     upgradeHelperDmgBtn.className = "upgrade-btn btn-available";
                 } else {
@@ -1635,13 +1491,17 @@
             const cost = Math.floor(baseClickUpgradeCost * Math.pow(1.5, clickUpgradeLevel));
             if (coins >= cost) {
                 coins -= cost;
-                clickPower += 1;
                 clickUpgradeLevel += 1;
+                
+                // Пересчитываем урон по новой формуле
+                clickPower = calculateClickPower();
+                
                 gameMetrics.upgradesBought++;
                 updateCoins();
-                if (clickPowerDisplay) clickPowerDisplay.textContent = `Сила: ${clickPower}`;
+                // ОКРУГЛЕНИЕ ДО ЦЕЛОГО ЧИСЛА
+                if (clickPowerDisplay) clickPowerDisplay.textContent = `Сила: ${Math.round(clickPower)}`;
                 playSound('upgradeSound');
-                showTooltip(`Сила увеличена!<br>Теперь: ${clickPower}`);
+                showTooltip(`Сила увеличена!<br>Теперь: ${Math.round(clickPower)}`);
                 setTimeout(hideTooltip, 1500);
                 saveGame();
             }
@@ -1659,12 +1519,12 @@
         function buyCritChance() {
             if (coins >= critChanceCost) {
                 coins -= critChanceCost;
-                critChance = Math.min(1.0, critChance + 0.05);
+                critChance = Math.min(1.0, critChance + 0.01); // ИЗМЕНЕНО С 0.05 НА 0.01
                 gameMetrics.upgradesBought++;
                 updateCoins();
                 if (critChanceDisplay) critChanceDisplay.textContent = `Крит: ${(critChance * 100).toFixed(0)}%`;
                 playSound('upgradeSound');
-                showTooltip(`Шанс крита +5%!<br>Теперь: ${(critChance * 100).toFixed(0)}%`);
+                showTooltip(`Шанс крита +1%!<br>Теперь: ${(critChance * 100).toFixed(0)}%`); // ОБНОВЛЕНО ОПИСАНИЕ
                 setTimeout(hideTooltip, 1500);
                 saveGame();
             }
@@ -1714,8 +1574,8 @@
                 gameArea.removeChild(currentBlock);
             }
             
-            const locationMultiplier = 1 + (locationRequirements[currentLocation].damageRequired / 50000);
-            const blockHealth = Math.floor(baseHealth * locationMultiplier * (0.5 + Math.random()));
+            // НОВАЯ СИСТЕМА РАСЧЕТА ПРОЧНОСТИ
+            const blockHealth = calculateBlockHealth();
             currentBlockHealth = blockHealth;
             
             const block = document.createElement("div");
@@ -1747,6 +1607,10 @@
                 block.style.border = `2px solid ${theme.borderColor}`;
                 block.textContent = blockHealth;
             }
+            
+            // Отладочная информация
+            const expectedClicks = getExpectedClicks(currentBlockHealth, clickPower);
+            console.log(`Создан блок: Здоровье=${currentBlockHealth}, Урон=${Math.round(clickPower)}, Ожидается кликов=${expectedClicks}`);
             
             block.addEventListener('click', () => hitBlock(block, clickPower));
             gameArea.appendChild(block);
@@ -1834,15 +1698,36 @@
             }
         }
 
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ STARTGAME - ТЕПЕРЬ СБРАСЫВАЕТ ПАРАМЕТРЫ
         function startGame() {
+            // СБРАСЫВАЕМ ВСЕ ПАРАМЕТРЫ ПЕРЕД НАЧАЛОМ НОВОЙ ИГРЫ
+            coins = 0;
+            totalDamageDealt = 0;
+            currentLocation = 'mercury';
+            clickPower = 1;
+            clickUpgradeLevel = 0;
+            helperUpgradeLevel = 0;
+            helperDamageBonus = 0.3;
+            critChance = 0.01; // ИЗМЕНЕНО С 0.1 НА 0.01
+            critMultiplier = 2.0;
+            helperActive = false;
+            helperTimeLeft = 0;
+            
+            if (helperInterval) {
+                clearInterval(helperInterval);
+                helperInterval = null;
+            }
+            
+            gameArea.innerHTML = "";
+            
             if (welcomeScreen) {
                 welcomeScreen.style.display = "none";
             }
+            
             gameActive = true;
             comboCount = 0;
             lastDestroyTime = 0;
-            helperActive = false;
-            helperTimeLeft = 0;
+            
             gameMetrics.startTime = Date.now();
             gameMetrics.blocksDestroyed = 0;
             gameMetrics.upgradesBought = 0;
@@ -1850,8 +1735,10 @@
             
             updateCoins();
             updateProgressBar();
+            updateUpgradeButtons();
             setLocation(currentLocation);
             animateParticles();
+            
             setTimeout(() => createMovingBlock(), 500);
         }
 
@@ -1863,7 +1750,7 @@
             clickUpgradeLevel = 0;
             helperUpgradeLevel = 0;
             helperDamageBonus = 0.3;
-            critChance = 0.1;
+            critChance = 0.01; // ИЗМЕНЕНО С 0.1 НА 0.01
             critMultiplier = 2.0;
             helperActive = false;
             helperTimeLeft = 0;
@@ -1901,22 +1788,11 @@
             setTimeout(hideTooltip, 3000);
         }
 
-        // Обработчик для полноэкранного режима
-        function handleFullscreenChange() {
-            isFullscreen = !!(document.fullscreenElement || 
-                             document.webkitFullscreenElement || 
-                             document.mozFullScreenElement || 
-                             document.msFullscreenElement);
-            
-            // Перерасчет размеров при изменении полноэкранного режима
-            setTimeout(resizeCanvases, 100);
-        }
-
         // === ОБРАБОТЧИКИ СОБЫТИЙ ===
         if (startBtn) {
             startBtn.addEventListener('click', function() {
                 try {
-                    startGame();
+                    startGame(); // Теперь startGame сбрасывает параметры
                 } catch (error) {
                     console.error("Ошибка при запуске игры:", error);
                     showStartError();
@@ -1928,7 +1804,7 @@
 
         if (upgradeClickBtn) {
             upgradeClickBtn.addEventListener('click', buyClickPower);
-            upgradeClickBtn.addEventListener('mouseenter', () => showTooltip('Сила удара<br>+1 урон'));
+            upgradeClickBtn.addEventListener('mouseenter', () => showTooltip('Сила удара<br>Нелинейный рост урона'));
             upgradeClickBtn.addEventListener('mouseleave', hideTooltip);
         }
         if (upgradeHelperBtn) {
@@ -1938,7 +1814,7 @@
         }
         if (upgradeCritChanceBtn) {
             upgradeCritChanceBtn.addEventListener('click', buyCritChance);
-            upgradeCritChanceBtn.addEventListener('mouseenter', () => showTooltip('Шанс крита<br>+5% шанс крит. урона'));
+            upgradeCritChanceBtn.addEventListener('mouseenter', () => showTooltip('Шанс крита<br>+1% шанс крит. урона')); // ОБНОВЛЕНО ОПИСАНИЕ
             upgradeCritChanceBtn.addEventListener('mouseleave', hideTooltip);
         }
         if (upgradeCritMultBtn) {
@@ -1954,22 +1830,6 @@
         if (restartBtn) restartBtn.addEventListener('click', restartGame);
         if (shareBtn) shareBtn.addEventListener('click', shareResult);
         if (dailyRewardBtn) dailyRewardBtn.addEventListener('click', checkDailyReward);
-
-        // Инициализация полноэкранного режима для мобильных
-        setupMobileFullscreen();
-
-        // Обработчик для кнопки полноэкранного режима (опционально)
-        document.addEventListener('dblclick', function(e) {
-            if (e.target === gameArea || e.target === document.body) {
-                toggleFullscreen();
-            }
-        });
-
-        // Обработчик выхода из полноэкранного режима
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
         // ИНИЦИАЛИЗАЦИЯ
         resizeCanvases();
