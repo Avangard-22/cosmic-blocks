@@ -2,7 +2,11 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
   <title>Космический Кликер</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -10,6 +14,8 @@
       box-sizing: border-box;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
     body {
       font-family: 'Orbitron', 'Segoe UI', sans-serif;
@@ -21,6 +27,12 @@
       background: #000;
       width: 100vw;
       height: 100vh;
+    }
+    /* Фикс для Safari */
+    @supports (-webkit-touch-callout: none) {
+      body {
+        height: -webkit-fill-available;
+      }
     }
     /* Фоны локаций */
     #location-mercury, #location-venus, #location-earth, #location-mars {
@@ -433,6 +445,107 @@
         0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
         50% { background-position: 100% 50%; filter: hue-rotate(180deg); }
     }
+
+    /* Мобильная адаптация */
+    @media (max-width: 768px) {
+      #header {
+        padding: 8px 40px 8px 0;
+      }
+      
+      #gameTitle {
+        font-size: 1.1em;
+      }
+      
+      #coins, #clickPowerInfo, #speedInfo, #helperTimer, #critChanceInfo, #critMultiplierInfo {
+        font-size: 0.7em;
+        left: 10px;
+      }
+      
+      #coins { top: 10px; }
+      #clickPowerInfo { top: 25px; }
+      #speedInfo { top: 40px; }
+      #helperTimer { top: 70px; }
+      #critChanceInfo { top: 85px; }
+      #critMultiplierInfo { top: 100px; }
+      
+      /* Прогресс-бар для мобильных */
+      #progressContainer {
+        top: 55px;
+        left: 10px;
+        width: 150px;
+        height: 10px;
+      }
+      
+      #progressText {
+        top: 68px;
+        left: 10px;
+        font-size: 0.6em;
+      }
+      
+      /* Кнопки улучшений для мобильных */
+      .upgrade-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.3em;
+        bottom: 15px;
+        right: 15px;
+      }
+      
+      #upgradeClickBtn { bottom: 75px; }
+      #upgradeHelperBtn { bottom: 135px; }
+      #upgradeCritChanceBtn { bottom: 195px; }
+      #upgradeCritMultBtn { bottom: 255px; }
+      #upgradeHelperDmgBtn { bottom: 315px; }
+      
+      .tooltip {
+        bottom: 70px;
+        right: 15px;
+        font-size: 0.75em;
+        max-width: 120px;
+        white-space: normal;
+        text-align: center;
+      }
+      
+      /* Блоки для мобильных */
+      .moving-block {
+        font-size: 0.8em;
+        min-width: 50px;
+        min-height: 50px;
+      }
+      
+      /* Экран приветствия и завершения */
+      #welcomeScreen h2 {
+        font-size: 1.6em;
+      }
+      
+      #welcomeScreen p, #gameOverScreen p {
+        font-size: 0.9em;
+      }
+      
+      .btn {
+        padding: 10px 20px;
+        font-size: 1em;
+      }
+    }
+
+    /* Для очень маленьких экранов */
+    @media (max-width: 360px) {
+      #progressContainer {
+        width: 120px;
+      }
+      
+      .upgrade-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2em;
+      }
+      
+      #upgradeClickBtn { bottom: 70px; }
+      #upgradeHelperBtn { bottom: 125px; }
+      #upgradeCritChanceBtn { bottom: 180px; }
+      #upgradeCritMultBtn { bottom: 235px; }
+      #upgradeHelperDmgBtn { bottom: 290px; }
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -589,6 +702,95 @@
         neptune: { damageRequired: 1000000, nextLocation: 'pluto' },
         pluto: { damageRequired: 2000000, nextLocation: null }
     };
+
+    // === ПОЛНОЭКРАННЫЙ РЕЖИМ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ ===
+    let isFullscreen = false;
+
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    function requestFullscreen() {
+        const docEl = document.documentElement;
+        
+        if (docEl.requestFullscreen) {
+            docEl.requestFullscreen();
+        } else if (docEl.mozRequestFullScreen) { /* Firefox */
+            docEl.mozRequestFullScreen();
+        } else if (docEl.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            docEl.webkitRequestFullscreen();
+        } else if (docEl.msRequestFullscreen) { /* IE/Edge */
+            docEl.msRequestFullscreen();
+        }
+        
+        isFullscreen = true;
+    }
+
+    function exitFullscreen() {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { /* Firefox */
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { /* Chrome, Safari & Opera */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE/Edge */
+            document.msExitFullscreen();
+        }
+        
+        isFullscreen = false;
+    }
+
+    function toggleFullscreen() {
+        if (!isFullscreen) {
+            requestFullscreen();
+        } else {
+            exitFullscreen();
+        }
+    }
+
+    // Автоматический полноэкранный режим для мобильных устройств
+    function setupMobileFullscreen() {
+        if (!isMobileDevice()) return;
+        
+        // Запрос полноэкранного режима при первом касании
+        const enableFullscreen = () => {
+            if (!isFullscreen) {
+                requestFullscreen();
+            }
+            document.removeEventListener('click', enableFullscreen);
+            document.removeEventListener('touchstart', enableFullscreen);
+        };
+        
+        document.addEventListener('click', enableFullscreen);
+        document.addEventListener('touchstart', enableFullscreen);
+        
+        // Обработка изменения ориентации
+        window.addEventListener('resize', handleMobileResize);
+        window.addEventListener('orientationchange', handleMobileResize);
+    }
+
+    // Обработчик изменения размера для мобильных
+    function handleMobileResize() {
+        setTimeout(() => {
+            resizeCanvases();
+            updateMobileLayout();
+        }, 100);
+    }
+
+    // Обновление layout для мобильных
+    function updateMobileLayout() {
+        if (!isMobileDevice()) return;
+        
+        // Динамическая адаптация размеров блоков
+        const blockSize = Math.max(40, Math.min(80, window.innerWidth * 0.15));
+        document.querySelectorAll('.moving-block').forEach(block => {
+            const currentSize = parseInt(block.style.width);
+            if (currentSize > blockSize) {
+                block.style.width = blockSize + 'px';
+                block.style.height = blockSize + 'px';
+            }
+        });
+    }
 
     // Объявляем глобальные переменные для анимаций
     let stars = [], lavaParticles = [], snowflakes = [], bioDots = [];
@@ -786,16 +988,39 @@
         function resizeCanvases() {
             const w = window.innerWidth;
             const h = window.innerHeight;
-            [starsCanvas, lavaCanvas, iceCanvas, bioCanvas, particlesCanvas].forEach(c => {
-                if (c) {
-                    c.width = w;
-                    c.height = h;
+            
+            // Устанавливаем размеры canvas с учетом pixel ratio
+            const canvases = [starsCanvas, lavaCanvas, iceCanvas, bioCanvas, particlesCanvas];
+            canvases.forEach(canvas => {
+                if (canvas) {
+                    const rect = canvas.getBoundingClientRect();
+                    canvas.width = rect.width * window.devicePixelRatio;
+                    canvas.height = rect.height * window.devicePixelRatio;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
                 }
             });
-            if (currentLocation === 'mercury') initStars();
-            if (currentLocation === 'venus') initLava();
-            if (currentLocation === 'earth') initSnow();
-            if (currentLocation === 'mars') initBio();
+            
+            // Переинициализация анимаций для текущей локации
+            if (currentLocation === 'mercury') {
+                initStars();
+                if (gameActive) animateStars();
+            } else if (currentLocation === 'venus') {
+                initLava();
+                if (gameActive) animateLava();
+            } else if (currentLocation === 'earth') {
+                initSnow();
+                if (gameActive) animateSnow();
+            } else if (currentLocation === 'mars') {
+                initBio();
+                if (gameActive) animateBio();
+            }
+            
+            // Обновление layout для мобильных
+            if (isMobileDevice()) {
+                updateMobileLayout();
+            }
         }
         
         // === ФОНОВЫЕ АНИМАЦИИ ===
@@ -1134,9 +1359,12 @@
 
         function hitBlock(block, damage) {
             if (!gameActive) return;
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
+            
+            // Тактильный отклик для мобильных устройств
+            if (navigator.vibrate && isMobileDevice()) {
+                navigator.vibrate(30); // 30ms вибрации
             }
+            
             playSound('clickSound');
             block.style.transform = 'translateX(-50%) scale(0.85)';
             setTimeout(() => {
@@ -1673,6 +1901,17 @@
             setTimeout(hideTooltip, 3000);
         }
 
+        // Обработчик для полноэкранного режима
+        function handleFullscreenChange() {
+            isFullscreen = !!(document.fullscreenElement || 
+                             document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || 
+                             document.msFullscreenElement);
+            
+            // Перерасчет размеров при изменении полноэкранного режима
+            setTimeout(resizeCanvases, 100);
+        }
+
         // === ОБРАБОТЧИКИ СОБЫТИЙ ===
         if (startBtn) {
             startBtn.addEventListener('click', function() {
@@ -1715,6 +1954,22 @@
         if (restartBtn) restartBtn.addEventListener('click', restartGame);
         if (shareBtn) shareBtn.addEventListener('click', shareResult);
         if (dailyRewardBtn) dailyRewardBtn.addEventListener('click', checkDailyReward);
+
+        // Инициализация полноэкранного режима для мобильных
+        setupMobileFullscreen();
+
+        // Обработчик для кнопки полноэкранного режима (опционально)
+        document.addEventListener('dblclick', function(e) {
+            if (e.target === gameArea || e.target === document.body) {
+                toggleFullscreen();
+            }
+        });
+
+        // Обработчик выхода из полноэкранного режима
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
         // ИНИЦИАЛИЗАЦИЯ
         resizeCanvases();
