@@ -542,6 +542,81 @@
         animation: mysteryShift 4s ease-in-out infinite !important;
     }
     
+    /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ЭФФЕКТА ВЗРЫВА - УВЕЛИЧЕННАЯ ОБЛАСТЬ */
+    .explosion {
+      position: absolute;
+      pointer-events: none;
+      z-index: 15;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+      transform: translate(-50%, -50%);
+      animation: explode 0.6s ease-out forwards;
+    }
+    
+    @keyframes explode {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+      }
+    }
+    
+    .explosion-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 14;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      animation: particleFly 0.8s ease-out forwards;
+    }
+    
+    @keyframes particleFly {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+      }
+    }
+    
+    /* Адаптация для мобильных устройств */
+    @media (max-width: 768px) {
+      .explosion {
+        width: 150px;
+        height: 150px;
+      }
+      
+      @keyframes explode {
+        0% {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.8;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(2);
+          opacity: 0;
+        }
+      }
+      
+      .explosion-particle {
+        width: 10px;
+        height: 10px;
+      }
+    }
+    
     @keyframes gold-shimmer {
         0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 107, 0, 0.3) inset; }
         50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 107, 0, 0.6) inset; }
@@ -676,19 +751,21 @@
   </div>
 
   <script>
-    // === КОД ПЛАНЕТАРНОГО ФОНА ===
+    // === ОБНОВЛЕННЫЙ КОД ПЛАНЕТАРНОГО ФОНА С АДАПТАЦИЕЙ ДЛЯ МОБИЛЬНЫХ ===
     (function() {
       const canvas = document.getElementById('planetBackgroundCanvas');
       const ctx = canvas.getContext('2d');
       
-      // Фиксированные настройки для фона
+      // АДАПТИРОВАННЫЕ НАСТРОЙКИ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
       const fixedSettings = {
-        speed: 5,
-        density: 5,
-        size: 5,
-        smoothness: 5,
-        nebulaIntensity: 3,
-        starDensity: 2
+        speed: isMobile ? 3 : 5,
+        density: isMobile ? 3 : 5,
+        size: isMobile ? 3 : 5,
+        smoothness: isMobile ? 3 : 5,
+        nebulaIntensity: isMobile ? 2 : 3,
+        starDensity: isMobile ? 1 : 2
       };
       
       // Переменные для анимации
@@ -760,24 +837,37 @@
         }
       };
       
-      // Установка размеров canvas
+      // Установка размеров canvas с учетом мобильных устройств
       function setCanvasSize() {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
+        
+        // Оптимизация для мобильных устройств
+        if (isMobile) {
+          const pixelRatio = window.devicePixelRatio || 1;
+          canvas.width = canvas.offsetWidth * pixelRatio;
+          canvas.height = canvas.offsetHeight * pixelRatio;
+          ctx.scale(pixelRatio, pixelRatio);
+        }
       }
       
-      // Класс частиц
+      // Класс частиц с оптимизацией для мобильных
       class Particle {
         constructor(x, y, radius, color, velocity, type) {
           this.x = x;
           this.y = y;
-          this.radius = radius;
+          // Уменьшаем размер частиц на мобильных
+          this.radius = isMobile ? radius * 0.7 : radius;
           this.color = color;
-          this.velocity = velocity;
+          // Замедляем скорость на мобильных
+          this.velocity = {
+            x: isMobile ? velocity.x * 0.7 : velocity.x,
+            y: isMobile ? velocity.y * 0.7 : velocity.y
+          };
           this.alpha = 1;
           this.type = type;
           this.rotation = Math.random() * Math.PI * 2;
-          this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+          this.rotationSpeed = (Math.random() - 0.5) * (isMobile ? 0.01 : 0.02);
           this.pulse = Math.random() * Math.PI * 2;
           this.twinkle = Math.random() * Math.PI * 2;
           this.twinkleSpeed = 0.05 + Math.random() * 0.05;
@@ -873,20 +963,29 @@
           this.pulse += 0.05;
           this.twinkle += this.twinkleSpeed;
           
-          if (this.x < -this.radius * 2) {
-            this.x = canvas.width + this.radius;
-            this.lifetime = 0;
-          } else if (this.x > canvas.width + this.radius * 2) {
-            this.x = -this.radius;
-            this.lifetime = 0;
-          }
-          
-          if (this.y < -this.radius * 2) {
-            this.y = canvas.height + this.radius;
-            this.lifetime = 0;
-          } else if (this.y > canvas.height + this.radius * 2) {
-            this.y = -this.radius;
-            this.lifetime = 0;
+          // Упрощенная логика для мобильных
+          if (isMobile) {
+            if (this.x < -this.radius * 3 || this.x > canvas.width + this.radius * 3 ||
+                this.y < -this.radius * 3 || this.y > canvas.height + this.radius * 3) {
+              this.lifetime = 0;
+            }
+          } else {
+            // Старая логика для десктопа
+            if (this.x < -this.radius * 2) {
+              this.x = canvas.width + this.radius;
+              this.lifetime = 0;
+            } else if (this.x > canvas.width + this.radius * 2) {
+              this.x = -this.radius;
+              this.lifetime = 0;
+            }
+            
+            if (this.y < -this.radius * 2) {
+              this.y = canvas.height + this.radius;
+              this.lifetime = 0;
+            } else if (this.y > canvas.height + this.radius * 2) {
+              this.y = -this.radius;
+              this.lifetime = 0;
+            }
           }
         }
       }
@@ -904,15 +1003,15 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
       
-      // Генерация звезд
+      // Генерация звезд с адаптацией для мобильных
       function generateStars() {
-        const starCount = fixedSettings.starDensity * 50;
+        const starCount = fixedSettings.starDensity * (isMobile ? 30 : 50);
         stars = [];
         
         for (let i = 0; i < starCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * 1.5 + 0.5;
+          const radius = Math.random() * (isMobile ? 1 : 1.5) + 0.5;
           
           const starColors = ['#ffffff', '#f8f8ff', '#e6e6fa', '#fffacd', '#f0f8ff'];
           const color = starColors[Math.floor(Math.random() * starColors.length)];
@@ -926,7 +1025,7 @@
         }
       }
       
-      // Генерация туманностей
+      // Генерация туманностей с адаптацией для мобильных
       function generateNebulae() {
         const nebulaCount = fixedSettings.nebulaIntensity;
         nebulae = [];
@@ -934,7 +1033,7 @@
         for (let i = 0; i < nebulaCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * 150 + 50;
+          const radius = Math.random() * (isMobile ? 100 : 150) + 50;
           
           const planetColors = planetData[currentPlanet].colors;
           const color = planetColors[Math.floor(Math.random() * planetColors.length)];
@@ -948,15 +1047,15 @@
         }
       }
       
-      // Функции генерации для каждой планеты
+      // Функции генерации для каждой планеты с оптимизацией для мобильных
       function generateMercury() {
-        const particleCount = fixedSettings.density * 15;
+        const particleCount = fixedSettings.density * (isMobile ? 10 : 15);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * 2 + 1;
+          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.5 : 2) + 1;
           const color = planetData.mercury.colors[Math.floor(Math.random() * planetData.mercury.colors.length)];
           
           const speedValue = (Math.random() * 0.5 + 0.1) * fixedSettings.speed / 5;
@@ -970,10 +1069,10 @@
           particles.push(new Particle(x, y, radius, color, velocity, 'rock'));
         }
         
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < (isMobile ? 3 : 5); i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * 20 + 10;
+          const radius = Math.random() * (isMobile ? 15 : 20) + 10;
           const color = planetData.mercury.colors[3];
           
           const velocity = {
@@ -986,13 +1085,13 @@
       }
       
       function generateVenus() {
-        const particleCount = fixedSettings.density * 20;
+        const particleCount = fixedSettings.density * (isMobile ? 15 : 20);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * 3 + 5;
+          const radius = Math.random() * fixedSettings.size * (isMobile ? 2 : 3) + 5;
           const color = planetData.venus.colors[Math.floor(Math.random() * planetData.venus.colors.length)];
           
           const speedValue = (Math.random() * 0.3 + 0.1) * fixedSettings.speed / 5;
@@ -1013,13 +1112,13 @@
       }
       
       function generateEarth() {
-        const particleCount = fixedSettings.density * 25;
+        const particleCount = fixedSettings.density * (isMobile ? 20 : 25);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * 2 + 2;
+          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.5 : 2) + 2;
           const color = planetData.earth.colors[Math.floor(Math.random() * planetData.earth.colors.length)];
           
           const speedValue = (Math.random() * 0.5 + 0.2) * fixedSettings.speed / 5;
@@ -1037,7 +1136,7 @@
       }
       
       function generateMars() {
-        const particleCount = fixedSettings.density * 30;
+        const particleCount = fixedSettings.density * (isMobile ? 25 : 30);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
@@ -1059,13 +1158,13 @@
       }
       
       function generateJupiter() {
-        const particleCount = fixedSettings.density * 15;
+        const particleCount = fixedSettings.density * (isMobile ? 10 : 15);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * 4 + 10;
+          const radius = Math.random() * fixedSettings.size * (isMobile ? 3 : 4) + 10;
           const color = planetData.jupiter.colors[Math.floor(Math.random() * planetData.jupiter.colors.length)];
           
           const speedValue = (Math.random() * 0.2 + 0.1) * fixedSettings.speed / 5;
@@ -1081,7 +1180,7 @@
         
         const x = canvas.width * 0.7;
         const y = canvas.height * 0.5;
-        const radius = 50;
+        const radius = isMobile ? 40 : 50;
         const color = planetData.jupiter.colors[3];
         
         const velocity = {
@@ -1093,7 +1192,7 @@
       }
       
       function generateSaturn() {
-        const particleCount = fixedSettings.density * 10;
+        const particleCount = fixedSettings.density * (isMobile ? 8 : 10);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
@@ -1101,7 +1200,7 @@
           const distance = 100 + Math.random() * 150;
           const x = canvas.width / 2 + Math.cos(angle) * distance;
           const y = canvas.height / 2 + Math.sin(angle) * distance;
-          const radius = Math.random() * fixedSettings.size * 2 + 5;
+          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.5 : 2) + 5;
           const color = planetData.saturn.colors[Math.floor(Math.random() * planetData.saturn.colors.length)];
           
           const speedValue = (Math.random() * 0.3 + 0.1) * fixedSettings.speed / 5;
@@ -1115,10 +1214,10 @@
           particles.push(new Particle(x, y, radius, color, velocity, 'ring'));
         }
         
-        for (let i = 0; i < fixedSettings.density * 5; i++) {
+        for (let i = 0; i < fixedSettings.density * (isMobile ? 3 : 5); i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * 3 + 5;
+          const radius = Math.random() * fixedSettings.size * (isMobile ? 2 : 3) + 5;
           const color = planetData.saturn.colors[Math.floor(Math.random() * planetData.saturn.colors.length)];
           
           const speedValue = (Math.random() * 0.2 + 0.1) * fixedSettings.speed / 5;
@@ -1134,13 +1233,13 @@
       }
       
       function generateUranus() {
-        const particleCount = fixedSettings.density * 20;
+        const particleCount = fixedSettings.density * (isMobile ? 15 : 20);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * 2 + 3;
+          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.5 : 2) + 3;
           const color = planetData.uranus.colors[Math.floor(Math.random() * planetData.uranus.colors.length)];
           
           const speedValue = (Math.random() * 0.2 + 0.05) * fixedSettings.speed / 5;
@@ -1156,7 +1255,7 @@
       }
       
       function generateNeptune() {
-        const particleCount = fixedSettings.density * 25;
+        const particleCount = fixedSettings.density * (isMobile ? 20 : 25);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
@@ -1198,13 +1297,13 @@
       }
       
       function generatePluto() {
-        const particleCount = fixedSettings.density * 20;
+        const particleCount = fixedSettings.density * (isMobile ? 15 : 20);
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * 1.5 + 2;
+          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.2 : 1.5) + 2;
           const color = planetData.pluto.colors[Math.floor(Math.random() * planetData.pluto.colors.length)];
           
           const speedValue = (Math.random() * 0.3 + 0.1) * fixedSettings.speed / 5;
@@ -1227,7 +1326,7 @@
         for (let i = 0; i < 3; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * 30 + 20;
+          const radius = Math.random() * (isMobile ? 25 : 30) + 20;
           const color = planetData.pluto.colors[3];
           
           const velocity = {
@@ -1726,47 +1825,66 @@
         // ЗАГРУЗКА СОХРАНЕНИЯ ПРИ СТАРТЕ И ОБНОВЛЕНИЕ КНОПКИ ПРОДОЛЖИТЬ
         updateContinueButton();
 
-        // === ИСПРАВЛЕННАЯ СИСТЕМА ЧАСТИЦ ДЛЯ ВЗРЫВА - В ВИДИМОЙ ОБЛАСТИ ===
-        const particles = [];
+        // === ОБНОВЛЕННЫЙ ЭФФЕКТ ВЗРЫВА С УВЕЛИЧЕННОЙ ОБЛАСТЬЮ ===
         function createExplosion(block) {
             const rect = block.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-            const theme = locations[currentLocation];
-            for (let i = 0; i < 30; i++) {
-                particles.push({
-                    x: centerX,
-                    y: centerY,
-                    size: Math.random() * 4 + 1,
-                    speedX: (Math.random() - 0.5) * 8,
-                    speedY: (Math.random() - 0.5) * 8,
-                    color: theme.blockColors[Math.floor(Math.random() * theme.blockColors.length)],
-                    life: 1
-                });
+            
+            // УВЕЛИЧЕННЫЙ РАЗМЕР ВЗРЫВА
+            const explosionSize = isMobile ? 150 : 200;
+            
+            // Создаем основной взрыв
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.style.left = centerX + 'px';
+            explosion.style.top = centerY + 'px';
+            explosion.style.width = explosionSize + 'px';
+            explosion.style.height = explosionSize + 'px';
+            document.body.appendChild(explosion);
+            
+            // УВЕЛИЧЕННОЕ КОЛИЧЕСТВО ЧАСТИЦ
+            const particleCount = isMobile ? 20 : 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'explosion-particle';
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                // УВЕЛИЧЕННЫЙ РАЗМЕР ЧАСТИЦ
+                const particleSize = isMobile ? 10 : 12;
+                particle.style.width = particleSize + 'px';
+                particle.style.height = particleSize + 'px';
+                
+                const theme = locations[currentLocation];
+                particle.style.backgroundColor = theme.blockColors[Math.floor(Math.random() * theme.blockColors.length)];
+                
+                // УВЕЛИЧЕННОЕ РАССТОЯНИЕ РАЗЛЕТА
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 100;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                
+                document.body.appendChild(particle);
+                
+                // Удаляем частицы после анимации
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        document.body.removeChild(particle);
+                    }
+                }, 800);
             }
-        }
-
-        function animateParticles() {
-            if (!gameActive || !particlesCanvas) return;
-            const ctx = particlesCanvas.getContext('2d');
-            ctx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.speedX;
-                p.y += p.speedY;
-                p.life -= 0.01;
-                ctx.globalAlpha = p.life;
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-                if (p.life <= 0) {
-                    particles.splice(i, 1);
+            
+            // Удаляем основной взрыв после анимации
+            setTimeout(() => {
+                if (explosion.parentNode) {
+                    document.body.removeChild(explosion);
                 }
-            }
-            if (gameActive) {
-                requestAnimationFrame(animateParticles);
-            }
+            }, 600);
         }
 
         const locations = {
@@ -2240,7 +2358,10 @@
             updateCoins();
             playSound('breakSound');
             showRewardText(reward, block);
+            
+            // Создаем эффект взрыва в центре блока
             createExplosion(block);
+            
             if (gameArea.contains(block)) {
                 gameArea.removeChild(block);
             }
@@ -2289,8 +2410,8 @@
                 block.classList.add(rareBlock.className);
                 currentBlockHealth = Math.floor(currentBlockHealth * rareBlock.healthMultiplier);
                 block.textContent = currentBlockHealth;
-                // Уменьшаем шрифт для уникальных блоков
-                block.innerHTML = `🌟<div style="font-size: 0.4em; margin-top: 2px;">${rareBlock.name}</div>`;
+                // Уменьшаем шрифт для уникальных блоков (сделаем еще меньше для лучшего отображения)
+                block.innerHTML = `🌟<div style="font-size: 0.35em; margin-top: 1px; line-height: 1.1;">${rareBlock.name}</div>`;
                 announceRareBlock(rareBlock.name);
             } else {
                 block.style.background = `linear-gradient(135deg, ${theme.blockColors[colorIndex]}, ${theme.blockColors[(colorIndex + 1) % theme.blockColors.length]})`;
@@ -2457,7 +2578,6 @@
             updateProgressBar();
             updateUpgradeButtons();
             setLocation(currentLocation);
-            animateParticles();
             
             setTimeout(() => createMovingBlock(), 500);
         }
@@ -2628,7 +2748,6 @@
         updateCoins();
         updateProgressBar();
         setLocation(currentLocation);
-        animateParticles();
     });
 
     // Блокировка жестов масштабирования и выделения
