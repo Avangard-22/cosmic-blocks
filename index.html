@@ -759,10 +759,11 @@
       // АДАПТИРОВАННЫЕ НАСТРОЙКИ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
+      // ВОЗВРАЩАЕМ ИСХОДНЫЕ ПАРАМЕТРЫ СКОРОСТИ, ПЛОТНОСТИ И РАЗМЕРА
       const fixedSettings = {
-        speed: isMobile ? 3 : 5,
-        density: isMobile ? 3 : 5,
-        size: isMobile ? 3 : 5,
+        speed: 5, // ВОЗВРАЩЕНО ИСХОДНОЕ ЗНАЧЕНИЕ
+        density: 5, // ВОЗВРАЩЕНО ИСХОДНОЕ ЗНАЧЕНИЕ
+        size: 5, // ВОЗВРАЩЕНО ИСХОДНОЕ ЗНАЧЕНИЕ
         smoothness: isMobile ? 3 : 5,
         nebulaIntensity: isMobile ? 2 : 3,
         starDensity: isMobile ? 1 : 2
@@ -856,18 +857,15 @@
         constructor(x, y, radius, color, velocity, type) {
           this.x = x;
           this.y = y;
-          // Уменьшаем размер частиц на мобильных
-          this.radius = isMobile ? radius * 0.7 : radius;
+          // ВОЗВРАЩАЕМ ИСХОДНЫЙ РАЗМЕР ЧАСТИЦ
+          this.radius = radius;
           this.color = color;
-          // Замедляем скорость на мобильных
-          this.velocity = {
-            x: isMobile ? velocity.x * 0.7 : velocity.x,
-            y: isMobile ? velocity.y * 0.7 : velocity.y
-          };
+          // ВОЗВРАЩАЕМ ИСХОДНУЮ СКОРОСТЬ
+          this.velocity = velocity;
           this.alpha = 1;
           this.type = type;
           this.rotation = Math.random() * Math.PI * 2;
-          this.rotationSpeed = (Math.random() - 0.5) * (isMobile ? 0.01 : 0.02);
+          this.rotationSpeed = (Math.random() - 0.5) * 0.02;
           this.pulse = Math.random() * Math.PI * 2;
           this.twinkle = Math.random() * Math.PI * 2;
           this.twinkleSpeed = 0.05 + Math.random() * 0.05;
@@ -1011,7 +1009,7 @@
         for (let i = 0; i < starCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * (isMobile ? 1 : 1.5) + 0.5;
+          const radius = Math.random() * 1.5 + 0.5;
           
           const starColors = ['#ffffff', '#f8f8ff', '#e6e6fa', '#fffacd', '#f0f8ff'];
           const color = starColors[Math.floor(Math.random() * starColors.length)];
@@ -1033,7 +1031,7 @@
         for (let i = 0; i < nebulaCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * (isMobile ? 100 : 150) + 50;
+          const radius = Math.random() * 150 + 50;
           
           const planetColors = planetData[currentPlanet].colors;
           const color = planetColors[Math.floor(Math.random() * planetColors.length)];
@@ -1049,13 +1047,13 @@
       
       // Функции генерации для каждой планеты с оптимизацией для мобильных
       function generateMercury() {
-        const particleCount = fixedSettings.density * (isMobile ? 10 : 15);
+        const particleCount = fixedSettings.density * 15;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.5 : 2) + 1;
+          const radius = Math.random() * fixedSettings.size * 2 + 1;
           const color = planetData.mercury.colors[Math.floor(Math.random() * planetData.mercury.colors.length)];
           
           const speedValue = (Math.random() * 0.5 + 0.1) * fixedSettings.speed / 5;
@@ -1069,10 +1067,10 @@
           particles.push(new Particle(x, y, radius, color, velocity, 'rock'));
         }
         
-        for (let i = 0; i < (isMobile ? 3 : 5); i++) {
+        for (let i = 0; i < 5; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * (isMobile ? 15 : 20) + 10;
+          const radius = Math.random() * 20 + 10;
           const color = planetData.mercury.colors[3];
           
           const velocity = {
@@ -1085,13 +1083,13 @@
       }
       
       function generateVenus() {
-        const particleCount = fixedSettings.density * (isMobile ? 15 : 20);
+        const particleCount = fixedSettings.density * 20;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * (isMobile ? 2 : 3) + 5;
+          const radius = Math.random() * fixedSettings.size * 3 + 5;
           const color = planetData.venus.colors[Math.floor(Math.random() * planetData.venus.colors.length)];
           
           const speedValue = (Math.random() * 0.3 + 0.1) * fixedSettings.speed / 5;
@@ -1112,13 +1110,13 @@
       }
       
       function generateEarth() {
-        const particleCount = fixedSettings.density * (isMobile ? 20 : 25);
+        const particleCount = fixedSettings.density * 25;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.5 : 2) + 2;
+          const radius = Math.random() * fixedSettings.size * 2 + 2;
           const color = planetData.earth.colors[Math.floor(Math.random() * planetData.earth.colors.length)];
           
           const speedValue = (Math.random() * 0.5 + 0.2) * fixedSettings.speed / 5;
@@ -1136,7 +1134,7 @@
       }
       
       function generateMars() {
-        const particleCount = fixedSettings.density * (isMobile ? 25 : 30);
+        const particleCount = fixedSettings.density * 30;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
@@ -1158,13 +1156,13 @@
       }
       
       function generateJupiter() {
-        const particleCount = fixedSettings.density * (isMobile ? 10 : 15);
+        const particleCount = fixedSettings.density * 15;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * (isMobile ? 3 : 4) + 10;
+          const radius = Math.random() * fixedSettings.size * 4 + 10;
           const color = planetData.jupiter.colors[Math.floor(Math.random() * planetData.jupiter.colors.length)];
           
           const speedValue = (Math.random() * 0.2 + 0.1) * fixedSettings.speed / 5;
@@ -1180,7 +1178,7 @@
         
         const x = canvas.width * 0.7;
         const y = canvas.height * 0.5;
-        const radius = isMobile ? 40 : 50;
+        const radius = 50;
         const color = planetData.jupiter.colors[3];
         
         const velocity = {
@@ -1192,7 +1190,7 @@
       }
       
       function generateSaturn() {
-        const particleCount = fixedSettings.density * (isMobile ? 8 : 10);
+        const particleCount = fixedSettings.density * 10;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
@@ -1200,7 +1198,7 @@
           const distance = 100 + Math.random() * 150;
           const x = canvas.width / 2 + Math.cos(angle) * distance;
           const y = canvas.height / 2 + Math.sin(angle) * distance;
-          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.5 : 2) + 5;
+          const radius = Math.random() * fixedSettings.size * 2 + 5;
           const color = planetData.saturn.colors[Math.floor(Math.random() * planetData.saturn.colors.length)];
           
           const speedValue = (Math.random() * 0.3 + 0.1) * fixedSettings.speed / 5;
@@ -1214,10 +1212,10 @@
           particles.push(new Particle(x, y, radius, color, velocity, 'ring'));
         }
         
-        for (let i = 0; i < fixedSettings.density * (isMobile ? 3 : 5); i++) {
+        for (let i = 0; i < fixedSettings.density * 5; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * (isMobile ? 2 : 3) + 5;
+          const radius = Math.random() * fixedSettings.size * 3 + 5;
           const color = planetData.saturn.colors[Math.floor(Math.random() * planetData.saturn.colors.length)];
           
           const speedValue = (Math.random() * 0.2 + 0.1) * fixedSettings.speed / 5;
@@ -1233,13 +1231,13 @@
       }
       
       function generateUranus() {
-        const particleCount = fixedSettings.density * (isMobile ? 15 : 20);
+        const particleCount = fixedSettings.density * 20;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.5 : 2) + 3;
+          const radius = Math.random() * fixedSettings.size * 2 + 3;
           const color = planetData.uranus.colors[Math.floor(Math.random() * planetData.uranus.colors.length)];
           
           const speedValue = (Math.random() * 0.2 + 0.05) * fixedSettings.speed / 5;
@@ -1255,7 +1253,7 @@
       }
       
       function generateNeptune() {
-        const particleCount = fixedSettings.density * (isMobile ? 20 : 25);
+        const particleCount = fixedSettings.density * 25;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
@@ -1297,13 +1295,13 @@
       }
       
       function generatePluto() {
-        const particleCount = fixedSettings.density * (isMobile ? 15 : 20);
+        const particleCount = fixedSettings.density * 20;
         particles = [];
         
         for (let i = 0; i < particleCount; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * fixedSettings.size * (isMobile ? 1.2 : 1.5) + 2;
+          const radius = Math.random() * fixedSettings.size * 1.5 + 2;
           const color = planetData.pluto.colors[Math.floor(Math.random() * planetData.pluto.colors.length)];
           
           const speedValue = (Math.random() * 0.3 + 0.1) * fixedSettings.speed / 5;
@@ -1326,7 +1324,7 @@
         for (let i = 0; i < 3; i++) {
           const x = Math.random() * canvas.width;
           const y = Math.random() * canvas.height;
-          const radius = Math.random() * (isMobile ? 25 : 30) + 20;
+          const radius = Math.random() * 30 + 20;
           const color = planetData.pluto.colors[3];
           
           const velocity = {
