@@ -166,7 +166,7 @@
     }
     
     /* Адаптивные экраны */
-    #welcomeScreen, #gameOverScreen {
+    #welcomeScreen, #gameOverScreen, #saveScreen, #developmentScreen {
       position: absolute;
       top: 0;
       left: 0;
@@ -214,6 +214,14 @@
       background: #2196F3;
       margin-bottom: 10px;
     }
+
+    #continueBtn.save-available {
+      background: #4CAF50;
+    }
+
+    #continueBtn.no-save {
+      background: #f44336;
+    }
     
     #gameOverScreen h2 {
       font-size: clamp(1.6em, 6vw, 2.2em);
@@ -233,8 +241,46 @@
       transition: transform 0.1s;
       min-height: 44px;
     }
+
+    /* Экран сохранения */
+    #saveScreen {
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      display: none;
+    }
+
+    #saveScreen h2 {
+      font-size: clamp(1.5em, 6vw, 2em);
+      margin-bottom: 20px;
+    }
+
+    #saveScreen p {
+      max-width: 90%;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* Экран разработки */
+    #developmentScreen {
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(15px);
+      display: none;
+    }
+
+    #developmentScreen h2 {
+      font-size: clamp(1.5em, 6vw, 2.2em);
+      margin-bottom: 20px;
+      color: #ff9800;
+    }
+
+    #developmentScreen p {
+      max-width: 90%;
+      margin-bottom: 20px;
+      line-height: 1.5;
+      font-size: clamp(1em, 4vw, 1.2em);
+    }
     
-    /* Адаптивные тексты урона - ОБНОВЛЕНО: ограничиваем позиционирование */
+    /* Адаптивные тексты урона - ОБНОВЛЕНО: улучшена читаемость */
     .damage-text {
       font-size: clamp(1em, 4vw, 1.1em);
       position: absolute;
@@ -242,9 +288,12 @@
       z-index: 15;
       opacity: 1;
       transition: transform 0.5s, opacity 0.5s;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.9);
       max-width: 100px;
       text-align: center;
+      font-weight: bold;
+      color: #FFFFFF;
+      -webkit-text-stroke: 1px #000000;
     }
     
     .combo-text {
@@ -256,6 +305,10 @@
       font-family: 'Orbitron', monospace;
       max-width: 150px;
       text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.9);
+      font-weight: bold;
+      color: #FFD700;
+      -webkit-text-stroke: 1px #000000;
     }
     
     .reward-text {
@@ -267,6 +320,10 @@
       font-family: 'Orbitron', monospace;
       max-width: 120px;
       text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.9);
+      font-weight: bold;
+      color: #FFFFFF;
+      -webkit-text-stroke: 1px #000000;
     }
     
     /* Оптимизация для landscape режима */
@@ -572,6 +629,7 @@
   <div id="location-pluto" class="location">
     <div id="cyberGrid"></div>
   </div>
+  
   <!-- UI -->
   <div id="header">
     <h2 id="gameTitle">☿ Меркурий</h2>
@@ -595,7 +653,7 @@
   <div id="progressContainer">
     <div id="progressBar"></div>
   </div>
-  <div id="progressText">Прогресс: 0.00000/0.38710 а.е.</div>
+  <div id="progressText">Прогресс: 0.00000 а.е. (0%)</div>
   
   <div id="gameArea"></div>
   <div id="levelAnnounce"></div>
@@ -651,8 +709,25 @@
     <p>🪐 <strong>9 реальных планет</strong> — от Меркурия до Плутона</p>
     <p>🚀 <strong>Улучшения</strong> — увеличивайте силу, криты и активируйте помощника</p>
     <p>✨ <strong>Редкие блоки</strong> — дают бонусы и огромные награды!</p>
-    <button id="continueBtn" class="btn" style="display:none;">Продолжить</button>
+    <button id="continueBtn" class="btn no-save">Продолжить</button>
     <button id="startBtn" class="btn">Новая игра</button>
+  </div>
+  
+  <!-- Экран сохранения -->
+  <div id="saveScreen">
+    <h2>СОХРАНЕНИЕ ИГРЫ</h2>
+    <p>Хотите продолжить с сохраненной игры или начать новую?</p>
+    <button id="loadSaveBtn" class="btn">Продолжить сохраненную игру</button>
+    <button id="newGameBtn" class="btn">Начать новую игру</button>
+    <button id="cancelSaveBtn" class="btn" style="background: #666;">Отмена</button>
+  </div>
+  
+  <!-- Экран разработки -->
+  <div id="developmentScreen">
+    <h2>🚧 ЛОКАЦИЯ ЮПИТЕР НАХОДИТСЯ В РАЗРАБОТКЕ</h2>
+    <p>Вы достигли границы исследованного космоса!</p>
+    <p>Следующая локация будет доступна в будущем обновлении.</p>
+    <button id="restartFromDevBtn" class="btn">Начать добычу заново</button>
   </div>
   
   <div id="gameOverScreen">
@@ -668,67 +743,68 @@
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     // === РЕАЛЬНЫЕ РАССТОЯНИЯ ПЛАНЕТ В АСТРОНОМИЧЕСКИХ ЕДИНИЦАХ ===
-    // 1 а.е. = 149 597 870,7 км (принимаем 1 км = 1 единица урона)
+    // 1 а.е. = 149 597 868 км (принимаем 1 км = 1 единица урона)
     const astronomicalUnits = {
-        mercury: 0.38710,   // 57.9 млн км
-        venus: 0.72333,     // 108.2 млн км  
-        earth: 1.00000,     // 149.6 млн км
-        mars: 1.52366,      // 227.9 млн км
-        jupiter: 5.20336,   // 778.3 млн км
-        saturn: 9.53707,    // 1.429 млрд км
-        uranus: 19.19126,   // 2.871 млрд км
-        neptune: 30.06896,  // 4.498 млрд км
-        pluto: 39.48200     // 5.906 млрд км
+        mercury: 0.38710,   // 57.909 млн км
+        venus: 0.72333,     // 108.21 млн км  
+        earth: 1.00000,     // 149.60 млн км
+        mars: 1.52366,      // 227.94 млн км
+        jupiter: 5.20336,   // 778.41 млн км
+        saturn: 9.53707,    // 1 429.4 млн км
+        uranus: 19.19126,   // 2 871.0 млн км
+        neptune: 30.06896,  // 4 498.3 млн км
+        pluto: 39.48200     // 5 906.4 млн км
     };
 
     // Конвертируем а.е. в урон (1 а.е. = 1 000 000 урона для баланса)
     const AU_TO_DAMAGE = 1000000;
     
+    // ОБНОВЛЕННАЯ СИСТЕМА ТРЕБОВАНИЙ - КАЖДАЯ ЛОКАЦИЯ НАЧИНАЕТСЯ С 0
     const locationRequirements = {
         mercury: { 
             damageRequired: 0, 
-            nextLocation: 'venus',
-            au: astronomicalUnits.mercury
+            targetAU: astronomicalUnits.mercury,
+            nextLocation: 'venus'
         },
         venus: { 
-            damageRequired: Math.round(astronomicalUnits.venus * AU_TO_DAMAGE), 
-            nextLocation: 'earth',
-            au: astronomicalUnits.venus
+            damageRequired: 0, 
+            targetAU: astronomicalUnits.venus,
+            nextLocation: 'earth'
         },
         earth: { 
-            damageRequired: Math.round(astronomicalUnits.earth * AU_TO_DAMAGE), 
-            nextLocation: 'mars',
-            au: astronomicalUnits.earth
+            damageRequired: 0, 
+            targetAU: astronomicalUnits.earth,
+            nextLocation: 'mars'
         },
         mars: { 
-            damageRequired: Math.round(astronomicalUnits.mars * AU_TO_DAMAGE), 
-            nextLocation: 'jupiter',
-            au: astronomicalUnits.mars
+            damageRequired: 0, 
+            targetAU: astronomicalUnits.mars,
+            nextLocation: 'jupiter'
         },
         jupiter: { 
-            damageRequired: Math.round(astronomicalUnits.jupiter * AU_TO_DAMAGE), 
-            nextLocation: 'saturn',
-            au: astronomicalUnits.jupiter
+            damageRequired: 0, 
+            targetAU: astronomicalUnits.jupiter,
+            nextLocation: 'saturn'
         },
         saturn: { 
-            damageRequired: Math.round(astronomicalUnits.saturn * AU_TO_DAMAGE), 
-            nextLocation: 'uranus',
-            au: astronomicalUnits.saturn
+            damageRequired: 0, 
+            targetAU: astronomicalUnits.saturn,
+            nextLocation: 'uranus'
         },
         uranus: { 
-            damageRequired: Math.round(astronomicalUnits.uranus * AU_TO_DAMAGE), 
-            nextLocation: 'neptune',
-            au: astronomicalUnits.uranus
+            damageRequired: 0, 
+            targetAU: astronomicalUnits.uranus,
+            nextLocation: 'neptune'
         },
         neptune: { 
-            damageRequired: Math.round(astronomicalUnits.neptune * AU_TO_DAMAGE), 
-            nextLocation: 'pluto',
-            au: astronomicalUnits.neptune
+            damageRequired: 0, 
+            targetAU: astronomicalUnits.neptune,
+            nextLocation: 'pluto'
         },
         pluto: { 
-            damageRequired: Math.round(astronomicalUnits.pluto * AU_TO_DAMAGE), 
-            nextLocation: null,
-            au: astronomicalUnits.pluto
+            damageRequired: 0, 
+            targetAU: astronomicalUnits.pluto,
+            nextLocation: null
         }
     };
 
@@ -842,7 +918,7 @@
     // === ОБНОВЛЕННЫЕ ФУНКЦИИ БАЛАНСИРОВКИ ===
     function calculateBlockHealth() {
         const location = locationRequirements[currentLocation];
-        const locationBonus = 1 + (location.damageRequired / 100000);
+        const locationBonus = 1 + (location.targetAU * 2); // Учитываем сложность локации
         
         let baseHealth = balanceConfig.baseHealth * locationBonus;
         
@@ -921,11 +997,13 @@
         totalDamageDealt,
         currentLocation,
         lastDailyReward: localStorage.getItem('lastDailyReward'),
-        gameActive: true // Помечаем, что игра активна
+        gameActive: true, // Помечаем, что игра активна
+        timestamp: Date.now()
       };
       localStorage.setItem('cosmicBlocksSave', JSON.stringify(saveData));
       showTooltip('Игра сохранена!');
       setTimeout(hideTooltip, 1500);
+      updateContinueButton();
     }
     
     function loadGame() {
@@ -933,22 +1011,43 @@
       if (saved) {
         try {
           const data = JSON.parse(saved);
-          coins = data.coins || 0;
-          clickPower = data.clickPower || 1;
-          clickUpgradeLevel = data.clickUpgradeLevel || 0;
-          critChance = data.critChance || 0.01;
-          critMultiplier = data.critMultiplier || 2.0;
-          helperDamageBonus = data.helperDamageBonus || 0.3;
-          helperUpgradeLevel = data.helperUpgradeLevel || 0;
-          totalDamageDealt = data.totalDamageDealt || 0;
-          currentLocation = data.currentLocation || 'mercury';
+          // Проверяем, что сохранение не слишком старое (например, старше 30 дней)
+          const saveAge = Date.now() - (data.timestamp || 0);
+          const maxSaveAge = 30 * 24 * 60 * 60 * 1000; // 30 дней
           
-          // Показываем кнопку "Продолжить" если есть сохранение
-          if (data.gameActive && document.getElementById('continueBtn')) {
-            document.getElementById('continueBtn').style.display = 'block';
+          if (saveAge < maxSaveAge) {
+            coins = data.coins || 0;
+            clickPower = data.clickPower || 1;
+            clickUpgradeLevel = data.clickUpgradeLevel || 0;
+            critChance = data.critChance || 0.01;
+            critMultiplier = data.critMultiplier || 2.0;
+            helperDamageBonus = data.helperDamageBonus || 0.3;
+            helperUpgradeLevel = data.helperUpgradeLevel || 0;
+            totalDamageDealt = data.totalDamageDealt || 0;
+            currentLocation = data.currentLocation || 'mercury';
+            
+            return true;
+          } else {
+            console.log('Сохранение устарело');
+            localStorage.removeItem('cosmicBlocksSave');
           }
         } catch (e) {
           console.warn('Ошибка загрузки сохранения', e);
+        }
+      }
+      return false;
+    }
+    
+    function updateContinueButton() {
+      const continueBtn = document.getElementById('continueBtn');
+      if (continueBtn) {
+        const hasSave = localStorage.getItem('cosmicBlocksSave') !== null;
+        if (hasSave) {
+          continueBtn.className = 'btn save-available';
+          continueBtn.textContent = 'Продолжить';
+        } else {
+          continueBtn.className = 'btn no-save';
+          continueBtn.textContent = 'Нет сохранения';
         }
       }
     }
@@ -990,15 +1089,21 @@
             upgradeCritMultBtn: document.getElementById("upgradeCritMultBtn"),
             upgradeHelperDmgBtn: document.getElementById("upgradeHelperDmgBtn"),
             gameOverScreen: document.getElementById("gameOverScreen"),
+            developmentScreen: document.getElementById("developmentScreen"),
             finalScoreDisplay: document.getElementById("finalScore"),
             tooltip: document.getElementById("tooltip"),
             welcomeScreen: document.getElementById("welcomeScreen"),
+            saveScreen: document.getElementById("saveScreen"),
             header: document.getElementById("header"),
             gameArea: document.getElementById("gameArea"),
             particlesCanvas: document.getElementById("particlesCanvas"),
             startBtn: document.getElementById("startBtn"),
             continueBtn: document.getElementById("continueBtn"),
+            loadSaveBtn: document.getElementById("loadSaveBtn"),
+            newGameBtn: document.getElementById("newGameBtn"),
+            cancelSaveBtn: document.getElementById("cancelSaveBtn"),
             restartBtn: document.getElementById("restartBtn"),
+            restartFromDevBtn: document.getElementById("restartFromDevBtn"),
             shareBtn: document.getElementById("shareBtn"),
             dailyRewardBtn: document.getElementById("dailyRewardBtn"),
             saveBtn: document.getElementById("saveBtn"),
@@ -1025,15 +1130,14 @@
             critChanceDisplay, critMultiplierDisplay, progressBar, progressText,
             levelAnnounce, gameTitle, upgradeClickBtn, upgradeHelperBtn, 
             upgradeCritChanceBtn, upgradeCritMultBtn, upgradeHelperDmgBtn, 
-            gameOverScreen, finalScoreDisplay, tooltip, welcomeScreen, header,
-            gameArea, particlesCanvas, startBtn, continueBtn, restartBtn, shareBtn, dailyRewardBtn, saveBtn,
+            gameOverScreen, developmentScreen, finalScoreDisplay, tooltip, welcomeScreen, saveScreen,
+            header, gameArea, particlesCanvas, startBtn, continueBtn, loadSaveBtn,
+            newGameBtn, cancelSaveBtn, restartBtn, restartFromDevBtn, shareBtn, dailyRewardBtn, saveBtn,
             starsCanvas, lavaCanvas, iceCanvas, bioCanvas
         } = DOMElements;
 
-        // ЗАГРУЗКА СОХРАНЕНИЯ ПРИ СТАРТЕ
-        loadGame();
-        // Пересчитываем урон по новой формуле после загрузки
-        clickPower = calculateClickPower();
+        // ЗАГРУЗКА СОХРАНЕНИЯ ПРИ СТАРТЕ И ОБНОВЛЕНИЕ КНОПКИ ПРОДОЛЖИТЬ
+        updateContinueButton();
 
         function resizeCanvases() {
             const w = window.innerWidth;
@@ -1095,55 +1199,87 @@
             }
         }
 
-        // === ФОНОВЫЕ АНИМАЦИИ (без изменений) ===
+        // === УЛУЧШЕННАЯ АНИМАЦИЯ ЗВЕЗД ДЛЯ МЕРКУРИЯ ===
         function initStars() {
             stars = [];
-            const centerX = starsCanvas.width / 2;
-            const centerY = starsCanvas.height / 2;
+            const ctx = starsCanvas.getContext('2d');
+            
+            // Заливаем canvas черным цветом
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, starsCanvas.width, starsCanvas.height);
+            
+            // Цвета для Меркурия
+            const mercuryColors = ['#bb86fc', '#a0d2ff', '#4a55e0', '#f8bbd0', '#2962ff', '#4fc3f7'];
+            
+            // Создаем звезды с разбросом по всему экрану
             for (let i = 0; i < 150; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const speed = 1.5;
-                const distance = Math.random() * Math.max(starsCanvas.width, starsCanvas.height) * 0.8;
+                const baseSpeed = Math.random() * 3 + 1;
+                const baseDirection = 225 * Math.PI / 180; // Направление 225 градусов
+                const spread = 30 * Math.PI / 180; // Разброс ±30 градусов
+                const direction = baseDirection + (Math.random() - 0.5) * spread;
+                
                 stars.push({
-                    x: centerX + Math.cos(angle) * distance,
-                    y: centerY + Math.sin(angle) * distance,
-                    size: Math.random() * 3 + 0.5,
-                    speed: speed,
-                    angle: angle,
-                    opacity: Math.random() * 0.8 + 0.2,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed
+                    x: Math.random() * starsCanvas.width,
+                    y: Math.random() * starsCanvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speedX: Math.cos(direction) * baseSpeed,
+                    speedY: Math.sin(direction) * baseSpeed,
+                    color: mercuryColors[Math.floor(Math.random() * mercuryColors.length)],
+                    brightness: Math.random() * 0.8 + 0.2,
+                    life: 1,
+                    maxLife: Math.random() * 100 + 50,
+                    // Добавляем мерцание
+                    twinkleSpeed: Math.random() * 0.05 + 0.01,
+                    twinklePhase: Math.random() * Math.PI * 2
                 });
             }
         }
-        
+
         function animateStars() {
             const ctx = starsCanvas.getContext('2d');
-            ctx.fillStyle = 'rgba(11, 11, 29, 0.1)';
+            
+            // Очищаем canvas с полупрозрачным черным для создания шлейфа
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
             ctx.fillRect(0, 0, starsCanvas.width, starsCanvas.height);
-            const centerX = starsCanvas.width / 2;
-            const centerY = starsCanvas.height / 2;
-            ctx.fillStyle = '#fff';
+            
+            // Рисуем и обновляем звезды
             stars.forEach(star => {
-                star.x += star.vx;
-                star.y += star.vy;
-                if (star.x < -50 || star.x > starsCanvas.width + 50 || 
-                    star.y < -50 || star.y > starsCanvas.height + 50) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = 1.5;
-                    star.x = centerX;
-                    star.y = centerY;
-                    star.vx = Math.cos(angle) * speed;
-                    star.vy = Math.sin(angle) * speed;
-                    star.size = Math.random() * 3 + 0.5;
-                    star.opacity = Math.random() * 0.8 + 0.2;
+                // Двигаем звезды
+                star.x += star.speedX;
+                star.y += star.speedY;
+                star.life -= 0.5;
+                star.twinklePhase += star.twinkleSpeed;
+                
+                // Мерцание
+                const twinkle = Math.sin(star.twinklePhase) * 0.3 + 0.7;
+                const alpha = star.brightness * (star.life / star.maxLife) * twinkle;
+                
+                // Если звезда ушла за левую границу или закончилось время жизни, перерождаем ее справа
+                if (star.x < -20 || star.life <= 0) {
+                    star.x = starsCanvas.width + Math.random() * 50;
+                    star.y = Math.random() * starsCanvas.height;
+                    
+                    // Пересчитываем направление и скорость
+                    const baseSpeed = Math.random() * 3 + 1;
+                    const baseDirection = 225 * Math.PI / 180;
+                    const spread = 30 * Math.PI / 180;
+                    const direction = baseDirection + (Math.random() - 0.5) * spread;
+                    star.speedX = Math.cos(direction) * baseSpeed;
+                    star.speedY = Math.sin(direction) * baseSpeed;
+                    star.life = star.maxLife;
+                    star.brightness = Math.random() * 0.8 + 0.2;
+                    star.twinklePhase = Math.random() * Math.PI * 2;
                 }
-                ctx.globalAlpha = star.opacity;
+                
+                // Рисуем звезду
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = star.color;
                 ctx.beginPath();
                 ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
                 ctx.fill();
             });
             ctx.globalAlpha = 1;
+            
             if (currentLocation === 'mercury') {
                 requestAnimationFrame(animateStars);
             }
@@ -1282,36 +1418,41 @@
             const currentReq = locationRequirements[currentLocation];
             const nextLocation = currentReq.nextLocation;
             
-            if (nextLocation) {
-                const nextReq = locationRequirements[nextLocation];
-                const progress = totalDamageDealt - currentReq.damageRequired;
-                const requiredForNext = nextReq.damageRequired - currentReq.damageRequired;
-                const percentage = Math.min(100, (progress / requiredForNext) * 100);
-                
-                // Конвертируем в астрономические единицы
-                const currentAU = currentReq.au + (progress / AU_TO_DAMAGE);
-                const targetAU = nextReq.au;
-                
-                progressBar.style.width = percentage + '%';
-                progressText.textContent = `Прогресс: ${currentAU.toFixed(5)}/${targetAU.toFixed(5)} а.е.`;
-            } else {
-                // Финальная локация
-                progressBar.style.width = '100%';
-                progressText.textContent = 'Достигнут край Солнечной системы!';
-            }
+            // Конвертируем урон в астрономические единицы для текущей локации
+            const currentAU = totalDamageDealt / AU_TO_DAMAGE;
+            const targetAU = currentReq.targetAU;
+            const percentage = Math.min(100, (currentAU / targetAU) * 100);
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `Прогресс: ${currentAU.toFixed(5)} а.е. (${percentage.toFixed(1)}%)`;
         }
 
         function checkLocationUpgrade() {
             const currentReq = locationRequirements[currentLocation];
             const nextLocation = currentReq.nextLocation;
             
-            if (nextLocation && totalDamageDealt >= locationRequirements[nextLocation].damageRequired) {
+            const currentAU = totalDamageDealt / AU_TO_DAMAGE;
+            const targetAU = currentReq.targetAU;
+            
+            if (nextLocation && currentAU >= targetAU) {
+                // Проверяем, не пытаемся ли перейти на Юпитер
+                if (nextLocation === 'jupiter') {
+                    showDevelopmentScreen();
+                    return;
+                }
                 setLocation(nextLocation);
                 showTooltip(`Открыта локация: ${locations[nextLocation].name}!`);
                 setTimeout(hideTooltip, 3000);
             }
             
             updateProgressBar();
+        }
+
+        function showDevelopmentScreen() {
+            if (developmentScreen) {
+                developmentScreen.style.display = "flex";
+                gameActive = false;
+            }
         }
 
         // === ОБНОВЛЕННЫЕ ФУНКЦИИ ТЕКСТА УРОНА И БОНУСОВ ===
@@ -1406,7 +1547,7 @@
             }, 1500);
         }
 
-        // === ОСТАЛЬНЫЕ ФУНКЦИИ ИГРЫ (без существенных изменений) ===
+        // === ОСТАЛЬНЫЕ ФУНКЦИИ ИГРЫ ===
         function setLocation(loc) {
             document.querySelectorAll('.location').forEach(el => el.classList.remove('active'));
             document.getElementById(`location-${loc}`).classList.add('active');
@@ -1731,7 +1872,7 @@
             }
             lastDestroyTime = now;
             
-            const baseReward = 25 + (locationRequirements[currentLocation].damageRequired / 500);
+            const baseReward = 25 + (locationRequirements[currentLocation].targetAU * 100);
             let reward = Math.floor(baseReward * balanceConfig.rewardMultiplier);
             
             const randomBonus = balanceConfig.randomBonusRange.min + 
@@ -1776,7 +1917,7 @@
 
         function getBlockSize() {
             const baseSize = isMobile ? 80 : 60;
-            const locationBonus = locationRequirements[currentLocation].damageRequired / 10000;
+            const locationBonus = locationRequirements[currentLocation].targetAU * 10;
             return Math.max(baseSize, 100 - locationBonus);
         }
 
@@ -1950,6 +2091,15 @@
             if (welcomeScreen) {
                 welcomeScreen.style.display = "none";
             }
+            if (saveScreen) {
+                saveScreen.style.display = "none";
+            }
+            if (developmentScreen) {
+                developmentScreen.style.display = "none";
+            }
+            if (gameOverScreen) {
+                gameOverScreen.style.display = "none";
+            }
             
             gameActive = true;
             comboCount = 0;
@@ -1970,48 +2120,24 @@
         }
 
         function continueGame() {
-            startGame(false); // Не сбрасываем параметры
+            if (loadGame()) {
+                // Пересчитываем урон по новой формуле после загрузки
+                clickPower = calculateClickPower();
+                startGame(false); // Не сбрасываем параметры
+            } else {
+                showTooltip("Нет сохраненной игры!");
+                setTimeout(hideTooltip, 2000);
+            }
+        }
+
+        function showSaveScreen() {
+            if (saveScreen) {
+                saveScreen.style.display = "flex";
+            }
         }
 
         function restartGame() {
-            coins = 0;
-            totalDamageDealt = 0;
-            currentLocation = 'mercury';
-            clickPower = 1;
-            clickUpgradeLevel = 0;
-            helperUpgradeLevel = 0;
-            helperDamageBonus = 0.3;
-            critChance = 0.01;
-            critMultiplier = 2.0;
-            helperActive = false;
-            helperTimeLeft = 0;
-            
-            if (helperInterval) {
-                clearInterval(helperInterval);
-                helperInterval = null;
-            }
-            
-            gameArea.innerHTML = "";
-            
-            if (gameOverScreen) gameOverScreen.style.display = "none";
-            
-            gameMetrics.startTime = Date.now();
-            gameMetrics.blocksDestroyed = 0;
-            gameMetrics.upgradesBought = 0;
-            gameMetrics.totalClicks = 0;
-            
-            setLocation('mercury');
-            
-            updateCoins();
-            updateProgressBar();
-            updateUpgradeButtons();
-            
-            animateParticles();
-            
-            saveGame();
-            
-            gameActive = true;
-            setTimeout(() => createMovingBlock(), 500);
+            startGame(true);
         }
 
         function showStartError() {
@@ -2023,7 +2149,7 @@
         if (startBtn) {
             startBtn.addEventListener('click', function() {
                 try {
-                    startGame(true);
+                    showSaveScreen();
                 } catch (error) {
                     console.error("Ошибка при запуске игры:", error);
                     showStartError();
@@ -2032,7 +2158,7 @@
             startBtn.addEventListener('touchstart', function(e) {
                 e.preventDefault();
                 try {
-                    startGame(true);
+                    showSaveScreen();
                 } catch (error) {
                     console.error("Ошибка при запуске игры:", error);
                     showStartError();
@@ -2043,7 +2169,13 @@
         if (continueBtn) {
             continueBtn.addEventListener('click', function() {
                 try {
-                    continueGame();
+                    const hasSave = localStorage.getItem('cosmicBlocksSave') !== null;
+                    if (hasSave) {
+                        showSaveScreen();
+                    } else {
+                        showTooltip("Нет сохраненной игры!");
+                        setTimeout(hideTooltip, 2000);
+                    }
                 } catch (error) {
                     console.error("Ошибка при продолжении игры:", error);
                     showStartError();
@@ -2052,11 +2184,51 @@
             continueBtn.addEventListener('touchstart', function(e) {
                 e.preventDefault();
                 try {
-                    continueGame();
+                    const hasSave = localStorage.getItem('cosmicBlocksSave') !== null;
+                    if (hasSave) {
+                        showSaveScreen();
+                    } else {
+                        showTooltip("Нет сохраненной игры!");
+                        setTimeout(hideTooltip, 2000);
+                    }
                 } catch (error) {
                     console.error("Ошибка при продолжении игры:", error);
                     showStartError();
                 }
+            }, { passive: false });
+        }
+
+        if (loadSaveBtn) {
+            loadSaveBtn.addEventListener('click', continueGame);
+            loadSaveBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                continueGame();
+            }, { passive: false });
+        }
+
+        if (newGameBtn) {
+            newGameBtn.addEventListener('click', () => startGame(true));
+            newGameBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startGame(true);
+            }, { passive: false });
+        }
+
+        if (cancelSaveBtn) {
+            cancelSaveBtn.addEventListener('click', () => {
+                if (saveScreen) saveScreen.style.display = "none";
+            });
+            cancelSaveBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (saveScreen) saveScreen.style.display = "none";
+            }, { passive: false });
+        }
+
+        if (restartFromDevBtn) {
+            restartFromDevBtn.addEventListener('click', restartGame);
+            restartFromDevBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                restartGame();
             }, { passive: false });
         }
 
