@@ -751,22 +751,21 @@
   </div>
 
   <script>
-    // === ОБНОВЛЕННЫЙ КОД ПЛАНЕТАРНОГО ФОНА С АДАПТАЦИЕЙ ДЛЯ МОБИЛЬНЫХ ===
+    // === ОБНОВЛЕННЫЙ КОД ПЛАНЕТАРНОГО ФОНА С ПОЛНОЦЕННЫМИ ФОНАМИ ДЛЯ МОБИЛЬНЫХ ===
     (function() {
       const canvas = document.getElementById('planetBackgroundCanvas');
       const ctx = canvas.getContext('2d');
       
-      // АДАПТИРОВАННЫЕ НАСТРОЙКИ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      // ВОЗВРАЩАЕМ ИСХОДНЫЕ ПАРАМЕТРЫ СКОРОСТИ, ПЛОТНОСТИ И РАЗМЕРА
+      // ИСПРАВЛЕННЫЕ НАСТРОЙКИ - ОДИНАКОВЫЕ ДЛЯ ВСЕХ УСТРОЙСТВ ДЛЯ КРАСОЧНОСТИ
       const fixedSettings = {
-        speed: 5, // ВОЗВРАЩЕНО ИСХОДНОЕ ЗНАЧЕНИЕ
-        density: 5, // ВОЗВРАЩЕНО ИСХОДНОЕ ЗНАЧЕНИЕ
-        size: 5, // ВОЗВРАЩЕНО ИСХОДНОЕ ЗНАЧЕНИЕ
-        smoothness: isMobile ? 3 : 5,
-        nebulaIntensity: isMobile ? 2 : 3,
-        starDensity: isMobile ? 1 : 2
+        speed: 5,
+        density: 5,
+        size: 5,
+        smoothness: 5,
+        nebulaIntensity: 3,
+        starDensity: 2
       };
       
       // Переменные для анимации
@@ -838,7 +837,7 @@
         }
       };
       
-      // Установка размеров canvas с учетом мобильных устройств
+      // Установка размеров canvas
       function setCanvasSize() {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
@@ -852,15 +851,13 @@
         }
       }
       
-      // Класс частиц с оптимизацией для мобильных
+      // Класс частиц
       class Particle {
         constructor(x, y, radius, color, velocity, type) {
           this.x = x;
           this.y = y;
-          // ВОЗВРАЩАЕМ ИСХОДНЫЙ РАЗМЕР ЧАСТИЦ
           this.radius = radius;
           this.color = color;
-          // ВОЗВРАЩАЕМ ИСХОДНУЮ СКОРОСТЬ
           this.velocity = velocity;
           this.alpha = 1;
           this.type = type;
@@ -961,29 +958,20 @@
           this.pulse += 0.05;
           this.twinkle += this.twinkleSpeed;
           
-          // Упрощенная логика для мобильных
-          if (isMobile) {
-            if (this.x < -this.radius * 3 || this.x > canvas.width + this.radius * 3 ||
-                this.y < -this.radius * 3 || this.y > canvas.height + this.radius * 3) {
-              this.lifetime = 0;
-            }
-          } else {
-            // Старая логика для десктопа
-            if (this.x < -this.radius * 2) {
-              this.x = canvas.width + this.radius;
-              this.lifetime = 0;
-            } else if (this.x > canvas.width + this.radius * 2) {
-              this.x = -this.radius;
-              this.lifetime = 0;
-            }
-            
-            if (this.y < -this.radius * 2) {
-              this.y = canvas.height + this.radius;
-              this.lifetime = 0;
-            } else if (this.y > canvas.height + this.radius * 2) {
-              this.y = -this.radius;
-              this.lifetime = 0;
-            }
+          if (this.x < -this.radius * 2) {
+            this.x = canvas.width + this.radius;
+            this.lifetime = 0;
+          } else if (this.x > canvas.width + this.radius * 2) {
+            this.x = -this.radius;
+            this.lifetime = 0;
+          }
+          
+          if (this.y < -this.radius * 2) {
+            this.y = canvas.height + this.radius;
+            this.lifetime = 0;
+          } else if (this.y > canvas.height + this.radius * 2) {
+            this.y = -this.radius;
+            this.lifetime = 0;
           }
         }
       }
@@ -1001,9 +989,9 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
       
-      // Генерация звезд с адаптацией для мобильных
+      // Генерация звезд
       function generateStars() {
-        const starCount = fixedSettings.starDensity * (isMobile ? 30 : 50);
+        const starCount = fixedSettings.starDensity * 50;
         stars = [];
         
         for (let i = 0; i < starCount; i++) {
@@ -1023,7 +1011,7 @@
         }
       }
       
-      // Генерация туманностей с адаптацией для мобильных
+      // Генерация туманностей
       function generateNebulae() {
         const nebulaCount = fixedSettings.nebulaIntensity;
         nebulae = [];
@@ -1045,7 +1033,7 @@
         }
       }
       
-      // Функции генерации для каждой планеты с оптимизацией для мобильных
+      // Функции генерации для каждой планеты
       function generateMercury() {
         const particleCount = fixedSettings.density * 15;
         particles = [];
