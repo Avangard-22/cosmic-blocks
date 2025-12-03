@@ -1,8 +1,8 @@
 // === КОД ПЛАНЕТАРНОГО ФОНА ===
 (function() {
     const canvas = document.getElementById('planetBackgroundCanvas');
-    const ctx = canvas.getContext('2d');
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let ctx = null;
+    let isMobile = false;
     // НАСТРОЙКИ ПАРАЛЛАКСА
     const parallaxSettings = {
         baseSpeed: 0.2,
@@ -90,18 +90,7 @@
             type: 'dwarf'
         }
     };
-    // Установка размеров canvas
-    function setCanvasSize() {
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-        // Оптимизация для мобильных устройств
-        if (isMobile) {
-            const pixelRatio = window.devicePixelRatio || 1;
-            canvas.width = canvas.offsetWidth * pixelRatio;
-            canvas.height = canvas.offsetHeight * pixelRatio;
-            ctx.scale(pixelRatio, pixelRatio);
-        }
-    }
+
     // Класс частиц с поддержкой параллакса
     class Particle {
         constructor(x, y, radius, color, velocity, type, parallaxFactor = 1) {
@@ -122,6 +111,7 @@
             this.parallaxFactor = parallaxFactor;
         }
         draw() {
+            if (!ctx) return;
             ctx.save();
             if (this.type === 'star') {
                 const twinkleFactor = 0.7 + 0.3 * Math.sin(this.twinkle);
@@ -185,6 +175,7 @@
         }
         update() {
             this.draw();
+            if (!canvas) return;
             // Движение параллакса
             const parallaxSpeed = parallaxSettings.baseSpeed * this.parallaxFactor;
             this.x += parallaxSettings.directionX * parallaxSpeed;
@@ -211,8 +202,10 @@
             }
         }
     }
+
     // Функция для рисования градиентного фона
     function drawBackground() {
+        if (!ctx || !canvas) return;
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
         const bgColors = planetData[currentPlanet].background;
         gradient.addColorStop(0, bgColors[0]);
@@ -221,8 +214,10 @@
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
+
     // Генерация звезд с параллаксом
     function generateStars() {
+        if (!canvas) return;
         const starCount = fixedSettings.starDensity * 50;
         stars = [];
         for (let i = 0; i < starCount; i++) {
@@ -238,8 +233,10 @@
             stars.push(new Particle(x, y, radius, color, velocity, 'star', parallaxSettings.layers.stars));
         }
     }
+
     // Генерация туманностей с параллаксом
     function generateNebulae() {
+        if (!canvas) return;
         const nebulaCount = fixedSettings.nebulaIntensity;
         nebulae = [];
         for (let i = 0; i < nebulaCount; i++) {
@@ -256,8 +253,10 @@
             nebulae.push(new Particle(x, y, radius, color, velocity, 'nebula', parallaxSettings.layers.nebulae));
         }
     }
+
     // ОБНОВЛЕННЫЕ ФУНКЦИИ ГЕНЕРАЦИИ С ПАРАЛЛАКСОМ
     function generateMercury() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 15;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -285,7 +284,9 @@
             specialElements.push(new Particle(x, y, radius, color, velocity, 'sun', parallaxSettings.layers.special));
         }
     }
+
     function generateVenus() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 20;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -307,7 +308,9 @@
             particles.push(new Particle(x, y, radius, color, velocity, 'cloud', parallaxSettings.layers.particles));
         }
     }
+
     function generateEarth() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 25;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -326,7 +329,9 @@
             particles.push(new Particle(x, y, radius, color, velocity, 'water', parallaxSettings.layers.particles));
         }
     }
+
     function generateMars() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 30;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -343,7 +348,9 @@
             particles.push(new Particle(x, y, radius, color, velocity, 'dust', parallaxSettings.layers.particles));
         }
     }
+
     function generateJupiter() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 15;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -369,7 +376,9 @@
         };
         specialElements.push(new Particle(x, y, radius, color, velocity, 'spot', parallaxSettings.layers.special));
     }
+
     function generateSaturn() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 10;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -401,7 +410,9 @@
             particles.push(new Particle(x, y, radius, color, velocity, 'cloud', parallaxSettings.layers.particles));
         }
     }
+
     function generateUranus() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 20;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -418,7 +429,9 @@
             particles.push(new Particle(x, y, radius, color, velocity, 'ice', parallaxSettings.layers.particles));
         }
     }
+
     function generateNeptune() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 25;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -451,7 +464,9 @@
             specialElements.push(new Particle(x, y, radius, color, velocity, 'spot', parallaxSettings.layers.special));
         }
     }
+
     function generatePluto() {
+        if (!canvas) return;
         const particleCount = fixedSettings.density * 20;
         particles = [];
         for (let i = 0; i < particleCount; i++) {
@@ -485,6 +500,7 @@
             specialElements.push(new Particle(x, y, radius, color, velocity, 'ice', parallaxSettings.layers.special));
         }
     }
+
     // Анимация частиц
     function animateParticles() {
         drawBackground();
@@ -501,12 +517,14 @@
             element.update();
         });
     }
+
     // Основная функция анимации
     function animate() {
         time += 0.01;
         animateParticles();
         animationId = requestAnimationFrame(animate);
     }
+
     // Генерация фона для выбранной планеты
     function generatePlanetBackground() {
         if (animationId) {
@@ -532,21 +550,51 @@
         genMap[currentPlanet]();
         animate();
     }
+
     // Смена планеты
     function changePlanet(planet) {
         currentPlanet = planet;
         generatePlanetBackground();
     }
+
+    // Установка размеров canvas
+    function setCanvasSize() {
+        if (!canvas || !ctx) return;
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        // Оптимизация для мобильных устройств
+        if (isMobile) {
+            const pixelRatio = window.devicePixelRatio || 1;
+            canvas.width = canvas.offsetWidth * pixelRatio;
+            canvas.height = canvas.offsetHeight * pixelRatio;
+            ctx.scale(pixelRatio, pixelRatio);
+        }
+    }
+
     // Инициализация
     function init() {
+        if (!canvas) {
+            console.error("Canvas not found");
+            return;
+        }
+        ctx = canvas.getContext('2d');
+        isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         setCanvasSize();
         generatePlanetBackground();
         window.addEventListener('resize', setCanvasSize);
     }
+
     // Публичные методы
     window.planetBackground = {
         init: init,
         setPlanet: changePlanet,
         setCanvasSize: setCanvasSize
     };
+
+    // Инициализируем при загрузке DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();

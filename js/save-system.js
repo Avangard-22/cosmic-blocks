@@ -1,5 +1,21 @@
+let critChanceUpgradeLevel = 0;
+let critMultiplierUpgradeLevel = 0;
+let coins = 0;
+let clickPower = 1;
+let clickUpgradeLevel = 0;
+let critChance = 0.001;
+let critMultiplier = 2.0;
+let helperDamageBonus = 0.3;
+let helperUpgradeLevel = 0;
+let totalDamageDealt = 0;
+let currentLocation = 'mercury';
+let bogoCoinBonus = 0;
+let gameActive = false;
+
 // === ОБНОВЛЕННАЯ СИСТЕМА СОХРАНЕНИЯ ===
-function saveGame() {
+window.saveGame = function() {
+    if (!window.gameActive) return;
+    
     const saveData = {
         coins,
         clickPower,
@@ -13,17 +29,19 @@ function saveGame() {
         bogoCoinBonus,
         gameActive: true,
         timestamp: Date.now(),
-        // ИСПРАВЛЕНИЕ: Добавляем новые переменные в сохранение
+        // Добавляем новые переменные в сохранение
         critChanceUpgradeLevel,
         critMultiplierUpgradeLevel
     };
     localStorage.setItem('cosmicBlocksSave', JSON.stringify(saveData));
-    showTooltip(translations[currentLanguage].tooltips.saveSuccess);
-    setTimeout(hideTooltip, 1500);
-    updateContinueButton();
+    if (window.showTooltip && window.hideTooltip && window.translations) {
+        window.showTooltip(window.translations[currentLanguage].tooltips.saveSuccess);
+        setTimeout(window.hideTooltip, 1500);
+    }
+    window.updateContinueButton();
 }
 
-function loadGame() {
+window.loadGame = function() {
     const saved = localStorage.getItem('cosmicBlocksSave');
     if (saved) {
         try {
@@ -41,7 +59,7 @@ function loadGame() {
                 totalDamageDealt = data.totalDamageDealt || 0;
                 currentLocation = data.currentLocation || 'mercury';
                 bogoCoinBonus = data.bogoCoinBonus || 0;
-                // ИСПРАВЛЕНИЕ: Загружаем новые переменные с обратной совместимостью
+                // Загружаем новые переменные с обратной совместимостью
                 critChanceUpgradeLevel = data.critChanceUpgradeLevel || Math.round((critChance - 0.001) / 0.001);
                 critMultiplierUpgradeLevel = data.critMultiplierUpgradeLevel || Math.round((critMultiplier - 2.0) / 0.2);
                 return true;
@@ -56,19 +74,23 @@ function loadGame() {
     return false;
 }
 
-function updateContinueButton() {
+window.updateContinueButton = function() {
     const continueBtn = document.getElementById('continueBtn');
     if (continueBtn) {
         const hasSave = localStorage.getItem('cosmicBlocksSave') !== null;
         if (hasSave) {
             continueBtn.className = 'btn save-available';
-            continueBtn.textContent = translations[currentLanguage].buttons.continue;
+            if (window.translations && window.currentLanguage) {
+                continueBtn.textContent = window.translations[window.currentLanguage].buttons.continue;
+            }
         } else {
             continueBtn.className = 'btn no-save';
-            continueBtn.textContent = translations[currentLanguage].buttons.noSave;
+            if (window.translations && window.currentLanguage) {
+                continueBtn.textContent = window.translations[window.currentLanguage].buttons.noSave;
+            }
         }
     }
 }
 
-// Инициализация
-updateContinueButton();
+// Инициализация кнопки продолжения
+window.updateContinueButton();

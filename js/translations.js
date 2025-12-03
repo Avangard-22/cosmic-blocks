@@ -1,3 +1,6 @@
+// Глобальные переменные для перевода
+let currentLanguage = localStorage.getItem('gameLanguage') || 'ru';
+
 // Переводы для трех языков
 const translations = {
     ru: {
@@ -46,7 +49,7 @@ const translations = {
         },
         saveScreen: {
             title: "СОХРАНЕНИЕ ИГРЫ",
-            text: "Хотите продолжить с сохраненной игрой или начать новую?"
+            text: "Хотите продолжить с сохраненной игры или начать новую?"
         },
         gameOver: {
             title: "ДОБЫЧА ПРЕРВАНА!",
@@ -245,16 +248,6 @@ const translations = {
     }
 };
 
-// Текущий язык
-let currentLanguage = localStorage.getItem('gameLanguage') || 'ru';
-let gameMetrics = {
-    startTime: Date.now(),
-    blocksDestroyed: 0,
-    upgradesBought: 0,
-    totalClicks: 0,
-    sessions: 1
-};
-
 // Функция для форматирования строк с параметрами
 function formatString(template, params) {
     return template.replace(/{(\w+)}/g, (match, key) => {
@@ -296,27 +289,47 @@ function updateAllTranslations() {
         applyTranslation(welcomeTexts[5], 'welcome.text6');
         applyTranslation(welcomeTexts[6], 'welcome.text7');
     }
+    
+    // Обновление HUD
+    const coinsDisplay = document.getElementById('coins-value');
+    const clickPowerDisplay = document.getElementById('clickPower-value');
+    const critChanceDisplay = document.getElementById('critChance-value');
+    const critMultiplierDisplay = document.getElementById('critMultiplier-value');
+    const gameTitle = document.getElementById('gameTitle');
+    
+    if (coinsDisplay && window.coins !== undefined) coinsDisplay.textContent = Math.floor(window.coins).toLocaleString();
+    if (clickPowerDisplay && window.clickPower !== undefined) clickPowerDisplay.textContent = Math.round(window.clickPower);
+    if (critChanceDisplay && window.critChance !== undefined) critChanceDisplay.textContent = `${(window.critChance * 100).toFixed(1)}%`;
+    if (critMultiplierDisplay && window.critMultiplier !== undefined) critMultiplierDisplay.textContent = `x${window.critMultiplier.toFixed(1)}`;
+    if (gameTitle && window.currentLocation !== undefined) {
+        applyTranslation(gameTitle, `gameTitle.${window.currentLocation}`);
+    }
+    
     // Кнопки на экране приветствия
     applyTranslation(document.getElementById('continueBtn'), 'buttons.continue');
     applyTranslation(document.getElementById('startBtn'), 'buttons.start');
-    updateLangButtonTooltip();
-    // Экран сохранения
-    applyTranslation(document.querySelector('#saveScreen h2'), 'saveScreen.title');
-    applyTranslation(document.querySelector('#saveScreen p'), 'saveScreen.text');
     applyTranslation(document.getElementById('loadSaveBtn'), 'buttons.loadSave');
     applyTranslation(document.getElementById('newGameBtn'), 'buttons.newGame');
     applyTranslation(document.getElementById('cancelSaveBtn'), 'buttons.cancel');
-    // Экран Game Over
-    applyTranslation(document.querySelector('#gameOverScreen h2'), 'gameOver.title');
     applyTranslation(document.getElementById('restartBtn'), 'buttons.restart');
     applyTranslation(document.getElementById('shareBtn'), 'buttons.share');
-    // HUD
-    applyTranslation(document.querySelector('.hud-item#coins i + span'), 'hud.coins', { value: coinsDisplay.textContent });
-    applyTranslation(document.querySelector('.hud-item#clickPowerInfo i + span'), 'hud.clickPower', { value: clickPowerDisplay.textContent });
-    applyTranslation(document.querySelector('.hud-item#critChanceInfo i + span'), 'hud.critChance', { value: critChanceDisplay.textContent });
-    applyTranslation(document.querySelector('.hud-item#critMultiplierInfo i + span'), 'hud.critMultiplier', { value: critMultiplierDisplay.textContent });
-    // Название текущей локации
-    applyTranslation(document.getElementById('gameTitle'), `gameTitle.${currentLocation}`);
+    
+    // Экран сохранения
+    if (document.getElementById('saveScreen') && document.getElementById('saveScreen').style.display !== 'none') {
+        applyTranslation(document.querySelector('#saveScreen h2'), 'saveScreen.title');
+        applyTranslation(document.querySelector('#saveScreen p'), 'saveScreen.text');
+    }
+    
+    // Экран Game Over
+    if (document.getElementById('gameOverScreen') && document.getElementById('gameOverScreen').style.display !== 'none') {
+        applyTranslation(document.querySelector('#gameOverScreen h2'), 'gameOver.title');
+        if (window.totalDamageDealt !== undefined) {
+            applyTranslation(document.getElementById('finalScore'), 'gameOver.score', { 
+                damage: Math.floor(window.totalDamageDealt).toLocaleString() 
+            });
+        }
+    }
+    
     // Обновляем кнопки улучшений
     if (document.getElementById('upgradeClickBtn')) {
         document.getElementById('upgradeClickBtn').title = translations[currentLanguage].tooltips.upgradeClick;
@@ -333,17 +346,24 @@ function updateAllTranslations() {
     if (document.getElementById('upgradeHelperDmgBtn')) {
         document.getElementById('upgradeHelperDmgBtn').title = translations[currentLanguage].tooltips.upgradeHelperDmg;
     }
+    
+    // Обновляем прогресс-бар текст
+    if (window.totalDamageDealt !== undefined && window.AU_TO_DAMAGE !== undefined && window.locationRequirements !== undefined && window.currentLocation !== undefined) {
+        const currentAU = window.totalDamageDealt / window.AU_TO_DAMAGE;
+        const targetAU = window.locationRequirements[window.currentLocation].targetAU;
+        const percentage = Math.min(100, (currentAU / targetAU) * 100);
+        applyTranslation(document.getElementById('progressText'), 'progressText', {
+            current: currentAU.toFixed(5),
+            target: targetAU.toFixed(5),
+            percent: percentage.toFixed(1)
+        });
+    }
+    
+    // Обновляем текст подсказок
+    updateLangButtonTooltip();
+    
     // Сохраняем текущий язык
     localStorage.setItem('gameLanguage', currentLanguage);
-    // Обновляем прогресс-бар текст
-    const currentAU = totalDamageDealt / AU_TO_DAMAGE;
-    const targetAU = locationRequirements[currentLocation].targetAU;
-    const percentage = Math.min(100, (currentAU / targetAU) * 100);
-    applyTranslation(document.getElementById('progressText'), 'progressText', {
-        current: currentAU.toFixed(5),
-        target: targetAU.toFixed(5),
-        percent: percentage.toFixed(1)
-    });
 }
 
 // Функция обновления tooltip для кнопки выбора языка
@@ -379,7 +399,7 @@ function updateLanguageFlag() {
 }
 
 // Функция переключения языка
-function switchLanguage() {
+window.switchLanguage = function() {
     const languages = ['ru', 'en', 'zh'];
     const currentIndex = languages.indexOf(currentLanguage);
     const nextIndex = (currentIndex + 1) % languages.length;
@@ -387,4 +407,20 @@ function switchLanguage() {
     updateLanguageFlag();
     updateLangButtonTooltip();
     updateAllTranslations();
+    if (window.saveGame) window.saveGame(); // Сохраняем, если функция доступна
 }
+
+// Инициализация флага и подсказки
+function initLanguageUI() {
+    updateLanguageFlag();
+    updateLangButtonTooltip();
+    updateAllTranslations();
+}
+
+// Экспортируем функции для глобального доступа
+window.formatString = formatString;
+window.applyTranslation = applyTranslation;
+window.updateAllTranslations = updateAllTranslations;
+window.updateLanguageFlag = updateLanguageFlag;
+window.updateLangButtonTooltip = updateLangButtonTooltip;
+window.initLanguageUI = initLanguageUI;
