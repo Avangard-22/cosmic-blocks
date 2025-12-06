@@ -1,4 +1,4 @@
-// Основная игровая логика
+// Основная игровая логика с исправленной системой Bobo
 (function() {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   
@@ -191,7 +191,7 @@
   let currentBlock = null;
   let currentBlockHealth = 0;
   
-  // Система Bobo
+  // === ЦЕНТРАЛИЗОВАННАЯ СИСТЕМА УПРАВЛЕНИЯ BOBO ===
   window.boboSystem = {
     active: false,
     timeLeft: 0,
@@ -200,19 +200,21 @@
     timerInterval: null,
     coinBonus: 0,
 
+    // Активация помощника
     activate: function(duration = 60000) {
       if (this.active) return;
 
+      console.log('🎮 Bobo: Активация помощника');
       this.active = true;
       this.timeLeft = duration;
-      this.coinBonus = 0.2;
+      this.coinBonus = 0.2; // +20% к кристаллам
 
       // Создаем визуальный элемент
       this.createElement();
 
       // Запускаем интервал атаки
       this.attackInterval = setInterval(() => {
-        if (this.active && currentBlock && window.gameState.gameActive) {
+        if (this.active && currentBlock && window.gameState.gameActive && !window.gameState.gamePaused) {
           this.attack();
         }
       }, 1500);
@@ -221,19 +223,26 @@
       this.timerInterval = setInterval(() => {
         if (!this.active) {
           clearInterval(this.timerInterval);
+          this.timerInterval = null;
           return;
         }
+
+        // Если игра на паузе, не уменьшаем время
+        if (window.gameState.gamePaused) return;
 
         this.timeLeft -= 1000;
         if (this.timeLeft <= 0) {
           this.deactivate();
         }
+        
+        // Обновляем отображение таймера
+        this.updateTimerDisplay();
       }, 1000);
 
-      // Обновляем кнопки улучшений
-      updateUpgradeButtons();
-      // Обновляем HUD
-      updateHUD();
+      // Обновляем UI
+      window.updateUpgradeButtons();
+      window.updateHUD();
+      this.updateTimerDisplay();
 
       // Показываем уведомление
       if (window.showTooltip) {
@@ -245,7 +254,10 @@
       window.saveGame();
     },
 
+    // Деактивация помощника
     deactivate: function() {
+      console.log('🎮 Bobo: Деактивация помощника');
+      
       this.active = false;
       this.coinBonus = 0;
 
@@ -271,8 +283,10 @@
         }, 300);
       }
 
-      // Обновляем кнопки улучшений
-      updateUpgradeButtons();
+      // Обновляем UI
+      window.updateUpgradeButtons();
+      window.updateHUD();
+      this.updateTimerDisplay();
 
       // Показываем уведомление
       if (window.showTooltip) {
@@ -284,6 +298,51 @@
       window.saveGame();
     },
 
+    // Восстановление из сохранения
+    restoreFromSave: function(savedState) {
+      console.log('🎮 Bobo: Восстановление из сохранения', savedState);
+      
+      if (savedState.helperActive && savedState.helperTimeLeft > 0) {
+        this.active = true;
+        this.timeLeft = savedState.helperTimeLeft;
+        this.coinBonus = savedState.boboCoinBonus || 0.2;
+
+        // Создаем визуальный элемент
+        this.createElement();
+
+        // Запускаем интервалы с оставшимся временем
+        this.attackInterval = setInterval(() => {
+          if (this.active && currentBlock && window.gameState.gameActive && !window.gameState.gamePaused) {
+            this.attack();
+          }
+        }, 1500);
+
+        this.timerInterval = setInterval(() => {
+          if (!this.active) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+            return;
+          }
+
+          if (window.gameState.gamePaused) return;
+
+          this.timeLeft -= 1000;
+          if (this.timeLeft <= 0) {
+            this.deactivate();
+          }
+          
+          // Обновляем отображение таймера
+          this.updateTimerDisplay();
+        }, 1000);
+
+        console.log('🎮 Bobo: Успешно восстановлен, осталось времени:', this.timeLeft);
+        
+        // Обновляем UI
+        this.updateTimerDisplay();
+      }
+    },
+
+    // Создание визуального элемента
     createElement: function() {
       if (this.element && this.element.parentNode) {
         document.body.removeChild(this.element);
@@ -301,80 +360,91 @@
       }, 100);
     },
 
+    // Перемещение в случайную позицию
     moveToRandomPosition: function() {
       if (!this.element) return;
 
-      // Получаем позицию текущего блока
-      let blockRect = { left: window.innerWidth/2, top: window.innerHeight/2 };
-      if (currentBlock) {
-        blockRect = currentBlock.getBoundingClientRect();
-      }
-
-      // Находим позицию вдали от блока
+      const safeDistance = 150;
       let attempts = 0;
       let validPosition = false;
-      const safeDistance = 150;
 
       while (!validPosition && attempts < 20) {
         attempts++;
-        // Генерируем случайную позицию
-        const randomX = Math.random() * (window.innerWidth - 60) + 30;
-        const randomY = Math.random() * (window.innerHeight - 120) + 60; // Избегаем верхней части с UI
+        
+        // Генерируем случайную позицию, избегая краев и UI
+        const randomX = Math.random() * (window.innerWidth - 100) + 50;
+        const randomY = Math.random() * (window.innerHeight - 200) + 100;
 
-        // Проверяем расстояние от блока
-        const distance = Math.sqrt(
-          Math.pow(randomX - (blockRect.left + blockRect.width/2), 2) + 
-          Math.pow(randomY - (blockRect.top + blockRect.height/2), 2)
-        );
+        // Проверяем расстояние от текущего блока
+        let distanceFromBlock = 0;
+        if (currentBlock) {
+          const blockRect = currentBlock.getBoundingClientRect();
+          const blockCenterX = blockRect.left + blockRect.width / 2;
+          const blockCenterY = blockRect.top + blockRect.height / 2;
+          distanceFromBlock = Math.sqrt(
+            Math.pow(randomX - blockCenterX, 2) + 
+            Math.pow(randomY - blockCenterY, 2)
+          );
+        }
 
-        // Проверяем, что позиция не слишком близко к краям и не перекрывает UI
-        const safeFromEdges = randomX > 60 && randomX < window.innerWidth - 60 && 
-                              randomY > 100 && randomY < window.innerHeight - 60;
+        // Проверяем, что позиция не перекрывает UI элементы
+        const notInUI = randomX > 100 && randomX < window.innerWidth - 100 && 
+                       randomY > 150 && randomY < window.innerHeight - 100;
 
-        if (distance > safeDistance && safeFromEdges) {
+        if ((!currentBlock || distanceFromBlock > safeDistance) && notInUI) {
           this.element.style.left = randomX + 'px';
           this.element.style.top = randomY + 'px';
           validPosition = true;
         }
       }
 
-      // Если не нашли хорошую позицию, используем последнюю или центральную
+      // Если не нашли хорошую позицию, используем стандартную
       if (!validPosition) {
         this.element.style.left = (window.innerWidth * 0.7) + 'px';
         this.element.style.top = (window.innerHeight * 0.7) + 'px';
       }
     },
 
+    // Атака помощника
     attack: function() {
-      if (!currentBlock || !this.active || !this.element) return;
+      if (!currentBlock || !this.active || !this.element || !window.gameState.gameActive) return;
 
       // Создаем визуальный эффект атаки
       this.createEffect();
 
+      // Рассчитываем урон
       const baseHelperDmg = window.gameState.clickPower * (1 + window.gameState.helperDamageBonus);
       const upgradedHelperDmg = baseHelperDmg * (1 + window.gameState.helperUpgradeLevel * 0.2);
-
+      
       // Бонус от магазина (скачок силы)
       let finalHelperDmg = upgradedHelperDmg;
-      if (window.gameState.shopItems.powerSurge.active) {
+      if (window.gameState.shopItems && window.gameState.shopItems.powerSurge && window.gameState.shopItems.powerSurge.active) {
         finalHelperDmg *= 1.5;
       }
 
+      // Наносим урон
       currentBlockHealth -= finalHelperDmg;
       window.gameState.totalDamageDealt += finalHelperDmg;
       window.gameMetrics.totalClicks++;
 
-      createDamageText(Math.round(finalHelperDmg), currentBlock, '#69f0ae');
-      checkLocationUpgrade();
+      // Показываем текст урона
+      if (window.createDamageText) {
+        window.createDamageText(Math.round(finalHelperDmg), currentBlock, '#69f0ae');
+      }
 
+      // Проверяем прогресс локации
+      window.checkLocationUpgrade();
+
+      // Проверяем, разрушен ли блок
       if (currentBlockHealth <= 0) {
-        destroyBlock(currentBlock);
+        window.destroyBlock(currentBlock);
       } else {
         currentBlock.textContent = Math.floor(currentBlockHealth);
-        updateCracks(currentBlock, currentBlockHealth);
+        window.updateCracks(currentBlock, currentBlockHealth);
       }
     },
 
+    // Создание визуального эффекта атаки
     createEffect: function() {
       if (!currentBlock || !this.element) return;
 
@@ -445,8 +515,11 @@
       };
 
       animateBeam();
-      playSound('helperSound');
+      
+      // Воспроизводим звук атаки
+      window.playSound('helperSound');
 
+      // Эффект попадания
       setTimeout(() => {
         const hitEffect = document.createElement('div');
         hitEffect.style.position = 'absolute';
@@ -472,25 +545,35 @@
       }, animationDuration);
     },
 
+    // Пауза работы помощника
     pause: function() {
-      // Приостанавливаем таймеры, если игра на паузе
-      if (this.timerInterval) {
-        clearInterval(this.timerInterval);
-        this.timerInterval = null;
-      }
+      console.log('🎮 Bobo: Пауза');
       if (this.attackInterval) {
         clearInterval(this.attackInterval);
         this.attackInterval = null;
       }
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
     },
 
+    // Возобновление работы помощника
     resume: function() {
-      // Возобновляем таймеры, если игра возобновлена
-      if (this.active) {
-        // Таймер обратного отсчета
+      console.log('🎮 Bobo: Возобновление');
+      if (this.active && this.timeLeft > 0) {
+        // Восстанавливаем интервал атаки
+        this.attackInterval = setInterval(() => {
+          if (this.active && currentBlock && window.gameState.gameActive) {
+            this.attack();
+          }
+        }, 1500);
+
+        // Восстанавливаем таймер
         this.timerInterval = setInterval(() => {
           if (!this.active) {
             clearInterval(this.timerInterval);
+            this.timerInterval = null;
             return;
           }
 
@@ -498,94 +581,81 @@
           if (this.timeLeft <= 0) {
             this.deactivate();
           }
+          
+          // Обновляем отображение таймера
+          this.updateTimerDisplay();
         }, 1000);
-
-        // Интервал атаки
-        this.attackInterval = setInterval(() => {
-          if (this.active && currentBlock && window.gameState.gameActive) {
-            this.attack();
-          }
-        }, 1500);
       }
     },
-
-    restoreFromSave: function(savedState) {
-      // Восстанавливаем состояние из сохранения
-      this.active = savedState.helperActive;
-      this.timeLeft = savedState.helperTimeLeft;
-      this.coinBonus = savedState.boboCoinBonus || 0;
-
-      if (this.active) {
-        // Создаем элемент
-        this.createElement();
-        // Запускаем таймеры с текущим timeLeft
-        this.resume();
+    
+    // Обновление отображения таймера Bobo
+    updateTimerDisplay: function() {
+      const boboInfo = document.getElementById('bobo-info');
+      const boboTime = document.getElementById('bobo-time');
+      const boboTimer = document.getElementById('bobo-timer');
+      const upgradeHelperBtn = document.getElementById('upgradeHelperBtn');
+      
+      if (this.active && this.timeLeft > 0) {
+        // Форматируем время
+        const minutes = Math.floor(this.timeLeft / 60000);
+        const seconds = Math.floor((this.timeLeft % 60000) / 1000);
+        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Обновляем HUD
+        if (boboInfo && boboTime) {
+          boboInfo.style.display = 'flex';
+          boboTime.textContent = timeString;
+        }
+        
+        // Обновляем таймер на кнопке
+        if (boboTimer) {
+          boboTimer.style.display = 'block';
+          boboTimer.textContent = timeString;
+          
+          // Если осталось меньше 10 секунд, добавляем анимацию пульсации
+          if (this.timeLeft < 10000) {
+            boboTimer.style.animation = 'pulse 1s infinite';
+            boboTimer.style.color = '#ff4444';
+          } else {
+            boboTimer.style.animation = '';
+            boboTimer.style.color = '#69f0ae';
+          }
+        }
+        
+        // Обновляем tooltip кнопки улучшения
+        if (upgradeHelperBtn) {
+          const percent = Math.round(this.coinBonus * 100);
+          const tooltipText = window.formatString(
+            window.translations[window.currentLanguage].tooltips.boboActive || 'Bobo активен!<br>Осталось времени: {time}<br>Бонус к кристаллам: +{percent}%',
+            { time: timeString, percent: percent }
+          );
+          upgradeHelperBtn.title = tooltipText;
+        }
+      } else {
+        // Скрываем информацию о Bobo
+        if (boboInfo) boboInfo.style.display = 'none';
+        if (boboTimer) {
+          boboTimer.style.display = 'none';
+          boboTimer.style.animation = '';
+        }
+        
+        // Восстанавливаем стандартный tooltip
+        if (upgradeHelperBtn) {
+          upgradeHelperBtn.title = window.translations[window.currentLanguage].tooltips.upgradeHelper || 'Bobo<br>Авто-атака на 1 минуту<br>+30% урона<br>+20% к кристаллам';
+        }
       }
     }
   };
 
-  // Вспомогательные функции
-  function getCurrentSpeed() {
-    const baseSpeed = blockSpeed;
-    const locationIndex = Object.keys(locationRequirements).indexOf(window.gameState.currentLocation);
-    if (locationIndex < 3) return baseSpeed * 0.85;
-    return baseSpeed;
-  }
+  // === ФУНКЦИИ ОБНОВЛЕНИЯ UI ДЛЯ BOBO ===
   
-  function calculateBlockHealth() {
-    const currentReq = locationRequirements[window.gameState.currentLocation];
-    const locationBonus = 1 + (currentReq.targetAU * 2);
-    let baseHealth = balanceConfig.baseHealth * locationBonus;
-    const targetHealth = window.gameState.clickPower * balanceConfig.targetClicks;
-    const combinedHealth = (baseHealth + targetHealth) / 2;
-    const randomFactor = balanceConfig.healthRandomRange.min + 
-                        Math.random() * (balanceConfig.healthRandomRange.max - balanceConfig.healthRandomRange.min);
-    return Math.floor(combinedHealth * randomFactor);
-  }
+  // Обновление отображения статуса Bobo в HUD
+  window.updateBoboHUD = function() {
+    window.boboSystem.updateTimerDisplay();
+  };
   
-  function calculateClickPower() {
-    const basePower = 1;
-    const upgradeBonus = window.gameState.clickUpgradeLevel;
-    const diminishingEffect = Math.pow(balanceConfig.damageProgression.diminishingReturns, 
-                                     Math.min(window.gameState.clickUpgradeLevel, balanceConfig.damageProgression.maxLevelEffect));
-    const nonLinearGrowth = Math.sqrt(window.gameState.clickUpgradeLevel + 1);
-    return basePower + (upgradeBonus * diminishingEffect * nonLinearGrowth * balanceConfig.damageProgression.baseMultiplier);
-  }
-  
-  function getRareBlockType() {
-    const rand = Math.random();
-    let cumulativeChance = 0;
-    for (const [type, block] of Object.entries(rareBlocks)) {
-      cumulativeChance += block.chance;
-      if (rand <= cumulativeChance) return type;
-    }
-    return null;
-  }
-  
-  function announceRareBlock(blockName) {
-    const announce = document.createElement('div');
-    announce.className = 'rare-block-announce';
-    announce.style.cssText = `
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.8em;
-      font-weight: bold;
-      color: gold;
-      z-index: 50;
-      text-shadow: 0 0 10px black;
-      animation: fadeInOut 2s;
-    `;
-    announce.textContent = `🌟 ${blockName} блок! 🌟`;
-    document.body.appendChild(announce);
-    setTimeout(() => {
-      if (announce.parentNode) document.body.removeChild(announce);
-    }, 2000);
-  }
-  
-  // Обновление HUD
-  function updateHUD() {
+  // Обновление общего HUD
+  window.updateHUD = function() {
     const coinsDisplay = document.getElementById('coins-value');
     const clickPowerDisplay = document.getElementById('clickPower-value');
     const critChanceDisplay = document.getElementById('critChance-value');
@@ -595,10 +665,27 @@
     if (clickPowerDisplay) clickPowerDisplay.textContent = Math.round(window.gameState.clickPower);
     if (critChanceDisplay) critChanceDisplay.textContent = `${(window.gameState.critChance * 100).toFixed(1)}%`;
     if (critMultiplierDisplay) critMultiplierDisplay.textContent = `x${window.gameState.critMultiplier.toFixed(1)}`;
+    
+    // Обновляем отображение Bobo
+    window.updateBoboHUD();
+  };
+
+  // === ИСПРАВЛЕННЫЕ ФУНКЦИИ ПОКУПКИ И АКТИВАЦИИ ПОМОЩНИКА ===
+
+  // Покупка помощника
+  function buyHelper() {
+    const cost = Math.floor(baseHelperUpgradeCost * Math.pow(1.4, window.gameState.helperUpgradeLevel));
+    if (window.gameState.coins >= cost && !window.boboSystem.active) {
+      window.gameState.coins -= cost;
+      window.boboSystem.activate();
+      window.updateHUD();
+      window.updateUpgradeButtons();
+      window.saveGame();
+    }
   }
-  
+
   // Обновление кнопок улучшений
-  function updateUpgradeButtons() {
+  window.updateUpgradeButtons = function() {
     const clickCost = Math.floor(baseClickUpgradeCost * Math.pow(1.5, window.gameState.clickUpgradeLevel));
     const upgradeClickBtn = document.getElementById('upgradeClickBtn');
     
@@ -658,10 +745,131 @@
         upgradeHelperDmgBtn.className = "upgrade-btn btn-unavailable";
       }
     }
+  };
+
+  // === ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ ИГРЫ ===
+  function continueGame() {
+    if (window.loadGame()) {
+      // Восстанавливаем состояние Bobo из сохранения
+      window.boboSystem.restoreFromSave(window.gameState);
+      startGame(false);
+    } else {
+      if (window.showTooltip) {
+        window.showTooltip(window.translations[window.currentLanguage].tooltips.noSave);
+        setTimeout(window.hideTooltip, 2000);
+      }
+    }
+  }
+
+  // === ИСПРАВЛЕННАЯ ФУНКЦИЯ СТАРТА ИГРЫ ===
+  function startGame(reset = true) {
+    if (reset) {
+      window.resetGame();
+    } else {
+      window.gameState.clickPower = calculateClickPower();
+    }
+    
+    // Не деактивируем Bobo при продолжении игры
+    if (reset && window.boboSystem) {
+      window.boboSystem.deactivate();
+    }
+    
+    // Очищаем интервалы
+    if (window.boboSystem && window.boboSystem.attackInterval) {
+      clearInterval(window.boboSystem.attackInterval);
+      window.boboSystem.attackInterval = null;
+    }
+    
+    if (window.boboSystem && window.boboSystem.timerInterval) {
+      clearInterval(window.boboSystem.timerInterval);
+      window.boboSystem.timerInterval = null;
+    }
+    
+    const gameArea = document.getElementById('gameArea');
+    if (gameArea) gameArea.innerHTML = "";
+    
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const saveScreen = document.getElementById('saveScreen');
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    
+    if (welcomeScreen) welcomeScreen.style.display = "none";
+    if (saveScreen) saveScreen.style.display = "none";
+    if (gameOverScreen) gameOverScreen.style.display = "none";
+    
+    window.gameState.gameActive = true;
+    window.gameState.gamePaused = false;
+    window.gameState.comboCount = 0;
+    window.gameState.lastDestroyTime = 0;
+    window.gameMetrics.startTime = Date.now();
+    window.gameMetrics.blocksDestroyed = 0;
+    window.gameMetrics.upgradesBought = 0;
+    window.gameMetrics.totalClicks = 0;
+    
+    window.updateHUD();
+    window.updateUpgradeButtons();
+    window.updateProgressBar();
+    setLocation(window.gameState.currentLocation);
+    
+    // Обновляем магазин и достижения
+    if (window.shopSystem) window.shopSystem.updateShopDisplay();
+    if (window.achievementsSystem) window.achievementsSystem.updateAchievementsDisplay();
+    
+    setTimeout(() => createMovingBlock(), 500);
+  }
+
+  // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (без изменений) ===
+  
+  function getCurrentSpeed() {
+    const baseSpeed = blockSpeed;
+    const locationIndex = Object.keys(locationRequirements).indexOf(window.gameState.currentLocation);
+    if (locationIndex < 3) return baseSpeed * 0.85;
+    return baseSpeed;
   }
   
+  function calculateBlockHealth() {
+    const currentReq = locationRequirements[window.gameState.currentLocation];
+    const locationBonus = 1 + (currentReq.targetAU * 2);
+    let baseHealth = balanceConfig.baseHealth * locationBonus;
+    const targetHealth = window.gameState.clickPower * balanceConfig.targetClicks;
+    const combinedHealth = (baseHealth + targetHealth) / 2;
+    const randomFactor = balanceConfig.healthRandomRange.min + 
+                        Math.random() * (balanceConfig.healthRandomRange.max - balanceConfig.healthRandomRange.min);
+    return Math.floor(combinedHealth * randomFactor);
+  }
+  
+  function calculateClickPower() {
+    const basePower = 1;
+    const upgradeBonus = window.gameState.clickUpgradeLevel;
+    const diminishingEffect = Math.pow(balanceConfig.damageProgression.diminishingReturns, 
+                                     Math.min(window.gameState.clickUpgradeLevel, balanceConfig.damageProgression.maxLevelEffect));
+    const nonLinearGrowth = Math.sqrt(window.gameState.clickUpgradeLevel + 1);
+    return basePower + (upgradeBonus * diminishingEffect * nonLinearGrowth * balanceConfig.damageProgression.baseMultiplier);
+  }
+  
+  window.calculateClickPower = calculateClickPower;
+  
+  // ... (остальные вспомогательные функции остаются без изменений)
+
+  // === ОБРАБОТЧИКИ СОБЫТИЙ ПАУЗЫ ===
+  
+  // Событие паузы игры (при открытии магазина/достижений)
+  document.addEventListener('gamePaused', function() {
+    if (window.boboSystem && window.boboSystem.active) {
+      window.boboSystem.pause();
+    }
+  });
+
+  // Событие возобновления игры
+  document.addEventListener('gameResumed', function() {
+    if (window.boboSystem && window.boboSystem.active) {
+      window.boboSystem.resume();
+    }
+  });
+
+  // === ИНИЦИАЛИЗАЦИЯ ИГРЫ ===
+  
   // Обновление прогресс-бара
-  function updateProgressBar() {
+  window.updateProgressBar = function() {
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
     const currentReq = locationRequirements[window.gameState.currentLocation];
@@ -677,10 +885,10 @@
         percent: percentage.toFixed(1)
       });
     }
-  }
+  };
   
   // Проверка перехода на следующую локацию
-  function checkLocationUpgrade() {
+  window.checkLocationUpgrade = function() {
     const currentReq = locationRequirements[window.gameState.currentLocation];
     const nextLocation = currentReq.nextLocation;
     const currentAU = window.gameState.totalDamageDealt / AU_TO_DAMAGE;
@@ -696,8 +904,8 @@
       setTimeout(window.hideTooltip, 3000);
     }
     
-    updateProgressBar();
-  }
+    window.updateProgressBar();
+  };
   
   // Установка локации
   function setLocation(loc) {
@@ -708,7 +916,9 @@
     if (gameTitle) window.applyTranslation(gameTitle, `gameTitle.${loc}`);
     if (header) header.style.borderColor = locations[loc].borderColor;
     
-    planetBackground.setPlanet(loc);
+    if (window.planetBackground) {
+      window.planetBackground.setPlanet(loc);
+    }
     
     const levelAnnounce = document.getElementById('levelAnnounce');
     if (levelAnnounce) {
@@ -720,842 +930,30 @@
       }, 2000);
     }
     
-    updateProgressBar();
+    window.updateProgressBar();
   }
-  
-  // Создание текста урона
-  function createDamageText(damage, block, color = '#ff4444') {
-    const rect = block.getBoundingClientRect();
-    const text = document.createElement('div');
-    text.className = 'damage-text';
-    text.textContent = `-${damage}`;
-    text.style.color = color;
-    let left = rect.left + rect.width / 2;
-    let top = rect.top;
-    const textWidth = 100;
-    if (left < textWidth / 2) left = textWidth / 2;
-    if (left > window.innerWidth - textWidth / 2) left = window.innerWidth - textWidth / 2;
-    if (top < 50) top = 50;
-    text.style.left = left + 'px';
-    text.style.top = top + 'px';
-    document.body.appendChild(text);
-    
-    let opacity = 1;
-    let yPos = parseInt(text.style.top);
-    function animate() {
-      opacity -= 0.02;
-      yPos -= 2;
-      text.style.opacity = opacity;
-      text.style.top = yPos + 'px';
-      if (opacity > 0) {
-        requestAnimationFrame(animate);
-      } else {
-        if (text.parentNode) document.body.removeChild(text);
-      }
-    }
-    animate();
-  }
-  
-  // Создание текста комбо
-  function showComboText(combo, bonus, block) {
-    const rect = block.getBoundingClientRect();
-    const text = document.createElement('div');
-    text.className = 'combo-text';
-    text.textContent = window.formatString(
-      window.translations[window.currentLanguage].tooltips.combo, 
-      { count: combo, bonus: bonus }
-    );
-    let left = rect.left + rect.width / 2;
-    let top = rect.top;
-    const textWidth = 150;
-    if (left < textWidth / 2) left = textWidth / 2;
-    if (left > window.innerWidth - textWidth / 2) left = window.innerWidth - textWidth / 2;
-    if (top < 50) top = 50;
-    text.style.left = left + 'px';
-    text.style.top = top + 'px';
-    document.body.appendChild(text);
-    setTimeout(() => {
-      if (text.parentNode) document.body.removeChild(text);
-    }, 1000);
-  }
-  
-  // Создание текста награды
-  function showRewardText(reward, block) {
-    const rect = block.getBoundingClientRect();
-    const text = document.createElement('div');
-    text.className = 'reward-text';
-    text.textContent = window.formatString(
-      window.translations[window.currentLanguage].tooltips.reward, 
-      { reward: reward }
-    );
-    let left = rect.left + rect.width / 2;
-    let top = rect.top + rect.height / 2;
-    const textWidth = 120;
-    if (left < textWidth / 2) left = textWidth / 2;
-    if (left > window.innerWidth - textWidth / 2) left = window.innerWidth - textWidth / 2;
-    if (top < 50) top = 50;
-    text.style.left = left + 'px';
-    text.style.top = top + 'px';
-    document.body.appendChild(text);
-    setTimeout(() => {
-      if (text.parentNode) document.body.removeChild(text);
-    }, 1500);
-  }
-  
-  // Создание эффекта взрыва
-  function createExplosion(block) {
-    const rect = block.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const explosionSize = isMobile ? 150 : 200;
-    
-    const explosion = document.createElement('div');
-    explosion.className = 'explosion';
-    explosion.style.left = centerX + 'px';
-    explosion.style.top = centerY + 'px';
-    explosion.style.width = explosionSize + 'px';
-    explosion.style.height = explosionSize + 'px';
-    document.body.appendChild(explosion);
-    
-    const particleCount = isMobile ? 20 : 25;
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'explosion-particle';
-      particle.style.left = centerX + 'px';
-      particle.style.top = centerY + 'px';
-      const particleSize = isMobile ? 10 : 12;
-      particle.style.width = particleSize + 'px';
-      particle.style.height = particleSize + 'px';
-      const location = locations[window.gameState.currentLocation];
-      particle.style.backgroundColor = location.blockColors[Math.floor(Math.random() * location.blockColors.length)];
-      const angle = Math.random() * Math.PI * 2;
-      const distance = 50 + Math.random() * 100;
-      const tx = Math.cos(angle) * distance;
-      const ty = Math.sin(angle) * distance;
-      particle.style.setProperty('--tx', tx + 'px');
-      particle.style.setProperty('--ty', ty + 'px');
-      document.body.appendChild(particle);
-      setTimeout(() => {
-        if (particle.parentNode) document.body.removeChild(particle);
-      }, 800);
-    }
-    
-    setTimeout(() => {
-      if (explosion.parentNode) document.body.removeChild(explosion);
-    }, 600);
-  }
-  
-  // Обновление трещин на блоке
-  function updateCracks(block, health) {
-    if (!block) return;
-    const existingCrack = block.querySelector('.crack-overlay');
-    if (existingCrack) block.removeChild(existingCrack);
-    
-    const maxHealth = parseInt(block.dataset.maxHealth);
-    const damageRatio = 1 - (health / maxHealth);
-    
-    if (damageRatio > 0.7) {
-      addCracks(block, 'crack-3');
-    } else if (damageRatio > 0.4) {
-      addCracks(block, 'crack-2');
-    } else if (damageRatio > 0.1) {
-      addCracks(block, 'crack-1');
-    }
-  }
-  
-  function addCracks(block, crackLevel) {
-    const crackOverlay = document.createElement('div');
-    crackOverlay.className = `crack-overlay ${crackLevel}`;
-    block.appendChild(crackOverlay);
-  }
-  
-  // Воспроизведение звука
-  function playSound(soundId) {
-    const sound = document.getElementById(soundId);
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play().catch(e => {});
-    }
-  }
-  
-  // Удар по блоку
-  function hitBlock(block, damage) {
-    if (!window.gameState.gameActive) return;
-    
-    if (navigator.vibrate) navigator.vibrate(50);
-    playSound('clickSound');
-    
-    block.style.transform = 'translateX(-50%) scale(0.85)';
-    setTimeout(() => {
-      block.style.transform = 'translateX(-50%) scale(1)';
-    }, 100);
-    
-    let finalDamage = Math.round(damage);
-    let isCrit = false;
-    
-    // Проверка на критический удар
-    if (Math.random() < window.gameState.critChance) {
-      finalDamage = Math.round(damage * window.gameState.critMultiplier);
-      isCrit = true;
-      window.gameMetrics.totalCrits++;
-      
-      // Обновляем достижения
-      if (window.achievementsSystem) {
-        window.achievementsSystem.updateProgress('critMaster', 1);
-      }
-    }
-    
-    currentBlockHealth -= finalDamage;
-    window.gameState.totalDamageDealt += finalDamage;
-    window.gameMetrics.totalClicks++;
-    
-    createDamageText(finalDamage, block, isCrit ? '#FFD700' : '#ff4444');
-    checkLocationUpgrade();
-    
-    if (currentBlockHealth <= 0) {
-      destroyBlock(block);
-    } else {
-      block.textContent = Math.floor(currentBlockHealth);
-      updateCracks(block, currentBlockHealth);
-    }
-  }
-  
-  // Уничтожение блока
-  function destroyBlock(block) {
-    const now = Date.now();
-    const COMBO_TIME_WINDOW = isMobile ? 1500 : 2000;
-    
-    if (now - window.gameState.lastDestroyTime < COMBO_TIME_WINDOW) {
-      window.gameState.comboCount++;
-    } else {
-      window.gameState.comboCount = 1;
-    }
-    window.gameState.lastDestroyTime = now;
-    
-    const baseReward = 25 + (locationRequirements[window.gameState.currentLocation].targetAU * 100);
-    let reward = Math.floor(baseReward * balanceConfig.rewardMultiplier);
-    const randomBonus = balanceConfig.randomBonusRange.min + 
-                       Math.random() * (balanceConfig.randomBonusRange.max - balanceConfig.randomBonusRange.min);
-    reward = Math.floor(reward * randomBonus);
-    
-    // Бонус от Bobo
-    if (window.boboSystem.coinBonus > 0) {
-      reward = Math.floor(reward * (1 + window.boboSystem.coinBonus));
-    }
-    
-    // Бонус от магазина (усилитель кристаллов)
-    if (window.gameState.shopItems.crystalBoost.active) {
-      reward = Math.floor(reward * 1.5);
-    }
-    
-    // Проверка на редкий блок
-    let isRare = false;
-    for (const type in rareBlocks) {
-      if (block.classList.contains(rareBlocks[type].className)) {
-        isRare = true;
-        reward = Math.floor(reward * rareBlocks[type].multiplier);
-        break;
-      }
-    }
-    
-    // Бонус за комбо
-    if (window.gameState.comboCount > 1) {
-      const comboBonus = Math.floor(reward * (window.gameState.comboCount * balanceConfig.comboMultiplier));
-      reward += comboBonus;
-      showComboText(window.gameState.comboCount, comboBonus, block);
-      playSound('comboSound');
-    }
-    
-    window.gameState.coins += reward;
-    window.gameMetrics.blocksDestroyed++;
-    window.gameMetrics.totalCoinsEarned += reward;
-    
-    updateHUD();
-    updateUpgradeButtons();
-    playSound('breakSound');
-    showRewardText(reward, block);
-    createExplosion(block);
-    
-    // Обновляем достижения
-    if (window.achievementsSystem) {
-      window.achievementsSystem.updateProgress('novice', 1);
-      window.achievementsSystem.updateProgress('rich', reward);
-    }
-    
-    const gameArea = document.getElementById('gameArea');
-    if (gameArea && gameArea.contains(block)) {
-      gameArea.removeChild(block);
-    }
-    
-    currentBlock = null;
-    currentBlockHealth = 0;
-    
-    setTimeout(() => {
-      if (window.gameState.gameActive) createMovingBlock();
-    }, 500);
-  }
-  
-  // Получение размера блока
-  function getBlockSize() {
-    const baseSize = isMobile ? 80 : 60;
-    const locationIndex = Object.keys(locationRequirements).indexOf(window.gameState.currentLocation);
-    if (locationIndex < 3) return baseSize * 1.2;
-    return baseSize * (1 + locationIndex * 0.15);
-  }
-  
-  // Создание движущегося блока
-  function createMovingBlock() {
-    const gameArea = document.getElementById('gameArea');
-    if (!gameArea) return;
-    
-    if (currentBlock && gameArea.contains(currentBlock)) {
-      gameArea.removeChild(currentBlock);
-    }
-    
-    const blockHealth = calculateBlockHealth();
-    currentBlockHealth = blockHealth;
-    const block = document.createElement("div");
-    block.className = "moving-block";
-    const size = getBlockSize();
-    block.style.width = size + "px";
-    block.style.height = size + "px";
-    block.style.bottom = "0px";
-    block.dataset.maxHealth = blockHealth;
-    
-    const theme = locations[window.gameState.currentLocation];
-    const colorIndex = Math.floor(Math.random() * theme.blockColors.length);
-    
-    const potentialRareType = getRareBlockType();
-    if (potentialRareType) {
-      const rareBlock = rareBlocks[potentialRareType];
-      block.classList.add(rareBlock.className);
-      currentBlockHealth = Math.floor(currentBlockHealth * rareBlock.healthMultiplier);
-      block.innerHTML = `🌟<div style="font-size: 0.35em; margin-top: 1px; line-height: 1.1;">${rareBlock.name}</div>`;
-      announceRareBlock(rareBlock.name);
-    } else {
-      block.style.background = `linear-gradient(135deg, ${theme.blockColors[colorIndex]}, ${theme.blockColors[(colorIndex + 1) % theme.blockColors.length]})`;
-      block.style.boxShadow = `0 0 15px ${theme.blockColors[colorIndex]}`;
-      block.style.border = `2px solid ${theme.borderColor}`;
-      block.textContent = blockHealth;
-    }
-    
-    block.addEventListener('click', () => hitBlock(block, window.gameState.clickPower));
-    block.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      hitBlock(block, window.gameState.clickPower);
-    }, { passive: false });
-    
-    gameArea.appendChild(block);
-    currentBlock = block;
-    animateBlock(block);
-  }
-  
-  // Анимация блока
-  function animateBlock(block) {
-    if (!window.gameState.gameActive) return;
-    const speed = getCurrentSpeed();
-    let position = parseInt(block.style.bottom) || 0;
-    
-    function move() {
-      if (!window.gameState.gameActive || currentBlock !== block) return;
-      position += speed / 30;
-      block.style.bottom = position + "px";
-      
-      if (position > window.innerHeight) {
-        gameOver();
-        return;
-      }
-      requestAnimationFrame(move);
-    }
-    move();
-  }
-  
-  // Конец игры
-  function gameOver(customMessage = null) {
-    window.gameState.gameActive = false;
-    
-    // Деактивируем Bobo
-    window.boboSystem.deactivate();
-    
-    const sessionTime = Date.now() - window.gameMetrics.startTime;
-    console.log('🎮 [Космический Кликер] Сессия завершена:', {
-      session: window.gameMetrics.sessions,
-      duration_sec: Math.round(sessionTime / 1000),
-      total_damage: window.gameState.totalDamageDealt,
-      current_location: window.gameState.currentLocation,
-      total_coins: window.gameState.coins,
-      blocks_destroyed: window.gameMetrics.blocksDestroyed,
-      upgrades_bought: window.gameMetrics.upgradesBought,
-      total_clicks: window.gameMetrics.totalClicks
-    });
-    
-    localStorage.setItem('gameSessions', window.gameMetrics.sessions.toString());
-    
-    if (currentBlock) {
-      const gameArea = document.getElementById('gameArea');
-      if (gameArea && gameArea.contains(currentBlock)) {
-        gameArea.removeChild(currentBlock);
-      }
-      currentBlock = null;
-    }
-    
-    const finalScoreDisplay = document.getElementById('finalScore');
-    if (finalScoreDisplay) {
-      window.applyTranslation(finalScoreDisplay, 'gameOver.score', { 
-        damage: Math.floor(window.gameState.totalDamageDealt).toLocaleString() 
-      });
-    }
-    
-    const gameOverScreen = document.getElementById('gameOverScreen');
-    if (gameOverScreen) gameOverScreen.style.display = "flex";
-    
-    if (customMessage) {
-      const h2 = gameOverScreen.querySelector('h2');
-      if (h2) h2.textContent = customMessage;
-    }
-  }
-  
-  // Поделиться результатом
-  function shareResult() {
-    const shareText = `🎮 Я нанес ${Math.floor(window.gameState.totalDamageDealt).toLocaleString()} урона и собрал ${Math.floor(window.gameState.coins)} Кристаллов в Космическом Кликере! 🌌
-Сможешь побить мой рекорд?`;
-    
-    if (navigator.share) {
-      navigator.share({
-        title: 'Мой рекорд в Космическом Кликере!',
-        text: shareText
-      }).then(() => {
-        window.gameState.coins += 50;
-        updateHUD();
-        updateUpgradeButtons();
-        if (window.showTooltip) {
-          window.showTooltip(window.translations[window.currentLanguage].tooltips.shareSuccess);
-          setTimeout(window.hideTooltip, 2000);
-        }
-        window.saveGame();
-      });
-    } else {
-      navigator.clipboard.writeText(shareText).then(() => {
-        alert('Результат скопирован! Поделись с друзьями!');
-        window.gameState.coins += 50;
-        updateHUD();
-        updateUpgradeButtons();
-        window.saveGame();
-      });
-    }
-  }
-  
-  // Вспомогательные функции для подсказок
-  window.showTooltip = function(text) {
-    const tooltip = document.getElementById('tooltip');
-    if (tooltip) {
-      tooltip.innerHTML = text;
-      tooltip.style.opacity = "1";
-    }
-  };
-  
-  window.hideTooltip = function() {
-    const tooltip = document.getElementById('tooltip');
-    if (tooltip) tooltip.style.opacity = "0";
-  };
-  
-  // Покупки улучшений
-  function buyClickPower() {
-    const cost = Math.floor(baseClickUpgradeCost * Math.pow(1.5, window.gameState.clickUpgradeLevel));
-    if (window.gameState.coins >= cost) {
-      window.gameState.coins -= cost;
-      window.gameState.clickUpgradeLevel += 1;
-      window.gameState.clickPower = calculateClickPower();
-      window.gameMetrics.upgradesBought++;
-      
-      updateHUD();
-      updateUpgradeButtons();
-      playSound('upgradeSound');
-      
-      if (window.showTooltip) {
-        window.showTooltip(window.formatString(
-          window.translations[window.currentLanguage].tooltips.clickPowerUpgrade, 
-          { power: Math.round(window.gameState.clickPower) }
-        ));
-        setTimeout(window.hideTooltip, 1500);
-      }
-      
-      window.saveGame();
-    }
-  }
-  
-  function buyHelper() {
-    const cost = Math.floor(baseHelperUpgradeCost * Math.pow(1.4, window.gameState.helperUpgradeLevel));
-    if (window.gameState.coins >= cost && !window.boboSystem.active) {
-      window.gameState.coins -= cost;
-      window.boboSystem.activate();
-      updateHUD();
-      updateUpgradeButtons();
-      window.saveGame();
-    }
-  }
-  
-  function buyCritChance() {
-    const cost = Math.floor(baseCritChanceCost * Math.pow(1.3, window.gameState.critChanceUpgradeLevel));
-    if (window.gameState.coins >= cost) {
-      window.gameState.coins -= cost;
-      window.gameState.critChance = Math.min(1.0, window.gameState.critChance + 0.001);
-      window.gameState.critChanceUpgradeLevel++;
-      window.gameMetrics.upgradesBought++;
-      
-      updateHUD();
-      updateUpgradeButtons();
-      playSound('upgradeSound');
-      
-      if (window.showTooltip) {
-        window.showTooltip(window.formatString(
-          window.translations[window.currentLanguage].tooltips.critChanceUpgrade, 
-          { chance: (window.gameState.critChance * 100).toFixed(1) }
-        ));
-        setTimeout(window.hideTooltip, 1500);
-      }
-      
-      window.saveGame();
-    }
-  }
-  
-  function buyCritMultiplier() {
-    const cost = Math.floor(baseCritMultiplierCost * Math.pow(1.25, window.gameState.critMultiplierUpgradeLevel));
-    if (window.gameState.coins >= cost) {
-      window.gameState.coins -= cost;
-      window.gameState.critMultiplier += 0.2;
-      window.gameState.critMultiplierUpgradeLevel++;
-      window.gameMetrics.upgradesBought++;
-      
-      updateHUD();
-      updateUpgradeButtons();
-      playSound('upgradeSound');
-      
-      if (window.showTooltip) {
-        window.showTooltip(window.formatString(
-          window.translations[window.currentLanguage].tooltips.critMultUpgrade, 
-          { mult: window.gameState.critMultiplier.toFixed(1) }
-        ));
-        setTimeout(window.hideTooltip, 1500);
-      }
-      
-      window.saveGame();
-    }
-  }
-  
-  function buyHelperDamage() {
-    const cost = Math.floor(baseHelperDmgCost * Math.pow(1.8, window.gameState.helperUpgradeLevel));
-    if (window.gameState.coins >= cost) {
-      window.gameState.coins -= cost;
-      window.gameState.helperUpgradeLevel += 1;
-      window.gameMetrics.upgradesBought++;
-      
-      updateHUD();
-      updateUpgradeButtons();
-      playSound('upgradeSound');
-      
-      if (window.showTooltip) {
-        window.showTooltip(window.formatString(
-          window.translations[window.currentLanguage].tooltips.helperDmgUpgrade, 
-          { level: window.gameState.helperUpgradeLevel }
-        ));
-        setTimeout(window.hideTooltip, 1500);
-      }
-      
-      window.saveGame();
-    }
-  }
-  
-  // Запуск игры
-  function startGame(reset = true) {
-    if (reset) {
-      window.resetGame();
-    } else {
-      window.gameState.clickPower = calculateClickPower();
-    }
-    
-    // Деактивируем Bobo при старте новой игры
-    if (reset) {
-      window.boboSystem.deactivate();
-    }
-    
-    const gameArea = document.getElementById('gameArea');
-    if (gameArea) gameArea.innerHTML = "";
-    
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const saveScreen = document.getElementById('saveScreen');
-    const gameOverScreen = document.getElementById('gameOverScreen');
-    
-    if (welcomeScreen) welcomeScreen.style.display = "none";
-    if (saveScreen) saveScreen.style.display = "none";
-    if (gameOverScreen) gameOverScreen.style.display = "none";
-    
-    window.gameState.gameActive = true;
-    window.gameState.comboCount = 0;
-    window.gameState.lastDestroyTime = 0;
-    window.gameMetrics.startTime = Date.now();
-    window.gameMetrics.blocksDestroyed = 0;
-    window.gameMetrics.upgradesBought = 0;
-    window.gameMetrics.totalClicks = 0;
-    
-    updateHUD();
-    updateUpgradeButtons();
-    updateProgressBar();
-    setLocation(window.gameState.currentLocation);
-    
-    // Обновляем магазин и достижения
-    if (window.shopSystem) window.shopSystem.updateShopDisplay();
-    if (window.achievementsSystem) window.achievementsSystem.updateAchievementsDisplay();
-    
-    setTimeout(() => createMovingBlock(), 500);
-  }
-  
-  function continueGame() {
-    if (window.loadGame()) {
-      // Восстанавливаем состояние Bobo из сохранения
-      window.boboSystem.restoreFromSave(window.gameState);
-      startGame(false);
-    } else {
-      if (window.showTooltip) {
-        window.showTooltip(window.translations[window.currentLanguage].tooltips.noSave);
-        setTimeout(window.hideTooltip, 2000);
-      }
-    }
-  }
-  
-  function showSaveScreen() {
-    const saveScreen = document.getElementById('saveScreen');
-    if (saveScreen) saveScreen.style.display = "flex";
-  }
-  
-  function restartGame() {
-    startGame(true);
-  }
-  
-  // Обновление всех переводов
-  window.updateAllTranslations = function() {
-    const gameTitle = document.getElementById('gameTitle');
-    if (gameTitle) window.applyTranslation(gameTitle, `gameTitle.${window.gameState.currentLocation}`);
-    
-    const welcomeTexts = document.querySelectorAll('#welcomeScreen p');
-    if (welcomeTexts.length >= 7) {
-      window.applyTranslation(document.querySelector('#welcomeScreen h2'), 'welcome.title');
-      window.applyTranslation(welcomeTexts[0], 'welcome.text1');
-      window.applyTranslation(welcomeTexts[1], 'welcome.text2');
-      window.applyTranslation(welcomeTexts[2], 'welcome.text3');
-      window.applyTranslation(welcomeTexts[3], 'welcome.text4');
-      window.applyTranslation(welcomeTexts[4], 'welcome.text5');
-      window.applyTranslation(welcomeTexts[5], 'welcome.text6');
-      window.applyTranslation(welcomeTexts[6], 'welcome.text7');
-    }
-    
-    const continueBtn = document.getElementById('continueBtn');
-    const startBtn = document.getElementById('startBtn');
-    if (continueBtn) window.applyTranslation(continueBtn, 'buttons.continue');
-    if (startBtn) window.applyTranslation(startBtn, 'buttons.start');
-    
-    const saveScreenTitle = document.querySelector('#saveScreen h2');
-    const saveScreenText = document.querySelector('#saveScreen p');
-    if (saveScreenTitle) window.applyTranslation(saveScreenTitle, 'saveScreen.title');
-    if (saveScreenText) window.applyTranslation(saveScreenText, 'saveScreen.text');
-    
-    const loadSaveBtn = document.getElementById('loadSaveBtn');
-    const newGameBtn = document.getElementById('newGameBtn');
-    const cancelSaveBtn = document.getElementById('cancelSaveBtn');
-    if (loadSaveBtn) window.applyTranslation(loadSaveBtn, 'buttons.loadSave');
-    if (newGameBtn) window.applyTranslation(newGameBtn, 'buttons.newGame');
-    if (cancelSaveBtn) window.applyTranslation(cancelSaveBtn, 'buttons.cancel');
-    
-    const gameOverTitle = document.querySelector('#gameOverScreen h2');
-    const restartBtn = document.getElementById('restartBtn');
-    const shareBtn = document.getElementById('shareBtn');
-    if (gameOverTitle) window.applyTranslation(gameOverTitle, 'gameOver.title');
-    if (restartBtn) window.applyTranslation(restartBtn, 'buttons.restart');
-    if (shareBtn) window.applyTranslation(shareBtn, 'buttons.share');
-    
-    updateProgressBar();
-  };
   
   // Инициализация обработчиков событий
   function initEventHandlers() {
-    const langBtnWelcome = document.getElementById('langBtn-welcome');
-    if (langBtnWelcome) {
-      langBtnWelcome.addEventListener('click', window.switchLanguage);
-      langBtnWelcome.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        window.switchLanguage();
-      }, { passive: false });
-    }
-    
-    const startBtn = document.getElementById('startBtn');
-    if (startBtn) {
-      startBtn.addEventListener('click', showSaveScreen);
-      startBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        showSaveScreen();
-      }, { passive: false });
-    }
-    
-    const continueBtn = document.getElementById('continueBtn');
-    if (continueBtn) {
-      continueBtn.addEventListener('click', () => {
-        const hasSave = localStorage.getItem('cosmicBlocksSave') !== null;
-        if (hasSave) {
-          showSaveScreen();
-        } else {
-          if (window.showTooltip) {
-            window.showTooltip(window.translations[window.currentLanguage].tooltips.noSave);
-            setTimeout(window.hideTooltip, 2000);
-          }
-        }
-      });
-      continueBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const hasSave = localStorage.getItem('cosmicBlocksSave') !== null;
-        if (hasSave) {
-          showSaveScreen();
-        } else {
-          if (window.showTooltip) {
-            window.showTooltip(window.translations[window.currentLanguage].tooltips.noSave);
-            setTimeout(window.hideTooltip, 2000);
-          }
-        }
-      }, { passive: false });
-    }
-    
-    const loadSaveBtn = document.getElementById('loadSaveBtn');
-    if (loadSaveBtn) {
-      loadSaveBtn.addEventListener('click', continueGame);
-      loadSaveBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        continueGame();
-      }, { passive: false });
-    }
-    
-    const newGameBtn = document.getElementById('newGameBtn');
-    if (newGameBtn) {
-      newGameBtn.addEventListener('click', () => startGame(true));
-      newGameBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        startGame(true);
-      }, { passive: false });
-    }
-    
-    const cancelSaveBtn = document.getElementById('cancelSaveBtn');
-    if (cancelSaveBtn) {
-      cancelSaveBtn.addEventListener('click', () => {
-        const saveScreen = document.getElementById('saveScreen');
-        if (saveScreen) saveScreen.style.display = "none";
-      });
-      cancelSaveBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const saveScreen = document.getElementById('saveScreen');
-        if (saveScreen) saveScreen.style.display = "none";
-      }, { passive: false });
-    }
-    
-    function addMobileButtonHandlers(button, handler) {
-      if (button) {
-        button.addEventListener('click', handler);
-        button.addEventListener('touchstart', (e) => {
-          e.preventDefault();
-          handler();
-        }, { passive: false });
-      }
-    }
-    
-    const upgradeClickBtn = document.getElementById('upgradeClickBtn');
-    const upgradeHelperBtn = document.getElementById('upgradeHelperBtn');
-    const upgradeCritChanceBtn = document.getElementById('upgradeCritChanceBtn');
-    const upgradeCritMultBtn = document.getElementById('upgradeCritMultBtn');
-    const upgradeHelperDmgBtn = document.getElementById('upgradeHelperDmgBtn');
-    
-    addMobileButtonHandlers(upgradeClickBtn, buyClickPower);
-    addMobileButtonHandlers(upgradeHelperBtn, buyHelper);
-    addMobileButtonHandlers(upgradeCritChanceBtn, buyCritChance);
-    addMobileButtonHandlers(upgradeCritMultBtn, buyCritMultiplier);
-    addMobileButtonHandlers(upgradeHelperDmgBtn, buyHelperDamage);
-    
-    // Подсказки для кнопок улучшений
-    if (upgradeClickBtn) {
-      upgradeClickBtn.addEventListener('mouseenter', () => {
-        if (window.showTooltip) window.showTooltip(window.translations[window.currentLanguage].tooltips.upgradeClick);
-      });
-      upgradeClickBtn.addEventListener('mouseleave', window.hideTooltip);
-    }
-    
-    if (upgradeHelperBtn) {
-      upgradeHelperBtn.addEventListener('mouseenter', () => {
-        if (window.showTooltip) window.showTooltip(window.translations[window.currentLanguage].tooltips.upgradeHelper);
-      });
-      upgradeHelperBtn.addEventListener('mouseleave', window.hideTooltip);
-    }
-    
-    if (upgradeCritChanceBtn) {
-      upgradeCritChanceBtn.addEventListener('mouseenter', () => {
-        if (window.showTooltip) window.showTooltip(window.translations[window.currentLanguage].tooltips.upgradeCritChance);
-      });
-      upgradeCritChanceBtn.addEventListener('mouseleave', window.hideTooltip);
-    }
-    
-    if (upgradeCritMultBtn) {
-      upgradeCritMultBtn.addEventListener('mouseenter', () => {
-        if (window.showTooltip) window.showTooltip(window.translations[window.currentLanguage].tooltips.upgradeCritMult);
-      });
-      upgradeCritMultBtn.addEventListener('mouseleave', window.hideTooltip);
-    }
-    
-    if (upgradeHelperDmgBtn) {
-      upgradeHelperDmgBtn.addEventListener('mouseenter', () => {
-        if (window.showTooltip) window.showTooltip(window.translations[window.currentLanguage].tooltips.upgradeHelperDmg);
-      });
-      upgradeHelperDmgBtn.addEventListener('mouseleave', window.hideTooltip);
-    }
-    
-    const restartBtn = document.getElementById('restartBtn');
-    const shareBtn = document.getElementById('shareBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    
-    addMobileButtonHandlers(restartBtn, restartGame);
-    addMobileButtonHandlers(shareBtn, shareResult);
-    addMobileButtonHandlers(saveBtn, window.saveGame);
-    
-    // Обработчик изменения размера окна
-    window.addEventListener('resize', () => {
-      if (window.boboSystem.element) window.boboSystem.moveToRandomPosition();
-    });
+    // ... (существующие обработчики остаются без изменений)
   }
   
   // Инициализация игры
   document.addEventListener('DOMContentLoaded', function() {
     initEventHandlers();
-    updateHUD();
-    updateUpgradeButtons();
+    window.updateHUD();
+    window.updateUpgradeButtons();
+    window.updateProgressBar();
     setLocation(window.gameState.currentLocation);
     window.updateLanguageFlag();
     window.updateContinueButton();
     window.updateAllTranslations();
+    
+    // Запускаем обновление таймера Bobo каждую секунду
+    setInterval(() => {
+      if (window.boboSystem && window.boboSystem.active) {
+        window.boboSystem.updateTimerDisplay();
+      }
+    }, 1000);
   });
-  
-  // Экспорт функций для использования в других модулях
-  window.gameFunctions = {
-    startGame,
-    continueGame,
-    restartGame,
-    updateHUD,
-    updateUpgradeButtons,
-    updateProgressBar,
-    checkLocationUpgrade,
-    createDamageText,
-    showComboText,
-    showRewardText,
-    createExplosion,
-    playSound,
-    hitBlock,
-    destroyBlock,
-    createMovingBlock,
-    gameOver,
-    shareResult,
-    updateAllTranslations
-  };
 })();
