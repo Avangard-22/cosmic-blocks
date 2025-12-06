@@ -190,10 +190,340 @@
   // DOM элементы
   let currentBlock = null;
   let currentBlockHealth = 0;
-  let helperElement = null;
-  let helperInterval = null;
-  let helperPosition = { x: 0, y: 0 };
   
+  // Система Bobo
+  window.boboSystem = {
+    active: false,
+    timeLeft: 0,
+    element: null,
+    attackInterval: null,
+    timerInterval: null,
+    coinBonus: 0,
+
+    activate: function(duration = 60000) {
+      if (this.active) return;
+
+      this.active = true;
+      this.timeLeft = duration;
+      this.coinBonus = 0.2;
+
+      // Создаем визуальный элемент
+      this.createElement();
+
+      // Запускаем интервал атаки
+      this.attackInterval = setInterval(() => {
+        if (this.active && currentBlock && window.gameState.gameActive) {
+          this.attack();
+        }
+      }, 1500);
+
+      // Запускаем таймер обратного отсчета
+      this.timerInterval = setInterval(() => {
+        if (!this.active) {
+          clearInterval(this.timerInterval);
+          return;
+        }
+
+        this.timeLeft -= 1000;
+        if (this.timeLeft <= 0) {
+          this.deactivate();
+        }
+      }, 1000);
+
+      // Обновляем кнопки улучшений
+      updateUpgradeButtons();
+      // Обновляем HUD
+      updateHUD();
+
+      // Показываем уведомление
+      if (window.showTooltip) {
+        window.showTooltip(window.translations[window.currentLanguage].tooltips.helperAvailable);
+        setTimeout(window.hideTooltip, 2500);
+      }
+
+      // Сохраняем игру
+      window.saveGame();
+    },
+
+    deactivate: function() {
+      this.active = false;
+      this.coinBonus = 0;
+
+      // Очищаем интервалы
+      if (this.attackInterval) {
+        clearInterval(this.attackInterval);
+        this.attackInterval = null;
+      }
+
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+
+      // Удаляем визуальный элемент
+      if (this.element && this.element.parentNode) {
+        this.element.style.opacity = '0';
+        setTimeout(() => {
+          if (this.element && this.element.parentNode) {
+            document.body.removeChild(this.element);
+            this.element = null;
+          }
+        }, 300);
+      }
+
+      // Обновляем кнопки улучшений
+      updateUpgradeButtons();
+
+      // Показываем уведомление
+      if (window.showTooltip) {
+        window.showTooltip(window.translations[window.currentLanguage].tooltips.helperEnd);
+        setTimeout(window.hideTooltip, 1500);
+      }
+
+      // Сохраняем игру
+      window.saveGame();
+    },
+
+    createElement: function() {
+      if (this.element && this.element.parentNode) {
+        document.body.removeChild(this.element);
+      }
+
+      this.element = document.createElement('div');
+      this.element.className = 'helper';
+      document.body.appendChild(this.element);
+      this.moveToRandomPosition();
+
+      // Плавное появление
+      this.element.style.opacity = '0';
+      setTimeout(() => {
+        if (this.element) this.element.style.opacity = '1';
+      }, 100);
+    },
+
+    moveToRandomPosition: function() {
+      if (!this.element) return;
+
+      // Получаем позицию текущего блока
+      let blockRect = { left: window.innerWidth/2, top: window.innerHeight/2 };
+      if (currentBlock) {
+        blockRect = currentBlock.getBoundingClientRect();
+      }
+
+      // Находим позицию вдали от блока
+      let attempts = 0;
+      let validPosition = false;
+      const safeDistance = 150;
+
+      while (!validPosition && attempts < 20) {
+        attempts++;
+        // Генерируем случайную позицию
+        const randomX = Math.random() * (window.innerWidth - 60) + 30;
+        const randomY = Math.random() * (window.innerHeight - 120) + 60; // Избегаем верхней части с UI
+
+        // Проверяем расстояние от блока
+        const distance = Math.sqrt(
+          Math.pow(randomX - (blockRect.left + blockRect.width/2), 2) + 
+          Math.pow(randomY - (blockRect.top + blockRect.height/2), 2)
+        );
+
+        // Проверяем, что позиция не слишком близко к краям и не перекрывает UI
+        const safeFromEdges = randomX > 60 && randomX < window.innerWidth - 60 && 
+                              randomY > 100 && randomY < window.innerHeight - 60;
+
+        if (distance > safeDistance && safeFromEdges) {
+          this.element.style.left = randomX + 'px';
+          this.element.style.top = randomY + 'px';
+          validPosition = true;
+        }
+      }
+
+      // Если не нашли хорошую позицию, используем последнюю или центральную
+      if (!validPosition) {
+        this.element.style.left = (window.innerWidth * 0.7) + 'px';
+        this.element.style.top = (window.innerHeight * 0.7) + 'px';
+      }
+    },
+
+    attack: function() {
+      if (!currentBlock || !this.active || !this.element) return;
+
+      // Создаем визуальный эффект атаки
+      this.createEffect();
+
+      const baseHelperDmg = window.gameState.clickPower * (1 + window.gameState.helperDamageBonus);
+      const upgradedHelperDmg = baseHelperDmg * (1 + window.gameState.helperUpgradeLevel * 0.2);
+
+      // Бонус от магазина (скачок силы)
+      let finalHelperDmg = upgradedHelperDmg;
+      if (window.gameState.shopItems.powerSurge.active) {
+        finalHelperDmg *= 1.5;
+      }
+
+      currentBlockHealth -= finalHelperDmg;
+      window.gameState.totalDamageDealt += finalHelperDmg;
+      window.gameMetrics.totalClicks++;
+
+      createDamageText(Math.round(finalHelperDmg), currentBlock, '#69f0ae');
+      checkLocationUpgrade();
+
+      if (currentBlockHealth <= 0) {
+        destroyBlock(currentBlock);
+      } else {
+        currentBlock.textContent = Math.floor(currentBlockHealth);
+        updateCracks(currentBlock, currentBlockHealth);
+      }
+    },
+
+    createEffect: function() {
+      if (!currentBlock || !this.element) return;
+
+      const blockRect = currentBlock.getBoundingClientRect();
+      const helperRect = this.element.getBoundingClientRect();
+
+      const beamContainer = document.createElement('div');
+      beamContainer.className = 'helper-beam';
+      beamContainer.style.position = 'absolute';
+      beamContainer.style.zIndex = '13';
+      document.body.appendChild(beamContainer);
+
+      const startX = helperRect.left + helperRect.width / 2;
+      const startY = helperRect.top + helperRect.height / 2;
+      const endX = blockRect.left + blockRect.width / 2;
+      const endY = blockRect.top + blockRect.height / 2;
+
+      const canvas = document.createElement('canvas');
+      const maxSize = Math.max(window.innerWidth, window.innerHeight);
+      canvas.width = maxSize;
+      canvas.height = maxSize;
+      beamContainer.appendChild(canvas);
+
+      beamContainer.style.left = '0px';
+      beamContainer.style.top = '0px';
+
+      const ctx = canvas.getContext('2d');
+      let progress = 0;
+      const animationDuration = 300;
+      const startTime = Date.now();
+
+      const animateBeam = () => {
+        const currentTime = Date.now();
+        const elapsed = currentTime - startTime;
+        progress = Math.min(elapsed / animationDuration, 1);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (progress > 0) {
+          const currentX = startX + (endX - startX) * progress;
+          const currentY = startY + (endY - startY) * progress;
+
+          const gradient = ctx.createLinearGradient(startX, startY, currentX, currentY);
+          gradient.addColorStop(0, 'rgba(105, 240, 174, 0.9)');
+          gradient.addColorStop(0.7, 'rgba(105, 240, 174, 0.5)');
+          gradient.addColorStop(1, 'rgba(105, 240, 174, 0)');
+
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(currentX, currentY);
+          ctx.lineWidth = 4 + (4 * (1 - progress));
+          ctx.strokeStyle = gradient;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(currentX, currentY, 8 * (1 - progress), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(105, 240, 174, ${0.7 * (1 - progress)})`;
+          ctx.fill();
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(animateBeam);
+        } else {
+          setTimeout(() => {
+            if (beamContainer.parentNode) document.body.removeChild(beamContainer);
+          }, 200);
+        }
+      };
+
+      animateBeam();
+      playSound('helperSound');
+
+      setTimeout(() => {
+        const hitEffect = document.createElement('div');
+        hitEffect.style.position = 'absolute';
+        hitEffect.style.left = (endX - 10) + 'px';
+        hitEffect.style.top = (endY - 10) + 'px';
+        hitEffect.style.width = '20px';
+        hitEffect.style.height = '20px';
+        hitEffect.style.background = 'radial-gradient(circle, #69f0ae, transparent)';
+        hitEffect.style.borderRadius = '50%';
+        hitEffect.style.zIndex = '15';
+        hitEffect.style.opacity = '0.8';
+        document.body.appendChild(hitEffect);
+
+        let opacity = 0.8;
+        const fadeOut = setInterval(() => {
+          opacity -= 0.1;
+          hitEffect.style.opacity = opacity;
+          if (opacity <= 0) {
+            clearInterval(fadeOut);
+            if (hitEffect.parentNode) document.body.removeChild(hitEffect);
+          }
+        }, 30);
+      }, animationDuration);
+    },
+
+    pause: function() {
+      // Приостанавливаем таймеры, если игра на паузе
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+      if (this.attackInterval) {
+        clearInterval(this.attackInterval);
+        this.attackInterval = null;
+      }
+    },
+
+    resume: function() {
+      // Возобновляем таймеры, если игра возобновлена
+      if (this.active) {
+        // Таймер обратного отсчета
+        this.timerInterval = setInterval(() => {
+          if (!this.active) {
+            clearInterval(this.timerInterval);
+            return;
+          }
+
+          this.timeLeft -= 1000;
+          if (this.timeLeft <= 0) {
+            this.deactivate();
+          }
+        }, 1000);
+
+        // Интервал атаки
+        this.attackInterval = setInterval(() => {
+          if (this.active && currentBlock && window.gameState.gameActive) {
+            this.attack();
+          }
+        }, 1500);
+      }
+    },
+
+    restoreFromSave: function(savedState) {
+      // Восстанавливаем состояние из сохранения
+      this.active = savedState.helperActive;
+      this.timeLeft = savedState.helperTimeLeft;
+      this.coinBonus = savedState.boboCoinBonus || 0;
+
+      if (this.active) {
+        // Создаем элемент
+        this.createElement();
+        // Запускаем таймеры с текущим timeLeft
+        this.resume();
+      }
+    }
+  };
+
   // Вспомогательные функции
   function getCurrentSpeed() {
     const baseSpeed = blockSpeed;
@@ -286,7 +616,7 @@
     
     if (upgradeHelperBtn) {
       upgradeHelperBtn.querySelector('.upgrade-cost').textContent = helperCost.toLocaleString();
-      if (window.gameState.coins >= helperCost && !window.gameState.helperActive) {
+      if (window.gameState.coins >= helperCost && !window.boboSystem.active) {
         upgradeHelperBtn.className = "upgrade-btn btn-available";
       } else {
         upgradeHelperBtn.className = "upgrade-btn btn-unavailable";
@@ -609,8 +939,8 @@
     reward = Math.floor(reward * randomBonus);
     
     // Бонус от Bobo
-    if (window.gameState.boboCoinBonus > 0) {
-      reward = Math.floor(reward * (1 + window.gameState.boboCoinBonus));
+    if (window.boboSystem.coinBonus > 0) {
+      reward = Math.floor(reward * (1 + window.boboSystem.coinBonus));
     }
     
     // Бонус от магазина (усилитель кристаллов)
@@ -743,17 +1073,9 @@
   // Конец игры
   function gameOver(customMessage = null) {
     window.gameState.gameActive = false;
-    window.gameState.helperActive = false;
     
-    if (helperInterval) {
-      clearInterval(helperInterval);
-      helperInterval = null;
-    }
-    
-    if (helperElement && helperElement.parentNode) {
-      document.body.removeChild(helperElement);
-      helperElement = null;
-    }
+    // Деактивируем Bobo
+    window.boboSystem.deactivate();
     
     const sessionTime = Date.now() - window.gameMetrics.startTime;
     console.log('🎮 [Космический Кликер] Сессия завершена:', {
@@ -837,248 +1159,6 @@
     if (tooltip) tooltip.style.opacity = "0";
   };
   
-  // Функции помощника Bobo
-  function moveHelperToRandomPosition() {
-    if (!helperElement) return;
-    
-    let blockRect = { left: window.innerWidth/2, top: window.innerHeight/2 };
-    if (currentBlock) {
-      blockRect = currentBlock.getBoundingClientRect();
-    }
-    
-    let attempts = 0;
-    let validPosition = false;
-    const safeDistance = 150;
-    
-    while (!validPosition && attempts < 20) {
-      attempts++;
-      const randomX = Math.random() * (window.innerWidth - 60) + 30;
-      const randomY = Math.random() * (window.innerHeight - 120) + 60;
-      
-      const distance = Math.sqrt(
-        Math.pow(randomX - (blockRect.left + blockRect.width/2), 2) + 
-        Math.pow(randomY - (blockRect.top + blockRect.height/2), 2)
-      );
-      
-      const safeFromEdges = randomX > 60 && randomX < window.innerWidth - 60 && 
-                          randomY > 100 && randomY < window.innerHeight - 60;
-      
-      if (distance > safeDistance && safeFromEdges) {
-        helperPosition = { x: randomX, y: randomY };
-        validPosition = true;
-      }
-    }
-    
-    if (!validPosition) {
-      helperPosition = {
-        x: window.innerWidth * 0.7,
-        y: window.innerHeight * 0.7
-      };
-    }
-    
-    helperElement.style.left = helperPosition.x + 'px';
-    helperElement.style.top = helperPosition.y + 'px';
-  }
-  
-  function createHelperElement() {
-    if (helperElement && helperElement.parentNode) {
-      document.body.removeChild(helperElement);
-    }
-    
-    helperElement = document.createElement('div');
-    helperElement.className = 'helper';
-    document.body.appendChild(helperElement);
-    moveHelperToRandomPosition();
-    
-    helperElement.style.opacity = '0';
-    setTimeout(() => {
-      if (helperElement) helperElement.style.opacity = '1';
-    }, 100);
-  }
-  
-  function createHelperEffect() {
-    if (!currentBlock || !helperElement) return;
-    
-    const blockRect = currentBlock.getBoundingClientRect();
-    const helperRect = helperElement.getBoundingClientRect();
-    
-    const beamContainer = document.createElement('div');
-    beamContainer.className = 'helper-beam';
-    beamContainer.style.position = 'absolute';
-    beamContainer.style.zIndex = '13';
-    document.body.appendChild(beamContainer);
-    
-    const startX = helperRect.left + helperRect.width / 2;
-    const startY = helperRect.top + helperRect.height / 2;
-    const endX = blockRect.left + blockRect.width / 2;
-    const endY = blockRect.top + blockRect.height / 2;
-    
-    const canvas = document.createElement('canvas');
-    const maxSize = Math.max(window.innerWidth, window.innerHeight);
-    canvas.width = maxSize;
-    canvas.height = maxSize;
-    beamContainer.appendChild(canvas);
-    
-    beamContainer.style.left = '0px';
-    beamContainer.style.top = '0px';
-    
-    const ctx = canvas.getContext('2d');
-    let progress = 0;
-    const animationDuration = 300;
-    const startTime = Date.now();
-    
-    function animateBeam() {
-      const currentTime = Date.now();
-      const elapsed = currentTime - startTime;
-      progress = Math.min(elapsed / animationDuration, 1);
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      if (progress > 0) {
-        const currentX = startX + (endX - startX) * progress;
-        const currentY = startY + (endY - startY) * progress;
-        
-        const gradient = ctx.createLinearGradient(startX, startY, currentX, currentY);
-        gradient.addColorStop(0, 'rgba(105, 240, 174, 0.9)');
-        gradient.addColorStop(0.7, 'rgba(105, 240, 174, 0.5)');
-        gradient.addColorStop(1, 'rgba(105, 240, 174, 0)');
-        
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(currentX, currentY);
-        ctx.lineWidth = 4 + (4 * (1 - progress));
-        ctx.strokeStyle = gradient;
-        ctx.stroke();
-        
-        ctx.beginPath();
-        ctx.arc(currentX, currentY, 8 * (1 - progress), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(105, 240, 174, ${0.7 * (1 - progress)})`;
-        ctx.fill();
-      }
-      
-      if (progress < 1) {
-        requestAnimationFrame(animateBeam);
-      } else {
-        setTimeout(() => {
-          if (beamContainer.parentNode) document.body.removeChild(beamContainer);
-        }, 200);
-      }
-    }
-    
-    animateBeam();
-    playSound('helperSound');
-    
-    setTimeout(() => {
-      const hitEffect = document.createElement('div');
-      hitEffect.style.position = 'absolute';
-      hitEffect.style.left = (endX - 10) + 'px';
-      hitEffect.style.top = (endY - 10) + 'px';
-      hitEffect.style.width = '20px';
-      hitEffect.style.height = '20px';
-      hitEffect.style.background = 'radial-gradient(circle, #69f0ae, transparent)';
-      hitEffect.style.borderRadius = '50%';
-      hitEffect.style.zIndex = '15';
-      hitEffect.style.opacity = '0.8';
-      document.body.appendChild(hitEffect);
-      
-      let opacity = 0.8;
-      const fadeOut = setInterval(() => {
-        opacity -= 0.1;
-        hitEffect.style.opacity = opacity;
-        if (opacity <= 0) {
-          clearInterval(fadeOut);
-          if (hitEffect.parentNode) document.body.removeChild(hitEffect);
-        }
-      }, 30);
-    }, animationDuration);
-  }
-  
-  function activateHelper() {
-    if (window.gameState.helperActive) return;
-    
-    window.gameState.helperActive = true;
-    window.gameState.helperTimeLeft = 60000;
-    window.gameState.boboCoinBonus = 0.2;
-    
-    createHelperElement();
-    
-    helperInterval = setInterval(() => {
-      if (window.gameState.helperActive && currentBlock && window.gameState.gameActive) {
-        helperAttack();
-      }
-    }, 1500);
-    
-    const helperTimer = setInterval(() => {
-      if (!window.gameState.helperActive) {
-        clearInterval(helperTimer);
-        return;
-      }
-      
-      window.gameState.helperTimeLeft -= 1000;
-      if (window.gameState.helperTimeLeft <= 0) {
-        window.gameState.helperActive = false;
-        clearInterval(helperInterval);
-        clearInterval(helperTimer);
-        window.gameState.boboCoinBonus = 0;
-        
-        if (helperElement) {
-          helperElement.style.opacity = '0';
-          setTimeout(() => {
-            if (helperElement && helperElement.parentNode) {
-              document.body.removeChild(helperElement);
-              helperElement = null;
-            }
-          }, 300);
-        }
-        
-        updateUpgradeButtons();
-        if (window.showTooltip) {
-          window.showTooltip(window.translations[window.currentLanguage].tooltips.helperEnd);
-          setTimeout(window.hideTooltip, 1500);
-        }
-      }
-    }, 1000);
-    
-    updateUpgradeButtons();
-    updateHUD();
-    
-    if (window.showTooltip) {
-      window.showTooltip(window.translations[window.currentLanguage].tooltips.helperAvailable);
-      setTimeout(window.hideTooltip, 2500);
-    }
-    
-    window.saveGame();
-  }
-  
-  function helperAttack() {
-    if (!currentBlock || !window.gameState.helperActive || !helperElement) return;
-    
-    createHelperEffect();
-    
-    const baseHelperDmg = window.gameState.clickPower * (1 + window.gameState.helperDamageBonus);
-    const upgradedHelperDmg = baseHelperDmg * (1 + window.gameState.helperUpgradeLevel * 0.2);
-    
-    // Бонус от магазина (скачок силы)
-    let finalHelperDmg = upgradedHelperDmg;
-    if (window.gameState.shopItems.powerSurge.active) {
-      finalHelperDmg *= 1.5;
-    }
-    
-    currentBlockHealth -= finalHelperDmg;
-    window.gameState.totalDamageDealt += finalHelperDmg;
-    window.gameMetrics.totalClicks++;
-    
-    createDamageText(Math.round(finalHelperDmg), currentBlock, '#69f0ae');
-    checkLocationUpgrade();
-    
-    if (currentBlockHealth <= 0) {
-      destroyBlock(currentBlock);
-    } else {
-      currentBlock.textContent = Math.floor(currentBlockHealth);
-      updateCracks(currentBlock, currentBlockHealth);
-    }
-  }
-  
   // Покупки улучшений
   function buyClickPower() {
     const cost = Math.floor(baseClickUpgradeCost * Math.pow(1.5, window.gameState.clickUpgradeLevel));
@@ -1106,9 +1186,9 @@
   
   function buyHelper() {
     const cost = Math.floor(baseHelperUpgradeCost * Math.pow(1.4, window.gameState.helperUpgradeLevel));
-    if (window.gameState.coins >= cost && !window.gameState.helperActive) {
+    if (window.gameState.coins >= cost && !window.boboSystem.active) {
       window.gameState.coins -= cost;
-      activateHelper();
+      window.boboSystem.activate();
       updateHUD();
       updateUpgradeButtons();
       window.saveGame();
@@ -1194,14 +1274,9 @@
       window.gameState.clickPower = calculateClickPower();
     }
     
-    if (helperInterval) {
-      clearInterval(helperInterval);
-      helperInterval = null;
-    }
-    
-    if (helperElement && helperElement.parentNode) {
-      document.body.removeChild(helperElement);
-      helperElement = null;
+    // Деактивируем Bobo при старте новой игры
+    if (reset) {
+      window.boboSystem.deactivate();
     }
     
     const gameArea = document.getElementById('gameArea');
@@ -1237,6 +1312,8 @@
   
   function continueGame() {
     if (window.loadGame()) {
+      // Восстанавливаем состояние Bobo из сохранения
+      window.boboSystem.restoreFromSave(window.gameState);
       startGame(false);
     } else {
       if (window.showTooltip) {
@@ -1445,7 +1522,7 @@
     
     // Обработчик изменения размера окна
     window.addEventListener('resize', () => {
-      if (helperElement) moveHelperToRandomPosition();
+      if (window.boboSystem.element) window.boboSystem.moveToRandomPosition();
     });
   }
   
