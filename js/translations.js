@@ -1,6 +1,7 @@
 // Глобальные переменные переводов
 window.translations = {
     ru: {
+        // UI элементы
         gameTitle: {
             mercury: "☿ Меркурий",
             venus: "♀ Венера",
@@ -19,6 +20,7 @@ window.translations = {
             critMultiplier: "Множ: "
         },
         progressText: "Прогресс: {current} / {target} а.е. ({percent}%)",
+        // Кнопки
         buttons: {
             save: "Сохранить игру",
             continue: "Продолжить",
@@ -31,6 +33,7 @@ window.translations = {
             share: "Поделиться",
             lang: "Сменить язык"
         },
+        // Экраны
         welcome: {
             title: "🚀 КОСМИЧЕСКИЙ КЛИКЕР",
             text1: "Разрушайте восходящие блоки и собирайте <strong>космические Кристаллы</strong>!",
@@ -65,7 +68,13 @@ window.translations = {
             helperDmgUpgrade: "Урон Bobo +20%!<br>Уровень: {level}",
             clickPowerUpgrade: "Сила увеличена!<br>Теперь: {power}",
             noSave: "Нет сохраненной игры!",
-            shareSuccess: "+50 Кристаллов за распространение!"
+            shareSuccess: "+50 Кристаллов за распространение!",
+            shopItemTimeWarp: "Замедляет движение блоков на 50% на 30 секунд",
+            shopItemCrystalBoost: "Увеличивает награду за кристаллы на 50% на 1 минуту",
+            shopItemPowerSurge: "Увеличивает силу удара на 50% на 45 секунд",
+            achievementNovice: "Начните свое космическое приключение!",
+            achievementRich: "Соберите богатство вселенной!",
+            achievementCritMaster: "Станьте мастером критических ударов!"
         },
         rareBlocks: {
             gold: "Золотой",
@@ -76,24 +85,37 @@ window.translations = {
         locationProgress: {
             unlocked: "Открыта локация: {location}!"
         },
+        // Новые разделы для магазина и достижений
         shop: {
             title: "🛒 Магазин",
-            timeWarp: "Искажение времени (30сек)",
-            crystalBoost: "Усилитель кристаллов (1мин)",
-            powerSurge: "Скачок силы (45сек)",
+            timeWarp: "Искажение времени",
+            crystalBoost: "Усилитель кристаллов",
+            powerSurge: "Скачок силы",
             active: "АКТИВНО",
-            buy: "Купить"
+            buy: "Купить",
+            descriptionTimeWarp: "Замедляет движение блоков на 50%",
+            descriptionCrystalBoost: "+50% к кристаллам",
+            descriptionPowerSurge: "+50% к силе удара",
+            insufficientFunds: "Недостаточно кристаллов!",
+            alreadyActive: "Бонус уже активен!",
+            purchased: "Бонус активирован!"
         },
         achievements: {
             title: "🏆 Достижения",
-            novice: "Новичок: Разрушь 10 блоков",
-            rich: "Богач: Собери 1000 кристаллов",
-            critMaster: "Мастер крита: 50 критических ударов",
+            novice: "Новичок",
+            rich: "Богач",
+            critMaster: "Мастер крита",
             unlocked: "РАЗБЛОКИРОВАНО",
-            progress: "Прогресс"
+            progress: "Прогресс",
+            descriptionNovice: "Разрушь 10 блоков",
+            descriptionRich: "Собери 1000 кристаллов",
+            descriptionCritMaster: "Нанеси 50 критических ударов",
+            reward: "Награда: +{amount} кристаллов",
+            new: "НОВОЕ ДОСТИЖЕНИЕ!"
         }
     },
     en: {
+        // UI elements
         gameTitle: {
             mercury: "☿ Mercury",
             venus: "♀ Venus",
@@ -112,6 +134,7 @@ window.translations = {
             critMultiplier: "Mult: "
         },
         progressText: "Progress: {current} / {target} a.u. ({percent}%)",
+        // Buttons
         buttons: {
             save: "Save game",
             continue: "Continue",
@@ -124,6 +147,7 @@ window.translations = {
             share: "Share",
             lang: "Change language"
         },
+        // Screens
         welcome: {
             title: "🚀 SPACE CLICKER",
             text1: "Destroy rising blocks and collect <strong>cosmic Crystals</strong>!",
@@ -158,7 +182,13 @@ window.translations = {
             helperDmgUpgrade: "Bobo damage +20%!<br>Level: {level}",
             clickPowerUpgrade: "Power increased!<br>Now: {power}",
             noSave: "No saved game!",
-            shareSuccess: "+50 Crystals for sharing!"
+            shareSuccess: "+50 Crystals for sharing!",
+            shopItemTimeWarp: "Slows block movement by 50% for 30 seconds",
+            shopItemCrystalBoost: "Increases crystal reward by 50% for 1 minute",
+            shopItemPowerSurge: "Increases click power by 50% for 45 seconds",
+            achievementNovice: "Start your space adventure!",
+            achievementRich: "Gather universal wealth!",
+            achievementCritMaster: "Become a master of critical hits!"
         },
         rareBlocks: {
             gold: "Gold",
@@ -169,24 +199,37 @@ window.translations = {
         locationProgress: {
             unlocked: "Unlocked location: {location}!"
         },
+        // New sections for shop and achievements
         shop: {
             title: "🛒 Shop",
-            timeWarp: "Time Warp (30sec)",
-            crystalBoost: "Crystal Boost (1min)",
-            powerSurge: "Power Surge (45sec)",
+            timeWarp: "Time Warp",
+            crystalBoost: "Crystal Boost",
+            powerSurge: "Power Surge",
             active: "ACTIVE",
-            buy: "Buy"
+            buy: "Buy",
+            descriptionTimeWarp: "Slows block movement by 50%",
+            descriptionCrystalBoost: "+50% to crystals",
+            descriptionPowerSurge: "+50% to click power",
+            insufficientFunds: "Not enough crystals!",
+            alreadyActive: "Bonus already active!",
+            purchased: "Bonus activated!"
         },
         achievements: {
             title: "🏆 Achievements",
-            novice: "Novice: Destroy 10 blocks",
-            rich: "Rich: Collect 1000 crystals",
-            critMaster: "Crit Master: 50 critical hits",
+            novice: "Novice",
+            rich: "Rich",
+            critMaster: "Crit Master",
             unlocked: "UNLOCKED",
-            progress: "Progress"
+            progress: "Progress",
+            descriptionNovice: "Destroy 10 blocks",
+            descriptionRich: "Collect 1000 crystals",
+            descriptionCritMaster: "Deal 50 critical hits",
+            reward: "Reward: +{amount} crystals",
+            new: "NEW ACHIEVEMENT!"
         }
     },
     zh: {
+        // UI elements
         gameTitle: {
             mercury: "☿ 水星",
             venus: "♀ 金星",
@@ -205,6 +248,7 @@ window.translations = {
             critMultiplier: "倍数: "
         },
         progressText: "进度: {current} / {target} 天文单位 ({percent}%)",
+        // Buttons
         buttons: {
             save: "保存游戏",
             continue: "继续",
@@ -217,6 +261,7 @@ window.translations = {
             share: "分享",
             lang: "更改语言"
         },
+        // Screens
         welcome: {
             title: "🚀 太空点击器",
             text1: "摧毁上升的方块并收集<strong>宇宙水晶</strong>!",
@@ -251,7 +296,13 @@ window.translations = {
             helperDmgUpgrade: "Bobo伤害 +20%!<br>等级: {level}",
             clickPowerUpgrade: "力量增加!<br>现在: {power}",
             noSave: "没有保存的游戏!",
-            shareSuccess: "分享获得+50水晶!"
+            shareSuccess: "分享获得+50水晶!",
+            shopItemTimeWarp: "30秒内方块移动速度降低50%",
+            shopItemCrystalBoost: "1分钟内水晶奖励增加50%",
+            shopItemPowerSurge: "45秒内点击力量增加50%",
+            achievementNovice: "开始你的太空冒险!",
+            achievementRich: "收集宇宙财富!",
+            achievementCritMaster: "成为暴击大师!"
         },
         rareBlocks: {
             gold: "金色",
@@ -262,21 +313,33 @@ window.translations = {
         locationProgress: {
             unlocked: "解锁位置: {location}!"
         },
+        // Новые разделы для магазина и достижений
         shop: {
             title: "🛒 商店",
-            timeWarp: "时间扭曲 (30秒)",
-            crystalBoost: "水晶增强 (1分钟)",
-            powerSurge: "力量激增 (45秒)",
+            timeWarp: "时间扭曲",
+            crystalBoost: "水晶增强",
+            powerSurge: "力量激增",
             active: "激活",
-            buy: "购买"
+            buy: "购买",
+            descriptionTimeWarp: "方块移动速度降低50%",
+            descriptionCrystalBoost: "水晶奖励+50%",
+            descriptionPowerSurge: "点击力量+50%",
+            insufficientFunds: "水晶不足!",
+            alreadyActive: "增益已激活!",
+            purchased: "增益已激活!"
         },
         achievements: {
             title: "🏆 成就",
-            novice: "新手: 摧毁10个方块",
-            rich: "富人: 收集1000个水晶",
-            critMaster: "暴击大师: 50次暴击",
+            novice: "新手",
+            rich: "富人",
+            critMaster: "暴击大师",
             unlocked: "已解锁",
-            progress: "进度"
+            progress: "进度",
+            descriptionNovice: "摧毁10个方块",
+            descriptionRich: "收集1000个水晶",
+            descriptionCritMaster: "造成50次暴击",
+            reward: "奖励: +{amount} 水晶",
+            new: "新成就!"
         }
     }
 };

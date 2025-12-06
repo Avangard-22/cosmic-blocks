@@ -1,4 +1,4 @@
-// Основная игровая логика
+// Основная игровая логика с интеграцией магазина
 (function() {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   
@@ -198,8 +198,14 @@
   function getCurrentSpeed() {
     const baseSpeed = blockSpeed;
     const locationIndex = Object.keys(locationRequirements).indexOf(window.gameState.currentLocation);
-    if (locationIndex < 3) return baseSpeed * 0.85;
-    return baseSpeed;
+    let speed = locationIndex < 3 ? baseSpeed * 0.85 : baseSpeed;
+    
+    // Бонус от магазина (искажение времени)
+    if (window.shopSystem && window.shopSystem.getSpeedMultiplier) {
+      speed *= window.shopSystem.getSpeedMultiplier();
+    }
+    
+    return speed;
   }
   
   function calculateBlockHealth() {
@@ -548,7 +554,7 @@
     }
   }
   
-  // Удар по блоку
+  // Удар по блоку с интеграцией магазина
   function hitBlock(block, damage) {
     if (!window.gameState.gameActive) return;
     
@@ -575,6 +581,11 @@
       }
     }
     
+    // Бонус от магазина (скачок силы)
+    if (window.shopSystem && window.shopSystem.getPowerMultiplier) {
+      finalDamage = Math.round(finalDamage * window.shopSystem.getPowerMultiplier());
+    }
+    
     currentBlockHealth -= finalDamage;
     window.gameState.totalDamageDealt += finalDamage;
     window.gameMetrics.totalClicks++;
@@ -590,7 +601,7 @@
     }
   }
   
-  // Уничтожение блока
+  // Уничтожение блока с интеграцией магазина
   function destroyBlock(block) {
     const now = Date.now();
     const COMBO_TIME_WINDOW = isMobile ? 1500 : 2000;
@@ -614,8 +625,8 @@
     }
     
     // Бонус от магазина (усилитель кристаллов)
-    if (window.gameState.shopItems.crystalBoost.active) {
-      reward = Math.floor(reward * 1.5);
+    if (window.shopSystem && window.shopSystem.getCrystalMultiplier) {
+      reward = Math.floor(reward * window.shopSystem.getCrystalMultiplier());
     }
     
     // Проверка на редкий блок
@@ -720,7 +731,7 @@
     animateBlock(block);
   }
   
-  // Анимация блока
+  // Анимация блока с интеграцией магазина
   function animateBlock(block) {
     if (!window.gameState.gameActive) return;
     const speed = getCurrentSpeed();
@@ -993,6 +1004,36 @@
     }, animationDuration);
   }
   
+  // Атака помощника с интеграцией магазина
+  function helperAttack() {
+    if (!currentBlock || !window.gameState.helperActive || !helperElement) return;
+    
+    createHelperEffect();
+    
+    const baseHelperDmg = window.gameState.clickPower * (1 + window.gameState.helperDamageBonus);
+    const upgradedHelperDmg = baseHelperDmg * (1 + window.gameState.helperUpgradeLevel * 0.2);
+    
+    // Бонус от магазина (скачок силы)
+    let finalHelperDmg = upgradedHelperDmg;
+    if (window.shopSystem && window.shopSystem.getPowerMultiplier) {
+      finalHelperDmg *= window.shopSystem.getPowerMultiplier();
+    }
+    
+    currentBlockHealth -= finalHelperDmg;
+    window.gameState.totalDamageDealt += finalHelperDmg;
+    window.gameMetrics.totalClicks++;
+    
+    createDamageText(Math.round(finalHelperDmg), currentBlock, '#69f0ae');
+    checkLocationUpgrade();
+    
+    if (currentBlockHealth <= 0) {
+      destroyBlock(currentBlock);
+    } else {
+      currentBlock.textContent = Math.floor(currentBlockHealth);
+      updateCracks(currentBlock, currentBlockHealth);
+    }
+  }
+  
   function activateHelper() {
     if (window.gameState.helperActive) return;
     
@@ -1048,35 +1089,6 @@
     }
     
     window.saveGame();
-  }
-  
-  function helperAttack() {
-    if (!currentBlock || !window.gameState.helperActive || !helperElement) return;
-    
-    createHelperEffect();
-    
-    const baseHelperDmg = window.gameState.clickPower * (1 + window.gameState.helperDamageBonus);
-    const upgradedHelperDmg = baseHelperDmg * (1 + window.gameState.helperUpgradeLevel * 0.2);
-    
-    // Бонус от магазина (скачок силы)
-    let finalHelperDmg = upgradedHelperDmg;
-    if (window.gameState.shopItems.powerSurge.active) {
-      finalHelperDmg *= 1.5;
-    }
-    
-    currentBlockHealth -= finalHelperDmg;
-    window.gameState.totalDamageDealt += finalHelperDmg;
-    window.gameMetrics.totalClicks++;
-    
-    createDamageText(Math.round(finalHelperDmg), currentBlock, '#69f0ae');
-    checkLocationUpgrade();
-    
-    if (currentBlockHealth <= 0) {
-      destroyBlock(currentBlock);
-    } else {
-      currentBlock.textContent = Math.floor(currentBlockHealth);
-      updateCracks(currentBlock, currentBlockHealth);
-    }
   }
   
   // Покупки улучшений
