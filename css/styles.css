@@ -805,3 +805,210 @@ body {
   font-size: 0.7em;
   font-weight: bold;
 }
+/* Добавляем в конец файла css/styles.css */
+
+/* Анимации для уведомлений */
+@keyframes slideDown {
+  from { 
+    transform: translateX(-50%) translateY(-100px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateX(-50%) translateY(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateX(-50%) translateY(0); 
+    opacity: 1; 
+  }
+  to { 
+    transform: translateX(-50%) translateY(-100px); 
+    opacity: 0; 
+  }
+}
+
+/* Анимация плавания помощника */
+@keyframes helperFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Анимация пульсации для срочных уведомлений */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Стили для элемента помощника Bobo */
+.helper {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  background: radial-gradient(circle, #69f0ae, #00e676);
+  border-radius: 50%;
+  z-index: 12;
+  pointer-events: none;
+  box-shadow: 0 0 15px #69f0ae;
+  animation: helperFloat 3s ease-in-out infinite;
+  transition: opacity 0.3s ease;
+}
+
+/* Эффект луча Bobo */
+.helper-beam {
+  position: absolute;
+  z-index: 13;
+  pointer-events: none;
+}
+
+/* Индикатор активности Bobo в HUD */
+#hud-left .hud-item#bobo-info {
+  color: #69f0ae;
+  text-shadow: 0 0 4px rgba(105, 240, 174, 0.6);
+  animation: pulse 2s infinite;
+}
+
+/* Таймер Bobo на кнопке улучшения */
+.bobo-timer {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #69f0ae, #00e676);
+  color: white;
+  font-size: 0.7em;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  z-index: 1;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Стили для уведомлений о Bobo */
+.bobo-notification {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(105, 240, 174, 0.9), rgba(0, 230, 118, 0.9));
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  z-index: 1000;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: bold;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  animation: slideDown 0.5s ease-out;
+  max-width: 250px;
+}
+
+/* Стили для таймера Bobo в магазине/достижениях */
+.bobo-timer-active {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(105, 240, 174, 0.8);
+  color: white;
+  font-size: 0.7em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* Анимация для кнопки Bobo при малом времени */
+.upgrade-btn .bobo-timer.pulse-warning {
+  animation: pulse 0.5s infinite;
+  background: linear-gradient(135deg, #ff4444, #ff8800);
+}
+
+/* Эффект попадания луча Bobo */
+.helper-hit-effect {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, #69f0ae, transparent);
+  border-radius: 50%;
+  z-index: 15;
+  pointer-events: none;
+  animation: helperHit 0.5s ease-out forwards;
+}
+
+@keyframes helperHit {
+  0% { 
+    transform: scale(0.5); 
+    opacity: 0.8; 
+  }
+  70% { 
+    transform: scale(1.5); 
+    opacity: 0.4; 
+  }
+  100% { 
+    transform: scale(2); 
+    opacity: 0; 
+  }
+}
+
+/* Стили для бонусного эффекта Bobo */
+.bobo-bonus-effect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #69f0ae;
+  z-index: 50;
+  text-shadow: 0 0 10px rgba(105, 240, 174, 0.7);
+  animation: boboBonusFloat 2s ease-out forwards;
+}
+
+@keyframes boboBonusFloat {
+  0% { 
+    transform: translate(-50%, -50%) scale(0.5); 
+    opacity: 0; 
+  }
+  20% { 
+    transform: translate(-50%, -70%) scale(1.2); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: translate(-50%, -150%) scale(0.8); 
+    opacity: 0; 
+  }
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+  .helper {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .bobo-timer {
+    font-size: 0.6em;
+    padding: 1px 4px;
+    min-width: 35px;
+  }
+  
+  #hud-left .hud-item#bobo-info {
+    font-size: 0.7em;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .helper {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .bobo-timer {
+    font-size: 0.5em;
+    padding: 1px 3px;
+    min-width: 30px;
+  }
+}
