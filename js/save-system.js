@@ -49,7 +49,27 @@ window.gameMetrics = {
 // Функция сохранения игры
 window.saveGame = function() {
     const saveData = {
-        gameState: window.gameState,
+        gameState: {
+            coins: window.gameState.coins,
+            totalDamageDealt: window.gameState.totalDamageDealt,
+            clickPower: window.gameState.clickPower,
+            clickUpgradeLevel: window.gameState.clickUpgradeLevel,
+            currentLocation: window.gameState.currentLocation,
+            critChance: window.gameState.critChance,
+            critMultiplier: window.gameState.critMultiplier,
+            helperDamageBonus: window.gameState.helperDamageBonus,
+            helperUpgradeLevel: window.gameState.helperUpgradeLevel,
+            boboCoinBonus: window.gameState.boboCoinBonus,
+            critChanceUpgradeLevel: window.gameState.critChanceUpgradeLevel,
+            critMultiplierUpgradeLevel: window.gameState.critMultiplierUpgradeLevel,
+            gameActive: window.gameState.gameActive,
+            helperActive: window.boboSystem ? window.boboSystem.active : false,
+            helperTimeLeft: window.boboSystem ? window.boboSystem.timeLeft : 0,
+            comboCount: window.gameState.comboCount,
+            lastDestroyTime: window.gameState.lastDestroyTime,
+            shopItems: window.gameState.shopItems,
+            achievements: window.gameState.achievements
+        },
         gameMetrics: window.gameMetrics,
         timestamp: Date.now()
     };
@@ -77,7 +97,35 @@ window.loadGame = function() {
             
             if (saveAge < maxSaveAge) {
                 // Загружаем состояние игры
-                Object.assign(window.gameState, data.gameState || {});
+                if (data.gameState) {
+                    window.gameState.coins = data.gameState.coins || 0;
+                    window.gameState.totalDamageDealt = data.gameState.totalDamageDealt || 0;
+                    window.gameState.clickPower = data.gameState.clickPower || 1;
+                    window.gameState.clickUpgradeLevel = data.gameState.clickUpgradeLevel || 0;
+                    window.gameState.currentLocation = data.gameState.currentLocation || 'mercury';
+                    window.gameState.critChance = data.gameState.critChance || 0.001;
+                    window.gameState.critMultiplier = data.gameState.critMultiplier || 2.0;
+                    window.gameState.helperDamageBonus = data.gameState.helperDamageBonus || 0.3;
+                    window.gameState.helperUpgradeLevel = data.gameState.helperUpgradeLevel || 0;
+                    window.gameState.boboCoinBonus = data.gameState.boboCoinBonus || 0;
+                    window.gameState.critChanceUpgradeLevel = data.gameState.critChanceUpgradeLevel || 0;
+                    window.gameState.critMultiplierUpgradeLevel = data.gameState.critMultiplierUpgradeLevel || 0;
+                    window.gameState.gameActive = data.gameState.gameActive || false;
+                    window.gameState.helperActive = data.gameState.helperActive || false;
+                    window.gameState.helperTimeLeft = data.gameState.helperTimeLeft || 0;
+                    window.gameState.comboCount = data.gameState.comboCount || 0;
+                    window.gameState.lastDestroyTime = data.gameState.lastDestroyTime || 0;
+                    window.gameState.shopItems = data.gameState.shopItems || {
+                        timeWarp: { purchased: false, active: false, timeLeft: 0 },
+                        crystalBoost: { purchased: false, active: false, timeLeft: 0 },
+                        powerSurge: { purchased: false, active: false, timeLeft: 0 }
+                    };
+                    window.gameState.achievements = data.gameState.achievements || {
+                        novice: { unlocked: false, progress: 0, target: 10 },
+                        rich: { unlocked: false, progress: 0, target: 1000 },
+                        critMaster: { unlocked: false, progress: 0, target: 50 }
+                    };
+                }
                 
                 // Загружаем метрики
                 if (data.gameMetrics) {
