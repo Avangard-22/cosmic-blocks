@@ -65,11 +65,7 @@ window.translations = {
             helperDmgUpgrade: "Урон Bobo +20%!<br>Уровень: {level}",
             clickPowerUpgrade: "Сила увеличена!<br>Теперь: {power}",
             noSave: "Нет сохраненной игры!",
-            shareSuccess: "+50 Кристаллов за распространение!",
-            // Новые переводы для Bobo
-            boboActive: "Bobo активен!<br>Осталось времени: {time}<br>Бонус к кристаллам: +{percent}%",
-            boboEnding: "Bobo скоро закончит работу!",
-            boboReady: "Bobo готов к активации!"
+            shareSuccess: "+50 Кристаллов за распространение!"
         },
         rareBlocks: {
             gold: "Золотой",
@@ -95,12 +91,6 @@ window.translations = {
             critMaster: "Мастер крита: 50 критических ударов",
             unlocked: "РАЗБЛОКИРОВАНО",
             progress: "Прогресс"
-        },
-        // Новые переводы для Bobo
-        bobo: {
-            active: "Bobo активен",
-            timeFormat: "{minutes}:{seconds}",
-            bonus: "Бонус к кристаллам: +{percent}%"
         }
     },
     en: {
@@ -168,11 +158,7 @@ window.translations = {
             helperDmgUpgrade: "Bobo damage +20%!<br>Level: {level}",
             clickPowerUpgrade: "Power increased!<br>Now: {power}",
             noSave: "No saved game!",
-            shareSuccess: "+50 Crystals for sharing!",
-            // New translations for Bobo
-            boboActive: "Bobo is active!<br>Time left: {time}<br>Crystals bonus: +{percent}%",
-            boboEnding: "Bobo is about to finish!",
-            boboReady: "Bobo is ready to activate!"
+            shareSuccess: "+50 Crystals for sharing!"
         },
         rareBlocks: {
             gold: "Gold",
@@ -198,12 +184,6 @@ window.translations = {
             critMaster: "Crit Master: 50 critical hits",
             unlocked: "UNLOCKED",
             progress: "Progress"
-        },
-        // New translations for Bobo
-        bobo: {
-            active: "Bobo active",
-            timeFormat: "{minutes}:{seconds}",
-            bonus: "Crystals bonus: +{percent}%"
         }
     },
     zh: {
@@ -271,11 +251,7 @@ window.translations = {
             helperDmgUpgrade: "Bobo伤害 +20%!<br>等级: {level}",
             clickPowerUpgrade: "力量增加!<br>现在: {power}",
             noSave: "没有保存的游戏!",
-            shareSuccess: "分享获得+50水晶!",
-            // 新的Bobo翻译
-            boboActive: "Bobo已激活!<br>剩余时间: {time}<br>水晶奖励: +{percent}%",
-            boboEnding: "Bobo即将完成工作!",
-            boboReady: "Bobo准备激活!"
+            shareSuccess: "分享获得+50水晶!"
         },
         rareBlocks: {
             gold: "金色",
@@ -301,12 +277,6 @@ window.translations = {
             critMaster: "暴击大师: 50次暴击",
             unlocked: "已解锁",
             progress: "进度"
-        },
-        // 新的Bobo翻译
-        bobo: {
-            active: "Bobo 激活",
-            timeFormat: "{minutes}:{seconds}",
-            bonus: "水晶奖励: +{percent}%"
         }
     }
 };
